@@ -1,0 +1,14 @@
+{
+  "name": "node-wot",
+  "version": "0.0.1",
+  "description": "Web of Things implementation based on node.jsa",
+  "main": "main.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "author": "Johannes Hund (johannes.hund@gmail.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^6.0.45"
+  }
+}
