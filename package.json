@@ -10,5 +10,8 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^6.0.45"
+  },
+  "dependencies": {
+    "@types/es6-promise": "0.0.32"
   }
 }
