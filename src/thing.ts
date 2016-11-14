@@ -1,12 +1,15 @@
 namespace Thingweb {
     export class Thing implements WoT.DynamicThing {
         private actionHandlers : {[key : string] : (param? : any) => any } = {};
-        private propListeners  : {[key : string] : (param? : any) => any } = {};
+        private propListeners  : {[key : string] : Array<(param? : any) => any> } = {};
         private propStates : {[key : string] : any } = {}; 
-
 
         /** name of the Thing */
         public name: string
+
+        constructor(name : string) {
+            this.name = name;
+        }
 
         /** invokes an action on the target thing 
          * @param actionName Name of the action to invoke
@@ -77,6 +80,10 @@ namespace Thingweb {
          * @param cb callback to be called when the action gets invoked, optionally is supplied a parameter  
          */
         onInvokeAction(actionName: string, cb: (param?: any) => any): Thing { 
+            if(this.actionHandlers[actionName]) {
+                console.debug("replacing action handler for " + actionName + " on " + this.name);
+            } 
+            this.actionHandlers[actionName] = cb;
             return this;
         }
 
@@ -86,6 +93,11 @@ namespace Thingweb {
          * @param cb callback to be called when value changes; signature (newValue,oldValue)
          */
         onUpdateProperty(propertyName: string, cb: (newValue: any, oldValue?: any) => void): Thing {
+            if(this.propListeners[propertyName]) {
+                this.propListeners[propertyName].push(cb);
+            } else {
+                console.error("no such property " + propertyName + " on " + this.name);
+            }
             return this;
          }
 
@@ -101,7 +113,14 @@ namespace Thingweb {
          * @param propertyName Name of the property
          * @param valueType type specification of the value (JSON schema) 
          */
-        addProperty(propertyName: string, valueType: Object): Thing { return this; }
+        addProperty(propertyName: string, valueType: Object, initialValue? : any): Thing { 
+            this.propStates[propertyName] = (initialValue) ? initialValue : null;
+            this.propListeners[propertyName] = [];
+
+            // TODO decide for td-updates on-demand or pre-caching
+
+            return this; 
+        }
 
         /**
          * declare a new action for the thing
@@ -109,7 +128,13 @@ namespace Thingweb {
          * @param inputType type specification of the parameter (optional, JSON schema)
          * @param outputType type specification of the return value (optional, JSON schema)
          */
-        addAction(actionName: string, inputType?: Object, outputType?: Object): Thing  { return this; }
+        addAction(actionName: string, inputType?: Object, outputType?: Object): Thing  {
+            this.actionHandlers[actionName] = null;
+        
+            // TODO decide for td-updates on-demand or pre-caching
+
+            return this;
+         }
 
         /**
          * declare a new eventsource for the thing
@@ -119,12 +144,19 @@ namespace Thingweb {
         /**
          * remove a property from the thing
          */
-        removeProperty(propertyName: string): boolean { return false }
+        removeProperty(propertyName: string): boolean {
+            delete this.propListeners[propertyName];
+            delete this.propStates[propertyName];
+            return false
+        }
 
         /**
          * remove an action from the thing
          */
-        removeAction(actionName: string): boolean { return false }
+        removeAction(actionName: string): boolean {
+            delete this.actionHandlers[actionName];
+             return false
+        }
 
         /**
          * remove an event from the thing
