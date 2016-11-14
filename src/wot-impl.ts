@@ -1,5 +1,10 @@
 module Thingweb {
     export class WoTImpl implements WoT.WoTFactory {
+        private srv : Servient;
+
+        constructor(srv: Servient) {
+            this.srv = srv;
+        }
 
         discover(discoveryType: string, filter: Object): Promise<WoT.ConsumedThing> {
             return new Promise<WoT.ConsumedThing>((resolve, reject) => {

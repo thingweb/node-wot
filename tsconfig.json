@@ -7,9 +7,9 @@
 		"noImplicitAny": true,
 		"removeComments": true,
 		"noLib": false,
-		"preserveConstEnums": true,
-		"types" : [
-			"node"
-		]
-	}
+		"preserveConstEnums": true
+	},
+	"include": [
+		"src/**/*"
+	]
 }

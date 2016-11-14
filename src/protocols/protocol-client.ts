@@ -4,5 +4,7 @@ module Thingweb {
         writeResource(uri: string, payload: Object): Object;
         executeResource(uri: String, payload: Object): Object;
         unlinkResource(uri: string): Object;
+        start() : boolean;
+        stop() : boolean;
     }
 }
