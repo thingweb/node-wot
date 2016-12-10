@@ -9,9 +9,10 @@
   "author": "Johannes Hund (johannes.hund@gmail.com)",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^6.0.45"
+    "@types/es6-promise": "0.0.32",
+    "@types/node": "^6.0.45",
+    "typescript": "^2.1.4",
+    "wot-typescript-definitons": "^0.2.1"
   },
-  "dependencies": {
-    "@types/es6-promise": "0.0.32"
-  }
+  "dependencies": {}
 }

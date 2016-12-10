@@ -1,7 +1,7 @@
 'use strict'
 
 import fs = require("fs");
-import WoT = require("WoT")
+import WoT = require("wot-typescript-definitions")
 
 /**
  * Servient control for scripts
