@@ -1,10 +1,11 @@
 {
   "name": "node-wot",
   "version": "0.0.1",
-  "description": "Web of Things implementation based on node.jsa",
-  "main": "main.js",
+  "description": "Web of Things implementation based on node.js and typescript",
+  "main": "dist/main.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "node dist/examples/main.js",
+    "build": "./node-modules/.bin/tsc -p ."
   },
   "author": "Johannes Hund (johannes.hund@gmail.com)",
   "license": "MIT",
