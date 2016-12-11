@@ -1,7 +1,7 @@
 'use strict'
 
 import fs = require("fs");
-import WoT = require("wot-typescript-definitions")
+import {Servient}  from "../thingweb";
 
 /**
  * Servient control for scripts
@@ -9,7 +9,7 @@ import WoT = require("wot-typescript-definitions")
  * Obtain WoT object from servient
  * Use WoT object to Script
  */
-class MyServient extends Thingweb.Servient {
+class MyServient extends Servient {
     public readConf(): void {
         fs.readFile(".wotconfig", 'utf-8', (err, data) => {
             if (err) {
@@ -22,6 +22,9 @@ class MyServient extends Thingweb.Servient {
 }
 
 let srv = new MyServient();
+
+// ...import servers and clients and add them...
+
 let wot = srv.start();
 
 console.log("staring servient");
