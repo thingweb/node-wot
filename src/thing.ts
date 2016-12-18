@@ -1,4 +1,4 @@
-import {serializeTd} from './tdparser'
+import {serializeTD} from './tdparser'
 
 
 export default class Thing implements WoT.DynamicThing {
@@ -107,7 +107,7 @@ export default class Thing implements WoT.DynamicThing {
      * Retrive the thing description for this object
      */
     getDescription(): Object { 
-        return serializeTd(this);
+        return serializeTD(this);
     }
 
     /**

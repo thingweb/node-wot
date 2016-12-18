@@ -1,18 +1,17 @@
 import Thing from './thing';
-//import * from './protocols/protocols';
 import WoTImpl from './wot-impl';
 
 export class Servient {
     private servers : Array<ProtocolServer> = [];
-    private clients : Array<ProtocolClient> = [];
-
+    private clientFactories : Array<ProtocolClientFactory> = [];
+    
     public addServer(server: ProtocolServer): boolean {
         this.servers.push(server);
         return true;
     }
 
-    public addClient(client: ProtocolClient): boolean {
-        this.clients.push(client);
+    public addClientFactory(clientFactory: ProtocolClientFactory): boolean {
+        this.clientFactories.push(clientFactory);
         return true;
     }
 
@@ -27,12 +26,13 @@ export class Servient {
     //will return WoT object
     public start(): WoT.WoTFactory {
         this.servers.forEach((server) => server.start());
-        this.clients.forEach((client) => client.start());            
+        this.clientFactories.forEach((clientFactory) => clientFactory.init());
+        // Clients are to be created / started when a ConsumedThing is created            
         return new WoTImpl(this);
     }
 
     public shutdown(): void {
-        this.clients.forEach((client) => client.stop());
+        this.clientFactories.forEach((clientFactory) => clientFactory.destroy());
         this.servers.forEach((server) => server.stop());
         }
 }
