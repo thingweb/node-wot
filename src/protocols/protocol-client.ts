@@ -1,4 +1,8 @@
 declare interface ProtocolClient {
+
+    // @dape I assume we need async calls as well, e.g, readResourceAsync
+    readResourceAsync(uri: string): Promise<Object>;
+
     /** this client is requested to perform a "read" on the resource with the given URI */
     readResource(uri: string): Object;
 
