@@ -1,7 +1,6 @@
 import {serializeTD} from './tdparser'
 
-
-export default class Thing implements WoT.DynamicThing {
+export default class ServedThing implements WoT.DynamicThing {
     private actionHandlers : {[key : string] : (param? : any) => any } = {};
     private propListeners  : {[key : string] : Array<(param? : any) => any> } = {};
     private propStates : {[key : string] : any } = {}; 
@@ -63,15 +62,15 @@ export default class Thing implements WoT.DynamicThing {
      */
     public emitEvent(event: Event): void { }
 
-    public addListener(eventName: string, listener: (event: Event) => void): Thing {
+    public addListener(eventName: string, listener: (event: Event) => void): ServedThing {
         return this;
         }
 
-    public removeListener(eventName: string, listener: (event: Event) => void): Thing { 
+    public removeListener(eventName: string, listener: (event: Event) => void): ServedThing { 
         return this;
     }
 
-    removeAllListeners(eventName: string): Thing {
+    removeAllListeners(eventName: string): ServedThing {
         return this;
         }
 
@@ -81,7 +80,7 @@ export default class Thing implements WoT.DynamicThing {
      * @param actionName Name of the action
      * @param cb callback to be called when the action gets invoked, optionally is supplied a parameter  
      */
-    onInvokeAction(actionName: string, cb: (param?: any) => any): Thing { 
+    onInvokeAction(actionName: string, cb: (param?: any) => any): ServedThing { 
         if(this.actionHandlers[actionName]) {
             console.debug("replacing action handler for " + actionName + " on " + this.name);
         } 
@@ -94,7 +93,7 @@ export default class Thing implements WoT.DynamicThing {
      * @param propertyName Name of the property
      * @param cb callback to be called when value changes; signature (newValue,oldValue)
      */
-    onUpdateProperty(propertyName: string, cb: (newValue: any, oldValue?: any) => void): Thing {
+    onUpdateProperty(propertyName: string, cb: (newValue: any, oldValue?: any) => void): ServedThing {
         if(this.propListeners[propertyName]) {
             this.propListeners[propertyName].push(cb);
         } else {
@@ -104,18 +103,18 @@ export default class Thing implements WoT.DynamicThing {
         }
 
     /**
-     * Retrive the thing description for this object
+     * Retrive the ServedThing description for this object
      */
     getDescription(): Object { 
         return serializeTD(this);
     }
 
     /**
-     * declare a new property for the thing
+     * declare a new property for the ServedThing
      * @param propertyName Name of the property
      * @param valueType type specification of the value (JSON schema) 
      */
-    addProperty(propertyName: string, valueType: Object, initialValue? : any): Thing { 
+    addProperty(propertyName: string, valueType: Object, initialValue? : any): ServedThing { 
         this.propStates[propertyName] = (initialValue) ? initialValue : null;
         this.propListeners[propertyName] = [];
 
@@ -125,12 +124,12 @@ export default class Thing implements WoT.DynamicThing {
     }
 
     /**
-     * declare a new action for the thing
+     * declare a new action for the ServedThing
      * @param actionName Name of the action
      * @param inputType type specification of the parameter (optional, JSON schema)
      * @param outputType type specification of the return value (optional, JSON schema)
      */
-    addAction(actionName: string, inputType?: Object, outputType?: Object): Thing  {
+    addAction(actionName: string, inputType?: Object, outputType?: Object): ServedThing  {
         this.actionHandlers[actionName] = null;
     
         // TODO decide for td-updates on-demand or pre-caching
@@ -139,12 +138,12 @@ export default class Thing implements WoT.DynamicThing {
         }
 
     /**
-     * declare a new eventsource for the thing
+     * declare a new eventsource for the ServedThing
      */
-    addEvent(eventName: string): Thing  { return this; }
+    addEvent(eventName: string): ServedThing  { return this; }
 
     /**
-     * remove a property from the thing
+     * remove a property from the ServedThing
      */
     removeProperty(propertyName: string): boolean {
         delete this.propListeners[propertyName];
@@ -153,7 +152,7 @@ export default class Thing implements WoT.DynamicThing {
     }
 
     /**
-     * remove an action from the thing
+     * remove an action from the ServedThing
      */
     removeAction(actionName: string): boolean {
         delete this.actionHandlers[actionName];

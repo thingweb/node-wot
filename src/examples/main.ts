@@ -1,7 +1,7 @@
 'use strict'
 
 import fs = require("fs");
-import {Servient}  from "../thingweb";
+import {Servient} from "../thingweb";
 
 /**
  * Servient control for scripts

@@ -1,7 +1,7 @@
 /// <reference types="wot-typescript-definitons" />
 
-import {Servient} from './Servient'
-import * as WoT from 'wot-typescript-definitons';
+import Servient from './Servient'
+//import * as WoT from 'wot-typescript-definitons';
 
 export default class WoTImpl implements WoT.WoTFactory {
     private srv : Servient;

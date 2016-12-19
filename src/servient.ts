@@ -1,7 +1,8 @@
-import Thing from './thing';
+import ServedThing from './servedthing';
 import WoTImpl from './wot-impl';
+import ThingDescription from './thingdescription'
 
-export class Servient {
+export default class Servient {
     private servers : Array<ProtocolServer> = [];
     private clientFactories : Array<ProtocolClientFactory> = [];
     
@@ -15,11 +16,11 @@ export class Servient {
         return true;
     }
 
-    public addThing(thing : Thing) : boolean {
+    public addThing(thing : ThingDescription) : boolean {
         return false;
     }
 
-    public getThing(name : string) : Thing {
+    public getThing(name : string) : ServedThing {
         return null;
     }
 
