@@ -1,6 +1,7 @@
 /// <reference types="wot-typescript-definitons" />
 
-import Servient from './Servient'
+import Servient from './servient'
+import ServedThing from './servedthing'
 //import * as WoT from 'wot-typescript-definitons';
 
 export default class WoTImpl implements WoT.WoTFactory {
@@ -44,7 +45,9 @@ export default class WoTImpl implements WoT.WoTFactory {
      */
     createThing(name: string): Promise<WoT.DynamicThing> {
         return new Promise<WoT.DynamicThing>((resolve, reject) => {
-
+            console.log("async creation of a thing called " + name);
+            let mything = new ServedThing(name);
+            resolve(mything);
         });
     }
 
