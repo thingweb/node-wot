@@ -27,7 +27,7 @@ let srv = new MyServient();
 
 let wot = srv.start();
 
-console.log("staring servient");
+console.log("starting servient");
 
 wot.createThing("bla").then((thing) => {
     console.log("there is a thing called " + thing.name);
