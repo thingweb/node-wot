@@ -2,6 +2,7 @@
 
 import fs = require("fs");
 import {Servient}  from "../thingweb";
+import {DummyClientFactory}  from "../protocols/dummy/dummy-protocol-client";
 
 /**
  * Servient control for scripts
@@ -24,6 +25,8 @@ class MyServient extends Servient {
 let srv = new MyServient();
 
 // ...import servers and clients and add them...
+let dcf = new DummyClientFactory();
+srv.addClientFactory(dcf);
 
 let wot = srv.start();
 
@@ -48,3 +51,23 @@ wot.createThing("bla").then((thing) => {
 
     console.log("things are up, now check it");
 });
+
+// client factory tests
+let dc = dcf.getClient();
+console.log(dc.getSchemes());
+console.log(dc.readResource("dummy://foo"));
+console.log(dc.readResource("unknown://foo"));
+
+// async calls
+console.log("start async calls...");
+for (var i = 0; i < 5; i++) {
+    dc.readResourceAsync("dummy://foo_" + i).then(function (val) {
+        console.log(val);
+    }).catch(function (err) {
+        console.log('readResourceAsync error', err.message)
+    });
+}
+console.log("all async calls started (wait for responses)");
+
+// let t = srv.getThing("bla");
+// console.log(t.getProperty("bar"));
