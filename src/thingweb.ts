@@ -1,1 +1,1 @@
- export {Servient} from "./servient";
+ export {default as Servient} from './servient';
