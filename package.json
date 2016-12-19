@@ -15,5 +15,9 @@
     "typescript": "^2.1.4",
     "wot-typescript-definitons": "^0.2.1"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thingweb/node-wot.git"
+  }
 }
