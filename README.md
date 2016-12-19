@@ -17,7 +17,7 @@ npm install -g typescript
 npm install
 
 # start tsc to transcompile TS code to JS in dist directory
-# Note: This steeps needs to be repeated after every code change
+# Note: This step needs to be repeated after every code change
 tsc
 
 # start node-wot
