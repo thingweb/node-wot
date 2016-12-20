@@ -4,6 +4,8 @@
 
 export class DummyClientFactory implements ProtocolClientFactory {
 
+    public static readonly schemes : Array<string> = ["dummy"] ;
+
     public getClient() : ProtocolClient {
         console.log("getClient for scheme 'dummy'");
         return new DummyClient();
@@ -18,28 +20,30 @@ export class DummyClientFactory implements ProtocolClientFactory {
         console.log("destroy client-factory for scheme 'dummy'");
         return true;
     }
+   
+    public getSchemes() : Array<string> {
+        return DummyClientFactory.schemes;
+    }
 }
 
 
 class DummyClient implements ProtocolClient {
 
-    public static readonly schemes : Array<string> = ["dummy"] ;
-
-    private checkScheme(uri: string): boolean {
-        if(uri != null && uri.indexOf(DummyClient.schemes[0] + "://") == 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    // private checkScheme(uri: string): boolean {
+    //     if(uri != null && uri.indexOf(DummyClient.schemes[0] + "://") == 0) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
     public readResource(uri: string): Object {
         // return uri plus time
-        if (this.checkScheme(uri)) {
+        // if (this.checkScheme(uri)) {
             return "GET_" + uri + "_" + new Date();
-        } else {
-            return "GET ERROR for " + uri;
-        }
+        // } else {
+        //     return "GET ERROR for " + uri;
+        // }
     }
 
     public readResourceAsync(uri: string): Promise<any> {
@@ -77,8 +81,5 @@ class DummyClient implements ProtocolClient {
     public stop() : boolean {
         return true;
     }
-    
-    public getSchemes() : Array<string> {
-        return DummyClient.schemes;
-    }
+
 }

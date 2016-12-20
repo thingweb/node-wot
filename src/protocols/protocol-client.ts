@@ -19,12 +19,14 @@ declare interface ProtocolClient {
     start() : boolean;
     /**stop the client */
     stop() : boolean;
-    /** get the protocol types supported by this client - identified by its scheme (e.g. http, https etc.) */
-    getSchemes() : Array<string>;
+
 }
 
 declare interface ProtocolClientFactory {
     getClient() : ProtocolClient;
     init() : boolean;
     destroy() : boolean;
+    
+    /** get the protocol types supported by this client - identified by its scheme (e.g. http, https etc.) */
+    getSchemes() : Array<string>;
 }

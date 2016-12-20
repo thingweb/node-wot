@@ -54,7 +54,7 @@ wot.createThing("bla").then((thing) => {
 
 // client factory tests
 let dc = dcf.getClient();
-console.log(dc.getSchemes());
+console.log(dcf.getSchemes());
 console.log(dc.readResource("dummy://foo"));
 console.log(dc.readResource("unknown://foo"));
 
