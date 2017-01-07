@@ -22,10 +22,10 @@ class MyServient extends Servient {
     }
 }
 
-let srv = new MyServient();
+ let srv = new MyServient();
 
 // ...import servers and clients and add them...
-let dcf = new DummyClientFactory();
+ let dcf = new DummyClientFactory();
 srv.addClientFactory(dcf);
 
 let wot = srv.start();
@@ -38,25 +38,33 @@ wot.createThing("bla").then((thing) => {
     thing
         .addAction("wuu")
         .onInvokeAction("wuu",
-        () => {
-            console.log("Woo was called");
-        });
+            () => {
+                console.log("Woo was called");
+            }
+        );
     
     thing
     .addProperty("bar",{ "type" : "number"})
     .onUpdateProperty("bar",(nV,oV) => {
         "bar changed from " + oV + " to " + nV;
     })
-    .setProperty("bar",0);
+    .setProperty("bar",0)
+    .catch(console.error);
 
     console.log("things are up, now check it");
+
+    let t = srv.getThing("bla");
+    console.log(t.getProperty("bar"));
+    t.invokeAction("wuu");
 });
 
 // client factory tests
 let dc = dcf.getClient();
 console.log(dcf.getSchemes());
-console.log(dc.readResource("dummy://foo"));
-console.log(dc.readResource("unknown://foo"));
+dc.readResource("dummy://foo").then(console.log).catch(console.error);
+
+// console.log();
+// console.log(dc.readResource("unknown://foo"));
 
 // async calls
 console.log("start async calls...");
@@ -69,5 +77,3 @@ for (var i = 0; i < 5; i++) {
 }
 console.log("all async calls started (wait for responses)");
 
-// let t = srv.getThing("bla");
-// console.log(t.getProperty("bar"));

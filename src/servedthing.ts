@@ -35,7 +35,7 @@ export default class ServedThing implements WoT.DynamicThing {
      */
     public setProperty(propertyName: string, newValue: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            if(this.propStates[propertyName]) {
+            if(propertyName in this.propStates) {
                 this.propStates[propertyName] = newValue;
                 resolve(newValue);
             } else {
@@ -50,7 +50,7 @@ export default class ServedThing implements WoT.DynamicThing {
      */
     public getProperty(propertyName: string): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            if(this.propStates[propertyName]) {
+            if(propertyName in this.propStates) {
                 resolve(this.propStates[propertyName]);
             } else {
                 reject(new Error("No property called " + propertyName));

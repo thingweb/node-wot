@@ -49,10 +49,11 @@ class DummyClient implements ProtocolClient {
     public readResourceAsync(uri: string): Promise<any> {
         // do some work
         return new Promise<Object>((resolve, reject)=>{
-            let g = this.readResource(uri);
+            //let g = this.readResource(uri);
+            let g = "PUT_" + uri + "_" + new Date()
             let isSomeCondition = Math.random() < 0.5 ? true : false;
             if (isSomeCondition) {
-                throw new Error('No reason but reject ' + uri);
+                reject(new Error('No reason but reject ' + uri));
             }
             setTimeout( () => {
                 resolve(g);

@@ -8,7 +8,7 @@ import * as Helpers from './helpers'
 export default class Servient {
     private servers : Array<ProtocolServer> = [];
     private clientFactories : Dictionary<string,ProtocolClientFactory> = new Dictionary<string,ProtocolClientFactory>();
-    private things : Array<ServedThing> = [];
+    private things : Dictionary<string,ServedThing> = new Dictionary<string,ServedThing>();
 
     public addServer(server: ProtocolServer): boolean {
         this.servers.push(server);
@@ -27,12 +27,23 @@ export default class Servient {
         return this.clientFactories.getValue(scheme).getClient();
     }
 
-    public addThing(thing : ThingDescription) : boolean {
+    public addThingFromTD(thing : ThingDescription) : boolean {
         return false;
     }
 
+
+    public addThing(thing : ServedThing) : boolean {
+        if(!this.things.containsKey(thing.name)) {
+            this.things.setValue(thing.name,thing);
+            return true
+        } else
+        return false
+    }
+
     public getThing(name : string) : ServedThing {
-        return null;
+        if(this.things.containsKey(name)) {
+            return this.things.getValue(name);
+        } else return null;
     }
 
     //will return WoT object

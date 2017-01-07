@@ -58,7 +58,11 @@ export default class WoTImpl implements WoT.WoTFactory {
         return new Promise<WoT.DynamicThing>((resolve, reject) => {
             console.log("async creation of a thing called " + name);
             let mything = new ServedThing(name);
-            resolve(mything);
+            if(this.srv.addThing(mything)) {
+                resolve(mything);
+            } else {
+                reject(new Error("could not add thing: " + mything))
+            }
         });
     }
 
