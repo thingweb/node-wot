@@ -1,4 +1,5 @@
 import {serializeTD} from './tdparser'
+import ThingDescritpion from './thingdescription'
 
 export default class ServedThing implements WoT.DynamicThing {
     private actionHandlers : {[key : string] : (param? : any) => any } = {};
@@ -6,7 +7,7 @@ export default class ServedThing implements WoT.DynamicThing {
     private propStates : {[key : string] : any } = {}; 
 
     /** name of the Thing */
-    public name: string
+    readonly name: string
 
     constructor(name : string) {
         this.name = name;

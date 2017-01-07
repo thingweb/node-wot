@@ -4,16 +4,16 @@ declare interface ProtocolClient {
     readResourceAsync(uri: string): Promise<Object>;
 
     /** this client is requested to perform a "read" on the resource with the given URI */
-    readResource(uri: string): Object;
+    readResource(uri: string): Promise<Object>;
 
     /** this cliet is requested to perform a "write" on the resource with the given URI  */
-    writeResource(uri: string, payload: Object): Object;
+    writeResource(uri: string, payload: Object): Promise<Object>;
 
     /** this client is requested to perform an "invoke" on the resource with the given URI */
-    invokeResource(uri: String, payload: Object): Object;
+    invokeResource(uri: String, payload: Object): Promise<Object>;
 
     /** this client is requested to perform an "unlink" on the resource with the given URI */
-    unlinkResource(uri: string): Object;
+    unlinkResource(uri: string): Promise<Object>;
 
     /** start the client (ensure it is ready to send requests) */
     start() : boolean;

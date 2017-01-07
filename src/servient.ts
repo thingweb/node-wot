@@ -2,6 +2,8 @@ import ServedThing from './servedthing';
 import WoTImpl from './wot-impl';
 import ThingDescription from './thingdescription'
 import {Dictionary} from 'typescript-collections' //seems TS2.1 still does not support ES6 Map
+import * as Helpers from './helpers'
+
 
 export default class Servient {
     private servers : Array<ProtocolServer> = [];
@@ -18,6 +20,11 @@ export default class Servient {
             this.clientFactories.setValue(scheme,clientFactory);
         }        
         return true;
+    }
+
+    public getClientFor(uri: string) : ProtocolClient {
+        let scheme = Helpers.extractScheme(uri);
+        return this.clientFactories.getValue(scheme).getClient();
     }
 
     public addThing(thing : ThingDescription) : boolean {

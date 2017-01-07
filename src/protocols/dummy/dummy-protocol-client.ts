@@ -37,10 +37,10 @@ class DummyClient implements ProtocolClient {
     //     }
     // }
 
-    public readResource(uri: string): Object {
+    public readResource(uri: string): Promise<Object> {
         // return uri plus time
         // if (this.checkScheme(uri)) {
-            return "GET_" + uri + "_" + new Date();
+            return this.readResourceAsync(uri)
         // } else {
         //     return "GET ERROR for " + uri;
         // }
@@ -62,16 +62,22 @@ class DummyClient implements ProtocolClient {
         // new Promisethis.readResource(uri);
     }
 
-    public writeResource(uri: string, payload: Object): Object {
-        return "PUT_" + uri + "_" + new Date();
+    public writeResource(uri: string, payload: Object): Promise<Object> {
+        return new Promise<Object>((resolve, reject)=>{
+            resolve("PUT_" + uri + "_" + new Date())
+        })
     }
 
-    public invokeResource(uri: String, payload: Object): Object {
-        return "POST_" + uri + "_" + new Date();
+    public invokeResource(uri: String, payload: Object): Promise<Object> {
+        return new Promise<Object>((resolve, reject)=>{
+            resolve("POST_" + uri + "_" + new Date())
+        })
     }
 
-    public unlinkResource(uri: string): Object {
-        return "UNLINK_" + uri + "_" + new Date();
+    public unlinkResource(uri: string): Promise<Object> {
+        return new Promise<Object>((resolve, reject)=>{
+            resolve("DELETE_" + uri + "_" + new Date())
+        })
     }
 
     public start() : boolean {

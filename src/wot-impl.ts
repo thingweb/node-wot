@@ -2,6 +2,10 @@
 
 import Servient from './servient'
 import ServedThing from './servedthing'
+import ProxyThing from './proxything'
+import * as Helpers from './helpers'
+import * as TDParser from './tdparser'
+
 //import * as WoT from 'wot-typescript-definitons';
 
 export default class WoTImpl implements WoT.WoTFactory {
@@ -23,7 +27,12 @@ export default class WoTImpl implements WoT.WoTFactory {
      */
     consumeDescriptionUri(uri: string): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
-
+            let client = this.srv.getClientFor(uri);
+            client.readResource(uri).then((td) => {
+                let thingdesc = TDParser.parseTDObj(td);
+                let pt = new ProxyThing(thingdesc);
+                resolve(pt);
+            })
         });
     }
 
@@ -34,7 +43,9 @@ export default class WoTImpl implements WoT.WoTFactory {
      */
     consumeDescription(thingDescription: Object): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
-
+            let thingdesc = TDParser.parseTDObj(thingDescription);
+            let pt = new ProxyThing(thingdesc);
+            resolve(pt);
         });
     }
 
@@ -58,13 +69,19 @@ export default class WoTImpl implements WoT.WoTFactory {
      */
     createFromDescriptionUri(uri: string): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
-
+            let client = this.srv.getClientFor(uri);
+            client.readResource(uri).then((td) => {
+                let thingdesc = TDParser.parseTDObj(td);
+                let mything = new ServedThing(thingdesc.name);
+                resolve(mything);
+            }
+         );
         });
     }
 
     createFromDescription(thingDescription: Object): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
-
+            let thingdesc = TDParser.parseTDObj(thingDescription);
         });
     }
 }
