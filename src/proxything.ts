@@ -6,7 +6,8 @@ export default class ProxyThing implements WoT.ConsumedThing {
     private td : Object;
 
     constructor(td : ThingDescription) {
-
+        this.name = td.name;
+        this.td = td;
     }
 
 
