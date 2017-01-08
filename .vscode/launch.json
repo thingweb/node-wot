@@ -11,7 +11,8 @@
             "program": "${workspaceRoot}/dist/examples/main.js",
             "cwd": "${workspaceRoot}",
             "outFiles": [],
-            "sourceMaps": true
+            "sourceMaps": true,
+            "preLaunchTask": "build"
         },
         {
             "type": "node",

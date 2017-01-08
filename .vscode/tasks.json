@@ -3,8 +3,17 @@
     // for the documentation about the tasks.json format
     "version": "0.1.0",
     "command": "npm",
+    "args": ["run"],
+    "echoCommand": true,
     "isShellCommand": true,
-    "args": ["build"],
     "showOutput": "always",
-    "problemMatcher": "$tsc"
+    "problemMatcher": "$tsc",
+    "tasks": [
+        {
+            "taskName": "build"
+        },
+        {
+            "taskName": "test"
+        }
+    ]
 }
