@@ -30,7 +30,7 @@ export default class WoTImpl implements WoT.WoTFactory {
             let client = this.srv.getClientFor(uri);
             client.readResource(uri).then((td) => {
                 let thingdesc = TDParser.parseTDObj(td);
-                let pt = new ProxyThing(thingdesc);
+                let pt = new ProxyThing(this.srv, thingdesc);
                 resolve(pt);
             })
         });
@@ -44,7 +44,7 @@ export default class WoTImpl implements WoT.WoTFactory {
     consumeDescription(thingDescription: Object): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
             let thingdesc = TDParser.parseTDObj(thingDescription);
-            let pt = new ProxyThing(thingdesc);
+            let pt = new ProxyThing(this.srv, thingdesc);
             resolve(pt);
         });
     }
@@ -57,7 +57,7 @@ export default class WoTImpl implements WoT.WoTFactory {
     createThing(name: string): Promise<WoT.DynamicThing> {
         return new Promise<WoT.DynamicThing>((resolve, reject) => {
             console.log("async creation of a thing called " + name);
-            let mything = new ServedThing(name);
+            let mything = new ServedThing(this.srv, name);
             if(this.srv.addThing(mything)) {
                 resolve(mything);
             } else {
@@ -76,7 +76,7 @@ export default class WoTImpl implements WoT.WoTFactory {
             let client = this.srv.getClientFor(uri);
             client.readResource(uri).then((td) => {
                 let thingdesc = TDParser.parseTDObj(td);
-                let mything = new ServedThing(thingdesc.name);
+                let mything = new ServedThing(this.srv, thingdesc.name);
                 resolve(mything);
             }
          );

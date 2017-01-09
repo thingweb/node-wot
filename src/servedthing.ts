@@ -1,15 +1,18 @@
-import {serializeTD} from './tdparser'
-import ThingDescritpion from './thingdescription'
+import * as TDParser from './tdparser'
+import ThingDescription from './thingdescription'
+import Servient from './servient'
 
 export default class ServedThing implements WoT.DynamicThing {
     private actionHandlers : {[key : string] : (param? : any) => any } = {};
     private propListeners  : {[key : string] : Array<(param? : any) => any> } = {};
     private propStates : {[key : string] : any } = {}; 
+    private readonly srv : Servient;
 
     /** name of the Thing */
-    readonly name: string
+    public readonly name: string
 
-    constructor(name : string) {
+    constructor(servient : Servient, name : string) {
+        this.srv = servient;
         this.name = name;
     }
 
@@ -107,7 +110,7 @@ export default class ServedThing implements WoT.DynamicThing {
      * Retrive the ServedThing description for this object
      */
     getDescription(): Object { 
-        return serializeTD(this);
+        return TDParser.generateTD(this,this.srv)
     }
 
     /**
