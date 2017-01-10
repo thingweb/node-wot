@@ -4,6 +4,8 @@ import fs = require("fs");
 import {Servient} from "../thingweb";
 import {DummyClientFactory}  from "../protocols/dummy/dummy-protocol-client";
 
+var winston = require('winston');
+
 /**
  * Servient control for scripts
  * The lifecycle of a script should be. start up Servient
@@ -72,8 +74,9 @@ for (var i = 0; i < 5; i++) {
     dc.readResourceAsync("dummy://foo_" + i).then(function (val) {
         console.log(val);
     }).catch(function (err) {
-        console.log('readResourceAsync error', err.message)
+        winston.error('readResourceAsync error', err.message)
     });
 }
-console.log("all async calls started (wait for responses)");
+winston.info("all async calls started (wait for responses)");
+
 

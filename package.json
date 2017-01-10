@@ -23,7 +23,8 @@
     "wot-typescript-definitons": "^0.2.1"
   },
   "dependencies": {
-    "typescript-collections": "^1.2.3"
+    "typescript-collections": "^1.2.3",
+    "winston": "^2.3.0"
   },
   "repository": {
     "type": "git",

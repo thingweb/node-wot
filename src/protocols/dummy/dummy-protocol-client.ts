@@ -2,6 +2,8 @@
  * Dummy Protocol code for early testing
  */
 
+var winston = require('winston');
+
 export class DummyClientFactory implements ProtocolClientFactory {
 
     public static readonly schemes : Array<string> = ["dummy"] ;
@@ -53,7 +55,8 @@ class DummyClient implements ProtocolClient {
             let g = "PUT_" + uri + "_" + new Date()
             let isSomeCondition = Math.random() < 0.5 ? true : false;
             if (isSomeCondition) {
-                reject(new Error('No reason but reject ' + uri));
+                winston.info('Simulate rejection for testing purposes, ' + uri);
+                reject(new Error('Testing fail on purpose for "' + uri + '"'));
             }
             setTimeout( () => {
                 resolve(g);
