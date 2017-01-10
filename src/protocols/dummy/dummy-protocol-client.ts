@@ -2,7 +2,10 @@
  * Dummy Protocol code for early testing
  */
 
-var winston = require('winston');
+// var logger = require('winston');
+// var logger = require('../logger');
+import {logger} from "../../logger";
+// import ThingDescription from "../../logger";
 
 export class DummyClientFactory implements ProtocolClientFactory {
 
@@ -55,7 +58,7 @@ class DummyClient implements ProtocolClient {
             let g = "PUT_" + uri + "_" + new Date()
             let isSomeCondition = Math.random() < 0.5 ? true : false;
             if (isSomeCondition) {
-                winston.info('Simulate rejection for testing purposes, ' + uri);
+                logger.info('Simulate rejection for testing purposes, ' + uri);
                 reject(new Error('Testing fail on purpose for "' + uri + '"'));
             }
             setTimeout( () => {
