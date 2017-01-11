@@ -1,6 +1,7 @@
 import ServedThing from './servedthing';
 import WoTImpl from './wot-impl';
 import ThingDescription from './thingdescription'
+import * as TD from './thingdescription'
 import {Dictionary} from 'typescript-collections' //seems TS2.1 still does not support ES6 Map
 import * as Helpers from './helpers'
 
@@ -9,6 +10,11 @@ export default class Servient {
     private servers : Array<ProtocolServer> = [];
     private clientFactories : Dictionary<string,ProtocolClientFactory> = new Dictionary<string,ProtocolClientFactory>();
     private things : Dictionary<string,ServedThing> = new Dictionary<string,ServedThing>();
+
+    public chooseLink(links : Array<TD.TDInteractionLink>) : string {
+        // some way choosing a link
+        return (links.length > 0) ? links[0].href : "nope://none";
+    }
 
     public addServer(server: ProtocolServer): boolean {
         this.servers.push(server);

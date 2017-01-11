@@ -1,4 +1,5 @@
 import ThingDescription from './thingdescription'
+import * as TD from './thingdescription'
 import Servient from './servient'
 import * as TDParser from './tdparser'
 
@@ -18,7 +19,7 @@ export default class ProxyThing implements WoT.ConsumedThing {
     }
 
     private findInteraction(name: string, type: string) {
-        let res = this.td.interactions.filter((ia) => ia.type === type && ia.name === name)
+        let res = this.td.interactions.filter((ia) => ia.interactionType === TD.interactionTypeEnum.action && ia.name === name)
         return (res.length > 0) ? res[0] : null;
     }
 
@@ -33,13 +34,13 @@ export default class ProxyThing implements WoT.ConsumedThing {
             if (!action)
                 reject(new Error("cannot find action " + name + " in " + this.name))
             else {
-                let uri = action.uri;
+                let uri = this.srv.chooseLink(action.links);
                 console.log("getting client for " + uri);
                 let client = this.srv.getClientFor(uri);
                 if (!client)
                     reject("no suitable client found for " + uri)
                 else {
-                    console.log("invoking " + action.uri);
+                    console.log("invoking " + uri);
                     resolve(client.invokeResource(uri, parameter))
                 }
             }
@@ -58,13 +59,13 @@ export default class ProxyThing implements WoT.ConsumedThing {
             if (!property)
                 reject(new Error("cannot find property " + name + " in " + this.name))
             else {
-                let uri = property.uri;
+                let uri = this.srv.chooseLink(property.links);
                 console.log("getting client for " + uri);
                 let client = this.srv.getClientFor(uri);
                 if (!client)
                     reject("no suitable client found for " + uri)
                 else {
-                    console.log("invoking " + property.uri);
+                    console.log("writing " + uri);
                     resolve(client.writeResource(uri, newValue))
                 }
             }
@@ -83,13 +84,13 @@ export default class ProxyThing implements WoT.ConsumedThing {
             if (!property)
                 reject(new Error("cannot find property " + name + " in " + this.name))
             else {
-                let uri = property.uri;
+                let uri = this.srv.chooseLink(property.links);
                 console.log("getting client for " + uri);
                 let client = this.srv.getClientFor(uri);
                 if (!client)
-                    reject("no suitable client found for " + uri)
+                    reject(new Error("no suitable client found for " + uri))
                 else {
-                    console.log("invoking " + property.uri);
+                    console.log("reading " + uri);
                     resolve(client.readResource(uri))
                 }
             }

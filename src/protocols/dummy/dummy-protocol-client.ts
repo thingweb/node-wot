@@ -42,7 +42,7 @@ class DummyClient implements ProtocolClient {
     //     }
     // }
 
-    public readResource(uri: string): Promise<Object> {
+    public readResource(uri: string): Promise<any> {
         // return uri plus time
         // if (this.checkScheme(uri)) {
             return this.readResourceAsync(uri)
@@ -53,7 +53,7 @@ class DummyClient implements ProtocolClient {
 
     public readResourceAsync(uri: string): Promise<any> {
         // do some work
-        return new Promise<Object>((resolve, reject)=>{
+        return new Promise<string>((resolve, reject)=>{
             //let g = this.readResource(uri);
             let g = "PUT_" + uri + "_" + new Date()
             let isSomeCondition = Math.random() < 0.5 ? true : false;
@@ -69,20 +69,20 @@ class DummyClient implements ProtocolClient {
         // new Promisethis.readResource(uri);
     }
 
-    public writeResource(uri: string, payload: Object): Promise<Object> {
-        return new Promise<Object>((resolve, reject)=>{
+    public writeResource(uri: string, payload: any): Promise<any> {
+        return new Promise<any>((resolve, reject)=>{
             resolve("PUT_" + uri + "_" + new Date())
         })
     }
 
-    public invokeResource(uri: String, payload: Object): Promise<Object> {
-        return new Promise<Object>((resolve, reject)=>{
+    public invokeResource(uri: String, payload: any): Promise<any> {
+        return new Promise<string>((resolve, reject)=>{
             resolve("POST_" + uri + "_" + new Date())
         })
     }
 
-    public unlinkResource(uri: string): Promise<Object> {
-        return new Promise<Object>((resolve, reject)=>{
+    public unlinkResource(uri: string): Promise<any> {
+        return new Promise<string>((resolve, reject)=>{
             resolve("DELETE_" + uri + "_" + new Date())
         })
     }

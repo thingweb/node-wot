@@ -1,4 +1,4 @@
-import { JsonMember, JsonObject} from 'typedjson-npm';
+import { JsonMember, JsonObject} from 'typedjson';
 
 /** structured type representing a TD for internal usage */
 export default class ThingDescription {
@@ -57,7 +57,7 @@ export class TDInteractionLink {
 }
 
 /* media type selection */
-enum mediaTypeEnum {
+export enum mediaTypeEnum {
     "application/json",
     "application/xml",
     "application/exi"
@@ -65,13 +65,13 @@ enum mediaTypeEnum {
 }
 
 /* interaction type selection */
-enum interactionTypeEnum {
+export enum interactionTypeEnum {
     property,
     action,
     event
 }
 /* simple type selection */
-enum dataTypePrimitiveEnum {
+export enum dataTypePrimitiveEnum {
     string,
     boolean,
     number,
