@@ -32,7 +32,7 @@ export class TDInteraction {
 }
 
 /**
-* Internal links information of an interaction
+* Internal links information of an interaction 
 */
 export class TDInteractionLink {
   /* relativ or absulut URI path of the interaction resource */
