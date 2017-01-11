@@ -1,31 +1,61 @@
 /** structured type representing a TD for internal usage */
 export default class ThingDescription {
-    /** Name in this case is the machine-readable id of this thing */
-    public name : string
+
+    public name : string /** Human readable name identifier of the Thing  */
+    public base : string /** base uri of the interaction resources */
 
     /** interactions of this thing */
-    public interactions : Array<TDInterAction>;
+    public interactions : Array<TDInteraction>;
 
 }
 
 /**
  * Internal data structure for an interaction
  */
-export class TDInterAction {
+export class TDInteraction {
     /** name/identifier of the interaction */
-    readonly name : string
-    /** complete (absolute) uri */
-    readonly uri : string 
+    public name : string
+
     /** type of the interaction (action, property, event) */
-    readonly type : string
+    public interactionType : interactionTypeEnum
+
+    /** interactions of this thing */
+    public links : Array<TDInteractionLink>;
+
+    /* writable flag for the property*/
+    public writable : boolean;
 
     //how to handle types internally?
     // json schema objects
-    readonly reqType : any
-    readonly pesType : any
+    public inputData : any
+    public outputDate : any
 }
 
-enum DataTypePrimitive {
+/**
+* Internal links information of an interaction
+*/
+export class TDInteractionLink {
+  /* relativ or absulut URI path of the interaction resource */
+  public href : string
+
+  /* used mediaType of the interacion resources */
+  public mediaType : mediaTypeEnum
+}
+
+enum mediaTypeEnum {
+    "application/json",
+    "application/xml",
+    "application/exi"
+    /* TODO: add more media types here */
+}
+
+enum interactionTypeEnum {
+    property,
+    action,
+    event
+}
+
+enum dataTypePrimitiveEnum {
     string,
     boolean,
     number,
