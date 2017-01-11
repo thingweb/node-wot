@@ -3,6 +3,10 @@
 import fs = require("fs");
 import {Servient} from "../thingweb";
 import {DummyClientFactory}  from "../protocols/dummy/dummy-protocol-client";
+import ProxyThing from "../proxything";
+import ThingDescription from "../thingdescription";
+
+import {logger} from "../logger";
 
 /**
  * Servient control for scripts
@@ -72,8 +76,16 @@ for (var i = 0; i < 5; i++) {
     dc.readResourceAsync("dummy://foo_" + i).then(function (val) {
         console.log(val);
     }).catch(function (err) {
-        console.log('readResourceAsync error', err.message)
+        logger.error('readResourceAsync error', err.message)
     });
 }
-console.log("all async calls started (wait for responses)");
+logger.info("all async calls started (wait for responses)");
+
+
+// proxy thing tests
+// let servient: Servient, let td: ThingDescription;
+let td = new ThingDescription();
+td.name = "test";
+let pt = new ProxyThing(srv, td);
+pt.invokeAction("foo");
 

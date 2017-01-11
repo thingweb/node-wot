@@ -2,6 +2,8 @@ import ThingDescription from './thingdescription'
 import Servient from './servient'
 import * as TDParser from './tdparser'
 
+import {logger} from "./logger";
+
 export default class ProxyThing implements WoT.ConsumedThing {
 
     readonly name: string;
@@ -9,6 +11,7 @@ export default class ProxyThing implements WoT.ConsumedThing {
     private readonly srv: Servient;
 
     constructor(servient: Servient, td: ThingDescription) {
+        logger.info("Create ProxyThing '" + this.name + "' created");
         this.srv = servient
         this.name = td.name;
         this.td = td;
@@ -24,6 +27,7 @@ export default class ProxyThing implements WoT.ConsumedThing {
      * @param parameter optional json object to supply parameters  
     */
     invokeAction(actionName: string, parameter?: any): Promise<any> {
+        logger.info("invokeAction '" + actionName + "' for ProxyThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
             let action = this.findInteraction(name, 'action');
             if (!action)
@@ -48,6 +52,7 @@ export default class ProxyThing implements WoT.ConsumedThing {
      * @param newValue value to be set  
      */
     setProperty(propertyName: string, newValue: any): Promise<any> {
+        logger.info("setProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(name, 'property');
             if (!property)
@@ -72,6 +77,7 @@ export default class ProxyThing implements WoT.ConsumedThing {
      * @param propertyName Name of the property 
      */
     getProperty(propertyName: string): Promise<any> {
+        logger.info("getProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(name, 'property');
             if (!property)
