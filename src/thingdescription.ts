@@ -1,10 +1,18 @@
+import { JsonMember, JsonObject, TypedJSON } from 'typedjson-npm';
+
 /** structured type representing a TD for internal usage */
 export default class ThingDescription {
 
-    public name : string /** Human readable name identifier of the Thing  */
-    public base : string /** base uri of the interaction resources */
+    @JsonMember({name : "@context"}) /** @context information of the TD */
+    private context : Array<string> = ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"]
 
-    /** interactions of this thing */
+    @JsonMember({isRequired:true}) /** Human readable name identifier of the Thing  */
+    public name : string
+
+    @JsonMember /** base uri of the interaction resources */
+    public base : string
+
+    @JsonMember({isRequired:true})  /** interactions of this thing */
     public interactions : Array<TDInteraction>;
 
 }
@@ -13,32 +21,38 @@ export default class ThingDescription {
  * Internal data structure for an interaction
  */
 export class TDInteraction {
-    /** name/identifier of the interaction */
+
+    @JsonMember({name : "@type"}) /** @ type information of the interaction */
+    public  rdfType : Array<string>
+
+    @JsonMember({isRequired:true})  /** name/identifier of the interaction */
     public name : string
 
     /** type of the interaction (action, property, event) */
     public interactionType : interactionTypeEnum
 
-    /** interactions of this thing */
+    @JsonMember({isRequired:true})  /** link information of the interaction resources */
     public links : Array<TDInteractionLink>;
 
-    /* writable flag for the property*/
+    @JsonMember /* writable flag for the property*/
     public writable : boolean;
 
     //how to handle types internally?
-    // json schema objects
+    @JsonMember // json schema objects
     public inputData : any
+
+    @JsonMember
     public outputDate : any
 }
 
 /**
-* Internal links information of an interaction 
+* Internal links information of an interaction
 */
 export class TDInteractionLink {
-  /* relativ or absulut URI path of the interaction resource */
+  @JsonMember({isRequired:true})  /* relativ or absulut URI path of the interaction resource */
   public href : string
 
-  /* used mediaType of the interacion resources */
+  @JsonMember({isRequired:true})  /* used mediaType of the interacion resources */
   public mediaType : mediaTypeEnum
 }
 
