@@ -25,7 +25,8 @@
   "dependencies": {
     "typedjson": "git+https://github.com/JohnWeisz/TypedJSON.git",
     "typescript-collections": "^1.2.3",
-    "winston": "^2.3.0"
+    "winston": "^2.3.0",
+    "coap": "^0.19.0"
   },
   "repository": {
     "type": "git",
