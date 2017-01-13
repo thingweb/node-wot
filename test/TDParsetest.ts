@@ -3,9 +3,10 @@
  */
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import {expect} from 'chai'
+import {expect,should} from 'chai'
 import ThingDescription from "../src/thingdescription";
 import * as TDParser from "../src/tdparser"
+should()
 
 /** sample TD json-ld string from the CP page*/
 let td_cpexample_jsonld = '{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": "Thing","name": "MyTemperatureThing","interactions": [{"@type": ["Property"],"name": "temperature","outputData": {"valueType": { "type": "number" }},"writable": false,"links": [{"href" : "coap://mytemp.example.com:5683/temp","mediaType": "application/json"}]}]}';
@@ -17,10 +18,16 @@ class TDParserTest {
     @test("should parse the example from CP")
     cp_ex_parsing() {
         let td : ThingDescription = TDParser.parseTDString(td_cpexample_jsonld)
-        expect(td.name).to.eq("MyTemperatureThing")
-        expect(td.interactions[0].name).to.eq("temperature")
-        expect(td.interactions[0].links[0].href).to.eq("coap://mytemp.example.com:5683/temp")
-        expect(td.interactions[0].links[0].mediaType).to.eq("application/json")
+        
+        //BDD style expect
+        expect(td.name).to.equal("MyTemperatureThing")
+        expect(td.interactions).to.have.lengthOf(1);
+        expect(td.interactions[0]).to.have.property('name').that.equals("temperature")
+
+        //BDD style should
+        td.interactions[0].links.should.have.lengthOf(1)
+        td.interactions[0].links[0].should.have.property('mediaType').equal("application/json")
+        td.interactions[0].links[0].href.should.equal("coap://mytemp.example.com:5683/temp")
     }
     
     @test("should return same td in round-trip")
