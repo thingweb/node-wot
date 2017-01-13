@@ -61,24 +61,25 @@ export default class HttpServer implements ProtocolServer {
             res.end("Not Found");
         } else {
             if (req.method==="GET") {
-                res.writeHead(2.05);
+                res.code = "2.05";
                 res.end(requestHandler.onRead());
             } else if (req.method==="PUT") {
                 requestHandler.onWrite(req.payload)
-                res.writeHead(2.04);
+                res.code = "2.04";
                 res.end("Changed");
             } else if (req.method==="POST") {
-                res.writeHead(2.05);
+                res.code = "2.05";
                 res.end( requestHandler.onInvoke(req.payload) );
             } else if (req.method==="DELETE") {
-                res.writeHead(2.02);
+                res.code = "2.02";
                 requestHandler.onUnlink();
                 res.end("Deleted");
             } else {
-                res.writeHead(4.05);
+                res.code = "4.05";
                 res.end("Method Not Allowed");
             }
         }
+        logger.info("Replied with " + res.code);
     }
 
 }
