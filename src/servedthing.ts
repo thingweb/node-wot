@@ -1,32 +1,44 @@
 import * as TDParser from './tdparser'
+import * as TD from './thingdescription'
 import ThingDescription from './thingdescription'
 import Servient from './servient'
 
 export default class ServedThing implements WoT.DynamicThing {
-    private actionHandlers : {[key : string] : (param? : any) => any } = {};
-    private propListeners  : {[key : string] : Array<(param? : any) => any> } = {};
-    private propStates : {[key : string] : any } = {}; 
-    private readonly srv : Servient;
+    // these arrays and their contents are mutable
+    private interactions: Array<TD.TDInteraction> = [];
+    private interactionStates: { [key: string]: InteractionState } = {};
+
+    private readonly srv: Servient;
 
     /** name of the Thing */
     public readonly name: string
 
-    constructor(servient : Servient, name : string) {
+    constructor(servient: Servient, name: string) {
         this.srv = servient;
         this.name = name;
+    }
+
+    public getInteractions() {
+        // returns a copy
+        return this.interactions.slice(0);
     }
 
     /** invokes an action on the target thing 
      * @param actionName Name of the action to invoke
      * @param parameter optional json object to supply parameters  
     */
-    public invokeAction(actionName: string, parameter?: any): Promise<any> { 
+    public invokeAction(actionName: string, parameter?: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            let handler = this.actionHandlers[actionName];
-            if(handler) {
-                resolve(handler(parameter));
+            let state = this.interactionStates[actionName];
+            if (state) {
+                if (state.handlers.length) {
+                    let handler = state.handlers[0];
+                    resolve(handler(parameter));
+                } else {
+                    reject(new Error("No handler for " + actionName + " on " + this.name));
+                }
             } else {
-                reject(new Error("No handler for " + actionName));
+                reject(new Error("No action " + actionName + " on " + this.name));
             }
         });
     }
@@ -38,14 +50,20 @@ export default class ServedThing implements WoT.DynamicThing {
      */
     public setProperty(propertyName: string, newValue: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            if(propertyName in this.propStates) {
-                this.propStates[propertyName] = newValue;
+            let state = this.interactionStates[propertyName];
+            if (state) {
+                let oldValue = state.value;
+                state.value = newValue;
+                
+                // calls all handlers
+                state.handlers.forEach(handler => handler.apply(this,[newValue,oldValue]))
+                
                 resolve(newValue);
             } else {
                 reject(new Error("No property called " + propertyName));
             }
         });
-        }
+    }
 
     /**
      * Read a given property
@@ -53,13 +71,14 @@ export default class ServedThing implements WoT.DynamicThing {
      */
     public getProperty(propertyName: string): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            if(propertyName in this.propStates) {
-                resolve(this.propStates[propertyName]);
+            let state = this.interactionStates[propertyName];
+            if (state) {
+                resolve(state.value);
             } else {
                 reject(new Error("No property called " + propertyName));
             }
         });
-        }
+    }
 
     /**
      * Emit event to all listeners
@@ -68,15 +87,15 @@ export default class ServedThing implements WoT.DynamicThing {
 
     public addListener(eventName: string, listener: (event: Event) => void): ServedThing {
         return this;
-        }
+    }
 
-    public removeListener(eventName: string, listener: (event: Event) => void): ServedThing { 
+    public removeListener(eventName: string, listener: (event: Event) => void): ServedThing {
         return this;
     }
 
     removeAllListeners(eventName: string): ServedThing {
         return this;
-        }
+    }
 
 
     /**
@@ -84,11 +103,13 @@ export default class ServedThing implements WoT.DynamicThing {
      * @param actionName Name of the action
      * @param cb callback to be called when the action gets invoked, optionally is supplied a parameter  
      */
-    onInvokeAction(actionName: string, cb: (param?: any) => any): ServedThing { 
-        if(this.actionHandlers[actionName]) {
-            console.debug("replacing action handler for " + actionName + " on " + this.name);
-        } 
-        this.actionHandlers[actionName] = cb;
+    onInvokeAction(actionName: string, cb: (param?: any) => any): ServedThing {
+        let state = this.interactionStates[actionName];
+        if (state) {
+            if (state.handlers.length > 0) state.handlers.splice(0);
+            state.handlers.push(cb);
+        }
+
         return this;
     }
 
@@ -98,19 +119,21 @@ export default class ServedThing implements WoT.DynamicThing {
      * @param cb callback to be called when value changes; signature (newValue,oldValue)
      */
     onUpdateProperty(propertyName: string, cb: (newValue: any, oldValue?: any) => void): ServedThing {
-        if(this.propListeners[propertyName]) {
-            this.propListeners[propertyName].push(cb);
+        let state = this.interactionStates[propertyName];
+        if (state) {
+            state.handlers.push(cb);
         } else {
             console.error("no such property " + propertyName + " on " + this.name);
         }
+
         return this;
-        }
+    }
 
     /**
      * Retrive the ServedThing description for this object
      */
-    getDescription(): Object { 
-        return TDParser.generateTD(this,this.srv)
+    getDescription(): Object {
+        return TDParser.generateTD(this, this.srv)
     }
 
     /**
@@ -118,13 +141,25 @@ export default class ServedThing implements WoT.DynamicThing {
      * @param propertyName Name of the property
      * @param valueType type specification of the value (JSON schema) 
      */
-    addProperty(propertyName: string, valueType: Object, initialValue? : any): ServedThing { 
-        this.propStates[propertyName] = (initialValue) ? initialValue : null;
-        this.propListeners[propertyName] = [];
+    addProperty(propertyName: string, valueType: Object, initialValue?: any): ServedThing {
+        // new way
+        let newProp = new TD.TDInteraction();
+        newProp.interactionType = TD.interactionTypeEnum.property;
+        newProp.name = propertyName;
+        newProp.inputData = valueType;
+        newProp.outputDate = valueType;
+        newProp.writable = true; //we need a param for this
 
-        // TODO decide for td-updates on-demand or pre-caching
+        this.interactions.push(newProp);
 
-        return this; 
+        let propState = new InteractionState();
+        propState.value = initialValue;
+        propState.path = "properties/" + propertyName;
+        propState.handlers = [];
+
+        this.interactionStates[propertyName] = propState;
+
+        return this;
     }
 
     /**
@@ -133,38 +168,54 @@ export default class ServedThing implements WoT.DynamicThing {
      * @param inputType type specification of the parameter (optional, JSON schema)
      * @param outputType type specification of the return value (optional, JSON schema)
      */
-    addAction(actionName: string, inputType?: Object, outputType?: Object): ServedThing  {
-        this.actionHandlers[actionName] = null;
-    
-        // TODO decide for td-updates on-demand or pre-caching
+    addAction(actionName: string, inputType?: Object, outputType?: Object): ServedThing {
+        // new way
+        let newAction = new TD.TDInteraction();
+        newAction.interactionType = TD.interactionTypeEnum.property;
+        newAction.name = actionName;
+        newAction.inputData = inputType;
+        newAction.outputDate = outputType;
+
+        this.interactions.push(newAction);
+
+        let actionState = new InteractionState();
+        actionState.path = "actions/" + actionName;
+        actionState.handlers = [];
+
+        this.interactionStates[actionName] = actionState;
 
         return this;
-        }
+    }
 
     /**
      * declare a new eventsource for the ServedThing
      */
-    addEvent(eventName: string): ServedThing  { return this; }
+    addEvent(eventName: string): ServedThing { return this; }
 
     /**
      * remove a property from the ServedThing
      */
     removeProperty(propertyName: string): boolean {
-        delete this.propListeners[propertyName];
-        delete this.propStates[propertyName];
-        return false
+        delete this.interactionStates[propertyName];
+        return false;
     }
 
     /**
      * remove an action from the ServedThing
      */
     removeAction(actionName: string): boolean {
-        delete this.actionHandlers[actionName];
-            return false
+        delete this.interactionStates[actionName];
+        return false
     }
 
     /**
      * remove an event from the thing
      */
     removeEvent(eventName: string): boolean { return false }
+}
+
+class InteractionState {
+    public value: any;
+    public handlers: Array<(param?: any) => any> = [];
+    public path: string;
 }

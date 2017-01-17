@@ -1,3 +1,6 @@
+/// <reference path="protocols/protocol-client.ts"  />
+/// <reference path="protocols/protocol-server.ts"  />
+
 import ServedThing from './servedthing';
 import WoTImpl from './wot-impl';
 import ThingDescription from './thingdescription'

@@ -12,10 +12,14 @@ declare interface ProtocolServer {
 /**
  * defines the behaviour for a Resource 
  * expected implementations are e.g. actionlistener, propertylistener etc.
+ * 
+ * mkovatsc: we probably need to pass around an object with Media Type info, Buffer, and maybe error code
+ * mkovatsc: not sure if we need a promise here. The calls should be non-blocking IIRC
+ * mkovatsc: we need some adapter that uses TD information to convert between our Scripting API valueType objects and the Buffer/mediaType. Where should this go?
  */
 declare interface ResourceListener {
-    onRead(): Object;
-    onWrite(payload: Object): Object;
-    onInvoke(payload: Object): Object;
-    onUnlink(): Object;
+    onRead(): Buffer;
+    onWrite(value: Buffer) : void;
+    onInvoke(value: Buffer): Buffer;
+    onUnlink(): void;
 }
