@@ -1,13 +1,13 @@
-
 // TD V1 https://w3c.github.io/wot/current-practices/wot-practices-beijing-2016.html
 // TD V2 2017, USA, Santa Clara (FIXLINK http://w3c.github.io/wot/current-practices/wot-practices.html)
 
-import { JsonMember, JsonObject, TypedJSON } from 'typedjson';
-
 export function transformTDV1StringToV2String(td1 : string) : Object {
+  // create object from original TD and re-arrange data
   var td2 = JSON.parse(td1);
 
-  // TODO
+  // TODO the actual modifications
+  console.log("NO TD MODIFICATIONS DONE YET!!!!!");
+
   return td2;
 }
 
@@ -16,11 +16,56 @@ export function transformTDV1ObjToV2Obj(td1 : Object) : Object {
 }
 
 export function transformTDV2StringToV1String(td2 : string) : Object {
+  // create object from original TD and re-arrange data
   var td1 = JSON.parse(td2);
-  if(td1.interactions != null) {
-    td1.property = td1.interactions;
-    td1.interactions = null;
+
+  // base to uris
+  if(td1["base"] != null) {
+    td1["uris"] = []; // new Array();
+    td1["uris"].push(td1["base"]);
+    delete td1["base"]; // remove base field
   }
+
+  // split interaction into property, action & event
+  if(td1["interactions"] != null) {
+    for(let inter of td1["interactions"]) {
+      // TODO sanitize @type (remove Property, Action & Event)? Keep it for now. Does not hurt!
+
+      if(inter["@type"] != null && Array.isArray(inter["@type"]) ) {
+        if(inter["@type"].indexOf("Property") >= 0) {
+          if(td1["property"] == null) {
+            td1["property"] = []; // new Array();
+          }
+          td1["property"].push(inter);
+
+          // TODO valueType
+          // TODO links
+
+        }
+        if(inter["@type"].indexOf("Action") >= 0) {
+          if(td1["action"] == null) {
+            td1["action"] = []; // new Array();
+          }
+          td1["action"].push(inter);
+
+          // TODO valueType
+          // TODO links
+        }
+        if(inter["@type"].indexOf("Event") >= 0) {
+          if(td1["event"] == null) {
+            td1["event"] = []; // new Array();
+          }
+          td1["event"].push(inter);
+
+          // TODO valueType
+          // TODO links
+        }
+      }
+    }
+    delete td1["interactions"]; // remove interactions field
+  }
+
+  // TODO encodings
 
   return td1;
 }
@@ -28,47 +73,3 @@ export function transformTDV2StringToV1String(td2 : string) : Object {
 export function transformTDV2ObjToV1Obj(td2 : Object) : Object {
   return transformTDV2StringToV1String(JSON.stringify(td2));
 }
-
-// export function generateTD(thing : ServedThing, servient : Servient ) : ThingDescription {
-//     return null;
-// }
-
-// export function parseTDObj(td : Object) : ThingDescription {
-//     return parseTDString(JSON.stringify(td))
-// }
-
-// export function parseTDString(td : string) : ThingDescription {
-
-//         let td_obj = TypedJSON.parse(td,ThingDescription);
-//         let base = td_obj.base
-
-//         /* if a base uri is used normalize all relative hrefs in links */
-//         if(base!=null) {
-
-//           /** normalize each link information of the interaction */
-//           for (let interaction of td_obj.interactions) {
-
-//             let href = interaction.links[0].href
-
-//             /* add '/' character if it is missing at the end of the base and
-//             beginning of the href field*/
-//             if(base.charAt(base.length-1)  != '/' &&  href.charAt(0) != '/') {
-//               href = '/' + href;
-//             }
-//             /* remove '/' if it occurs at the end of base and
-//             beginning of the href field */
-//             else if(base.charAt(base.length-1)  == '/' &&  href.charAt(0) == '/') {
-//               href = href.substr(1)
-//             }
-//             interaction.links[0].href = base + href;
-//           }
-//         }
-
-
-
-//         return td_obj;
-// }
-
-// export function serializeTD(thing : ThingDescription) : string {
-//            return TypedJSON.stringify(thing);
-// }
