@@ -10,19 +10,24 @@ export default class AssetResourceListener implements ResourceListener {
         this.asset = asset;
     }
 
-    public onRead() : Buffer {
-        return new Buffer(this.asset);
+    public onRead() : Promise<Buffer> {
+        return new Promise<Buffer>(
+            (resolve,reject) => resolve(new Buffer(this.asset))
+        );
     }
 
-    public onWrite(value : Buffer) : void {
+    public onWrite(value : Buffer) : Promise<void> {
         this.asset = value.toString();
+        return new Promise<void>((resolve,reject) => resolve())
     }
 
-    public onInvoke(value : Buffer) : Buffer {
-        return new Buffer("TODO");
+    public onInvoke(value : Buffer) : Promise<Buffer> {
+        return new Promise<Buffer>(
+            (resolve,reject) => resolve(new Buffer('TODO'))
+        );
     }
 
-    public onUnlink() : void {
-
+    public onUnlink() : Promise<void> {
+        return new Promise<void>((resolve,reject) => resolve())
     }
 }
