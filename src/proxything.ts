@@ -10,6 +10,7 @@ export default class ProxyThing implements WoT.ConsumedThing {
     readonly name: string;
     private readonly td: ThingDescription;
     private readonly srv: Servient;
+    // lazy singleton for ProtocolClient per scheme
 
     constructor(servient: Servient, td: ThingDescription) {
         logger.info("Create ProxyThing '" + this.name + "' created");

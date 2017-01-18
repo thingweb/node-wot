@@ -18,8 +18,8 @@ declare interface ProtocolServer {
  * mkovatsc: we need some adapter that uses TD information to convert between our Scripting API valueType objects and the Buffer/mediaType. Where should this go?
  */
 declare interface ResourceListener {
-    onRead(): Buffer;
-    onWrite(value: Buffer) : void;
-    onInvoke(value: Buffer): Buffer;
-    onUnlink(): void;
+    onRead(): Promise<Buffer>;
+    onWrite(value: Buffer) : Promise<void>;
+    onInvoke(value: Buffer): Promise<Buffer>;
+    onUnlink(): Promise<void>;
 }
