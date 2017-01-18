@@ -27,7 +27,7 @@ export function transformTDV2StringToV1String(td2 : string) : Object {
   }
 
   // split interaction into property, action & event
-  if(td1["interactions"] != null) {
+  if(td1["interactions"] != null && Array.isArray(td1["interactions"]) ) {
     for(let inter of td1["interactions"]) {
       // TODO sanitize @type (remove Property, Action & Event)? Keep it for now. Does not hurt!
 
@@ -38,9 +38,15 @@ export function transformTDV2StringToV1String(td2 : string) : Object {
           }
           td1["property"].push(inter);
 
-          // TODO valueType
-          // TODO links
+          // outputData.valueType --> valueType
+          if(inter["outputData"] != null && inter["outputData"]["valueType"] != null) {
+            inter["valueType"] = inter["outputData"]["valueType"];
+            delete inter["outputData"]; // remove outputData field
+          }
 
+          // links.href --> hrefs
+          // links.mediaType --> encodings
+          fixLinksV2toHrefsEncodingsV1(td1, inter);
         }
         if(inter["@type"].indexOf("Action") >= 0) {
           if(td1["action"] == null) {
@@ -48,8 +54,11 @@ export function transformTDV2StringToV1String(td2 : string) : Object {
           }
           td1["action"].push(inter);
 
-          // TODO valueType
-          // TODO links
+          // inputData and outputData did not change for Action
+
+          // links.href --> hrefs
+          // links.mediaType --> encodings
+          fixLinksV2toHrefsEncodingsV1(td1, inter);
         }
         if(inter["@type"].indexOf("Event") >= 0) {
           if(td1["event"] == null) {
@@ -57,8 +66,15 @@ export function transformTDV2StringToV1String(td2 : string) : Object {
           }
           td1["event"].push(inter);
 
-          // TODO valueType
-          // TODO links
+          // outputData.valueType --> valueType
+          if(inter["outputData"] != null && inter["outputData"]["valueType"] != null) {
+            inter["valueType"] = inter["outputData"]["valueType"];
+            delete inter["outputData"]; // remove outputData field
+          }
+
+          // links.href --> hrefs
+          // links.mediaType --> encodings
+          fixLinksV2toHrefsEncodingsV1(td1, inter);
         }
       }
     }
@@ -68,6 +84,28 @@ export function transformTDV2StringToV1String(td2 : string) : Object {
   // TODO encodings
 
   return td1;
+}
+
+// links.href --> hrefs
+// links.mediaType --> encodings
+function fixLinksV2toHrefsEncodingsV1(td1 : any, inter : any) {
+  if(inter["links"] != null && Array.isArray(inter["links"]) ) {
+    for(let link of inter["links"]) {
+      // hrefs
+      if(inter["hrefs"] == null) {
+        inter["hrefs"] = []; // new Array();
+      }
+      inter["hrefs"].push(link["href"]);
+      // encodings
+      if(td1["encodings"] == null) {
+        td1["encodings"] = []; // new Array();
+      }
+      if(td1["encodings"].indexOf(link["mediaType"]) < 0) {
+        td1["encodings"].push(link["mediaType"]);
+      }
+    }
+    delete inter["links"]; // remove links field
+  }
 }
 
 export function transformTDV2ObjToV1Obj(td2 : Object) : Object {
