@@ -4,7 +4,7 @@ import Servient from './servient'
 import ServedThing from './servedthing'
 import ProxyThing from './proxything'
 import * as Helpers from './helpers'
-import * as TDParser from './tdparser'
+import * as TDParser from './td/tdparser'
 
 //import * as WoT from 'wot-typescript-definitons';
 
@@ -38,7 +38,7 @@ export default class WoTImpl implements WoT.WoTFactory {
 
     /**
      * consume a thing description from an object and return a client representation object
-     * 
+     *
      * @param thingDescription a thing description
      */
     consumeDescription(thingDescription: Object): Promise<WoT.ConsumedThing> {
@@ -51,8 +51,8 @@ export default class WoTImpl implements WoT.WoTFactory {
 
     /**
      * create a new Thing
-     * 
-     * @param name name/identifier of the thing to be created 
+     *
+     * @param name name/identifier of the thing to be created
      */
     createThing(name: string): Promise<WoT.DynamicThing> {
         return new Promise<WoT.DynamicThing>((resolve, reject) => {
@@ -68,8 +68,8 @@ export default class WoTImpl implements WoT.WoTFactory {
 
     /**
      * create a new Thing based on a thing description, given by a URI
-     * 
-     * @param uri URI of a thing description to be used as "template" 
+     *
+     * @param uri URI of a thing description to be used as "template"
      */
     createFromDescriptionUri(uri: string): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {

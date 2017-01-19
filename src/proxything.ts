@@ -1,7 +1,7 @@
-import ThingDescription from './thingdescription'
-import * as TD from './thingdescription'
+import ThingDescription from './td/thingdescription'
+import * as TD from './td/thingdescription'
 import Servient from './servient'
-import * as TDParser from './tdparser'
+import * as TDParser from './td/tdparser'
 
 import {logger} from "./logger";
 
@@ -24,9 +24,9 @@ export default class ProxyThing implements WoT.ConsumedThing {
         return (res.length > 0) ? res[0] : null;
     }
 
-    /** invokes an action on the target thing 
+    /** invokes an action on the target thing
      * @param actionName Name of the action to invoke
-     * @param parameter optional json object to supply parameters  
+     * @param parameter optional json object to supply parameters
     */
     invokeAction(actionName: string, parameter?: any): Promise<any> {
         logger.info("invokeAction '" + actionName + "' for ProxyThing '" + this.name + "'");
@@ -51,7 +51,7 @@ export default class ProxyThing implements WoT.ConsumedThing {
     /**
      * Set a given property
      * @param Name of the property
-     * @param newValue value to be set  
+     * @param newValue value to be set
      */
     setProperty(propertyName: string, newValue: any): Promise<any> {
         logger.info("setProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
@@ -76,7 +76,7 @@ export default class ProxyThing implements WoT.ConsumedThing {
 
     /**
      * Read a given property
-     * @param propertyName Name of the property 
+     * @param propertyName Name of the property
      */
     getProperty(propertyName: string): Promise<any> {
         logger.info("getProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");

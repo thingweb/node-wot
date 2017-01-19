@@ -3,8 +3,8 @@
 
 import ServedThing from './servedthing';
 import WoTImpl from './wot-impl';
-import ThingDescription from './thingdescription'
-import * as TD from './thingdescription'
+import ThingDescription from './td/thingdescription'
+import * as TD from './td/thingdescription'
 import {Dictionary} from 'typescript-collections' //seems TS2.1 still does not support ES6 Map
 import * as Helpers from './helpers'
 
@@ -27,7 +27,7 @@ export default class Servient {
     public addClientFactory(clientFactory: ProtocolClientFactory): boolean {
         for(let scheme in clientFactory.getSchemes()) {
             this.clientFactories.setValue(scheme,clientFactory);
-        }        
+        }
         return true;
     }
 
@@ -59,7 +59,7 @@ export default class Servient {
     public start(): WoT.WoTFactory {
         this.servers.forEach((server) => server.start());
         this.clientFactories.forEach((scheme,clientFactory) => clientFactory.init());
-        // Clients are to be created / started when a ConsumedThing is created            
+        // Clients are to be created / started when a ConsumedThing is created
         return new WoTImpl(this);
     }
 

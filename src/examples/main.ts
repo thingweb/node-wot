@@ -4,7 +4,7 @@ import fs = require("fs");
 import {Servient} from "../thingweb";
 import {DummyClientFactory}  from "../protocols/dummy/dummy-protocol-client";
 import ProxyThing from "../proxything";
-import ThingDescription from "../thingdescription";
+import ThingDescription from "../td/thingdescription";
 
 import {logger} from "../logger";
 
@@ -46,7 +46,7 @@ wot.createThing("bla").then((thing) => {
                 console.log("Woo was called");
             }
         );
-    
+
     thing
     .addProperty("bar",{ "type" : "number"})
     .onUpdateProperty("bar",(nV,oV) => {
@@ -88,4 +88,3 @@ let td = new ThingDescription();
 td.name = "test";
 let pt = new ProxyThing(srv, td);
 pt.invokeAction("foo");
-

@@ -1,6 +1,8 @@
+import * as TD from './thingdescription'
 import ThingDescription from './thingdescription'
-import ServedThing from './servedthing'
-import Servient from './servient'
+import TDInteraction from './thingdescription'
+import ServedThing from '../servedthing'
+import Servient from '../servient'
 
 import { JsonMember, JsonObject, TypedJSON } from 'typedjson';
 
@@ -17,11 +19,27 @@ export function parseTDString(td : string) : ThingDescription {
         let td_obj = TypedJSON.parse(td,ThingDescription);
         let base = td_obj.base
 
-        /* if a base uri is used normalize all relative hrefs in links */
-        if(base!=null) {
+        /** for each interaction assign the interaction type (Property, Action,
+        EVent) and, if it the case, normalize each link information of the
+        interaction */
+        for (let interaction of td_obj.interactions) {
 
-          /** normalize each link information of the interaction */
-          for (let interaction of td_obj.interactions) {
+          // TODO: not very nice, maybe there is a more better way (check JSON-LD module)
+          var interactionType = TypedJSON.stringify(interaction)
+
+          if(interactionType.match("\"Property\"")) {
+            interaction.interactionType = TD.interactionTypeEnum.property;
+          }
+          else if(interactionType.match("\"Action\"")) {
+            interaction.interactionType = TD.interactionTypeEnum.action;
+          }
+          else  {
+            interaction.interactionType = TD.interactionTypeEnum.event;
+          }
+
+          /* if a base uri is used normalize all relative hrefs in links */
+          if(base!=null) {
+
 
             let href = interaction.links[0].href
 

@@ -22,7 +22,7 @@ export default class ThingDescription {
  */
 export class TDInteraction {
 
-    @JsonMember({name : "@type",  elements: String }) /** @ type information of the interaction */
+    @JsonMember({isRequired:true, name : "@type",  elements: String }) /** @ type information of the interaction */
     public  rdfType : Array<string>
 
     @JsonMember({isRequired:true, type: String})  /** name/identifier of the interaction */

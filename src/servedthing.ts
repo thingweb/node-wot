@@ -1,6 +1,6 @@
-import * as TDParser from './tdparser'
-import * as TD from './thingdescription'
-import ThingDescription from './thingdescription'
+import * as TDParser from './td/tdparser'
+import * as TD from './td/thingdescription'
+import ThingDescription from './td/thingdescription'
 import Servient from './servient'
 
 export default class ServedThing implements WoT.DynamicThing {
@@ -23,9 +23,9 @@ export default class ServedThing implements WoT.DynamicThing {
         return this.interactions.slice(0);
     }
 
-    /** invokes an action on the target thing 
+    /** invokes an action on the target thing
      * @param actionName Name of the action to invoke
-     * @param parameter optional json object to supply parameters  
+     * @param parameter optional json object to supply parameters
     */
     public invokeAction(actionName: string, parameter?: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
@@ -46,7 +46,7 @@ export default class ServedThing implements WoT.DynamicThing {
     /**
      * Set a given property
      * @param Name of the property
-     * @param newValue value to be set  
+     * @param newValue value to be set
      */
     public setProperty(propertyName: string, newValue: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
@@ -54,10 +54,10 @@ export default class ServedThing implements WoT.DynamicThing {
             if (state) {
                 let oldValue = state.value;
                 state.value = newValue;
-                
+
                 // calls all handlers
                 state.handlers.forEach(handler => handler.apply(this,[newValue,oldValue]))
-                
+
                 resolve(newValue);
             } else {
                 reject(new Error("No property called " + propertyName));
@@ -67,7 +67,7 @@ export default class ServedThing implements WoT.DynamicThing {
 
     /**
      * Read a given property
-     * @param propertyName Name of the property 
+     * @param propertyName Name of the property
      */
     public getProperty(propertyName: string): Promise<any> {
         return new Promise<any>((resolve, reject) => {
@@ -101,7 +101,7 @@ export default class ServedThing implements WoT.DynamicThing {
     /**
      * register a handler for an action
      * @param actionName Name of the action
-     * @param cb callback to be called when the action gets invoked, optionally is supplied a parameter  
+     * @param cb callback to be called when the action gets invoked, optionally is supplied a parameter
      */
     onInvokeAction(actionName: string, cb: (param?: any) => any): ServedThing {
         let state = this.interactionStates[actionName];
@@ -139,7 +139,7 @@ export default class ServedThing implements WoT.DynamicThing {
     /**
      * declare a new property for the ServedThing
      * @param propertyName Name of the property
-     * @param valueType type specification of the value (JSON schema) 
+     * @param valueType type specification of the value (JSON schema)
      */
     addProperty(propertyName: string, valueType: Object, initialValue?: any): ServedThing {
         // new way
