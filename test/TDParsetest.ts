@@ -30,7 +30,7 @@ class TDParserTest {
         td.interactions[0].links[0].href.should.equal("coap://mytemp.example.com:5683/temp")
     }
 
-/*    @test("should return same td in round-trip")
+    @test("should return same td in round-trip")
     cp_ex_roundtrip() {
         let td : ThingDescription = TDParser.parseTDString(td_cpexample_jsonld)
         let newJson = TDParser.serializeTD(td);
@@ -39,6 +39,6 @@ class TDParserTest {
         let json_actual = JSON.parse(newJson);
 
         expect(json_actual).to.deep.equal(json_expected);
-    }*/
+    }
 
 }

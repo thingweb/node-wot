@@ -62,6 +62,15 @@ export function parseTDString(td : string) : ThingDescription {
         return td_obj;
 }
 
-export function serializeTD(thing : ThingDescription) : string {
-           return TypedJSON.stringify(thing);
+export function serializeTD(td : ThingDescription) : string {
+
+            // cp td object
+           let td_cp : ThingDescription  = TypedJSON.parse(TypedJSON.stringify(td),ThingDescription);
+
+           /* remove here all helper properties in the TD model before serializiation  */
+           for (let interaction of td_cp.interactions) {
+             delete interaction.interactionType
+          }
+
+           return TypedJSON.stringify(td_cp);
 }
