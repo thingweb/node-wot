@@ -2,9 +2,9 @@
  * HTTP Server based on http
  */
 
-import {logger} from '../../logger'
-import * as http from 'http'
-import * as url from 'url'
+import {logger} from "../../logger";
+import * as http from "http";
+import * as url from "url";
 
 export default class HttpServer implements ProtocolServer {
 
@@ -21,11 +21,13 @@ export default class HttpServer implements ProtocolServer {
         if (address!==undefined) {
             this.address = address;
         }
+
+        this.server.on("error", (err) => logger.error(`HttpServer for port ${this.port} failed: ${err.message}`) );
     }
 
     public addResource(path: string, res: ResourceListener) : boolean {
         if (this.resources[path]!==undefined) {
-            logger.warn(`Resource ${path} already registered for HTTP`)
+            logger.warn(`HttpServer on port ${this.getPort()} already has ResourceListener ${path}`)
             return false;
         } else {
             this.resources[path] = res;
@@ -37,19 +39,29 @@ export default class HttpServer implements ProtocolServer {
         return delete this.resources[path];
     }
     
-    public start(): boolean {
-        logger.info("Starting HTTP server on " + (this.address!==undefined ? this.address+" " : "") + "port " + this.port);
+    public start() : boolean {
+        logger.info("HttpServer starting on " + (this.address!==undefined ? this.address+" " : "") + "port " + this.port);
         this.server.listen(this.port, this.address);
+        // FIXME .listen() is async
         return this.server.listening;
     }
 
-    public stop(): boolean {
+    public stop() : boolean {
         this.server.close();
-        return this.server.listening;
+        return !this.server.listening;
+    }
+
+    public getPort() : number {
+        if (this.server.listening) {
+            return this.server.address().port;
+        } else {
+            return -1;
+        }
     }
 
     private handleRequest(req : http.IncomingMessage, res : http.ServerResponse) {
-        logger.info("Received request for " + req.url);
+        logger.info(`HttpServer on port ${this.getPort()} received ${req.method} ${req.url} from ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
+        res.on("finish", () => { logger.info(`CoapServer replied with ${res.statusCode} to ${req.socket.remoteAddress} port ${req.socket.remotePort}`); } );
         
         let requestUri = url.parse(req.url);
         let requestHandler = this.resources[requestUri.pathname];
@@ -59,25 +71,31 @@ export default class HttpServer implements ProtocolServer {
             res.end("Not Found");
         } else {
             if (req.method==="GET") {
-                res.writeHead(200);
-                res.end(requestHandler.onRead());
+                requestHandler.onRead()
+                    .then( buffer => { res.writeHead(200); res.end(buffer); })
+                    .catch( err => { res.writeHead(500); res.end(err.message); });
             } else if (req.method==="PUT") {
                 let body : Array<any> = [];
-                req.on("data", (data) => {body.push(data)} );
-                req.on("end", () => {requestHandler.onWrite(Buffer.concat(body))})
-                res.writeHead(204);
-                res.end("Changed");
+                req.on("data", (data) => { body.push(data) } );
+                req.on("end", () => {
+                    logger.verbose(`HttpServer on port ${this.getPort()} completed body '${body}'`);
+                    requestHandler.onWrite(Buffer.concat(body))
+                        .then( () => { res.writeHead(204); res.end(""); } )
+                        .catch( err => { res.writeHead(500); res.end(err.message); } );
+                });
             } else if (req.method==="POST") {
                 let body : Array<any> = [];
                 req.on("data", (data) => {body.push(data)} );
                 req.on("end", () => {
-                    res.writeHead(200);
-                    res.end( requestHandler.onInvoke(Buffer.concat(body)) );
+                    logger.verbose(`HttpServer on port ${this.getPort()} completed body '${body}'`);
+                    requestHandler.onInvoke(Buffer.concat(body))
+                        .then( buffer => { res.writeHead(200); res.end(buffer); })
+                        .catch( (err) => { res.writeHead(500); res.end(err.message); });
                 });
             } else if (req.method==="DELETE") {
-                res.writeHead(204);
-                requestHandler.onUnlink();
-                res.end("Deleted");
+                requestHandler.onUnlink()
+                    .then( () => { res.writeHead(204); res.end(""); })
+                    .catch( err => { res.writeHead(500); res.end(err.message); });
             } else {
                 res.writeHead(405);
                 res.end("Method Not Allowed");
