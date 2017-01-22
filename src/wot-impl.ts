@@ -1,4 +1,4 @@
-/// <reference types="wot-typescript-definitons" />
+/// <reference types="wot-typescript-definitions" />
 
 import Servient from './servient'
 import ServedThing from './servedthing'
