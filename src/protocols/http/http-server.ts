@@ -61,7 +61,7 @@ export default class HttpServer implements ProtocolServer {
 
     private handleRequest(req : http.IncomingMessage, res : http.ServerResponse) {
         logger.info(`HttpServer on port ${this.getPort()} received ${req.method} ${req.url} from ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
-        res.on("finish", () => { logger.info(`CoapServer replied with ${res.statusCode} to ${req.socket.remoteAddress} port ${req.socket.remotePort}`); } );
+        res.on("finish", () => { logger.info(`HttpServer replied with ${res.statusCode} to ${req.socket.remoteAddress} port ${req.socket.remotePort}`); } );
         
         let requestUri = url.parse(req.url);
         let requestHandler = this.resources[requestUri.pathname];
