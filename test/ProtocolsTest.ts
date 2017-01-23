@@ -36,11 +36,11 @@ class ProtocolsTest {
 
     @test("should change resource from 'off' to 'on' and try to invoke and delete")
     http_resource(done : Function) {
-        let httpServer = new HttpServer(0);
+        let httpServer = new HttpServer(58081);
         httpServer.addResource("/", new AssetResourceListener("off") );
         let ret = httpServer.start();
 
-        let uri = "http://localhost:" + httpServer.getPort() + "/";
+        let uri = "http://localhost:58081/";
 
         rp.get(uri).then(body => {
                 expect(body).to.equal("off");
@@ -61,18 +61,18 @@ class ProtocolsTest {
     
     @test("should cause EADDRINUSE error")
     http_conflicting_port(done : Function) {
-        let httpServer1 = new HttpServer(0);
+        let httpServer1 = new HttpServer(58082);
         httpServer1.addResource("/", new AssetResourceListener("One") );
         let ret1 = httpServer1.start();
 
-        let httpServer2 = new HttpServer(httpServer1.getPort());
+        let httpServer2 = new HttpServer(58082);
         httpServer2.addResource("/", new AssetResourceListener("Two") );
         let ret2 = httpServer2.start(); // should fail
 
         expect(ret2).to.eq(false);
         expect(httpServer2.getPort()).to.eq(-1);
 
-        let uri = "http://localhost:" + httpServer1.getPort() + "/";
+        let uri = "http://localhost:58082/";
 
         rp.get(uri).then(body => {
                 expect(body).to.equal("One");
@@ -128,7 +128,7 @@ class ProtocolsTest {
 
     @test("resource listeners should work cross-protocol")
     all_resource_listeners(done : Function) {
-        let httpServer = new HttpServer(0);
+        let httpServer = new HttpServer(58083);
         let coapServer = new CoapServer(56833);
 
         let asset = new AssetResourceListener("test");
@@ -139,7 +139,7 @@ class ProtocolsTest {
         httpServer.start();
         coapServer.start();
 
-        let uri = "http://localhost:"+httpServer.getPort()+"/";
+        let uri = "http://localhost:58083/";
 
         rp.get(uri).then(body => {
             expect(body).to.equal("test");
