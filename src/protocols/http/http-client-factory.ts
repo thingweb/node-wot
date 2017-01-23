@@ -5,8 +5,6 @@
 import {logger} from "../../logger";
 import HttpClient from "./http-client";
 
-
-
 export default class HttpClientFactory implements ProtocolClientFactory {
 
     public static readonly schemes : Array<string> = ["http"];

@@ -3,10 +3,11 @@
  * methods are using booleans to nindicate success, could be migrated to Promises
  */
 declare interface ProtocolServer {
-    addResource(path: string, res: ResourceListener) : boolean;
-    removeResourceListener(path: string): boolean;
-    start(): boolean;
-    stop(): boolean;
+    addResource(path : string, res : ResourceListener) : boolean;
+    removeResourceListener(path : string) : boolean;
+    start() : boolean;
+    stop() : boolean;
+    getPort() : number;
 }
 
 /**
@@ -18,8 +19,8 @@ declare interface ProtocolServer {
  * mkovatsc: we need some adapter that uses TD information to convert between our Scripting API valueType objects and the Buffer/mediaType. Where should this go?
  */
 declare interface ResourceListener {
-    onRead(): Promise<Buffer>;
-    onWrite(value: Buffer) : Promise<void>;
-    onInvoke(value: Buffer): Promise<Buffer>;
-    onUnlink(): Promise<void>;
+    onRead() : Promise<Buffer>;
+    onWrite(value : Buffer) : Promise<void>;
+    onInvoke(value : Buffer) : Promise<Buffer>;
+    onUnlink() : Promise<void>;
 }

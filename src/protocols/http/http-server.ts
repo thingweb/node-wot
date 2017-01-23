@@ -3,6 +3,7 @@
  */
 
 import {logger} from "../../logger";
+
 import * as http from "http";
 import * as url from "url";
 
@@ -42,7 +43,7 @@ export default class HttpServer implements ProtocolServer {
     public start() : boolean {
         logger.info("HttpServer starting on " + (this.address!==undefined ? this.address+" " : "") + "port " + this.port);
         this.server.listen(this.port, this.address);
-        // FIXME .listen() is async
+        // FIXME .listen() is async, but works for http
         return this.server.listening;
     }
 

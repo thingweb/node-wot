@@ -2,10 +2,10 @@
  * CoAP Server based on coap by mcollina
  */
 
-import {logger} from '../../logger'
-import * as url from 'url'
+import {logger} from "../../logger";
+import * as url from "url";
 
-var coap = require('coap');
+var coap = require("coap");
 
 export default class CoapServer implements ProtocolServer {
 

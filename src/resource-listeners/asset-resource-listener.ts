@@ -2,7 +2,7 @@
  * Resource that provides an asset
  */
 
-import {logger} from '../logger'
+import {logger} from "../logger";
 
 export default class AssetResourceListener implements ResourceListener {
     private asset : string;
