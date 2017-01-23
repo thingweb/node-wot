@@ -22,11 +22,11 @@ class ProtocolsTest {
 
     @test("should start an http server")
     http_start_stop() {
-        let httpServer = new HttpServer();
+        let httpServer = new HttpServer(58080);
         let ret = httpServer.start();
 
         expect(ret).to.eq(true);
-        expect(httpServer.getPort()).to.eq(8080); // from default
+        expect(httpServer.getPort()).to.eq(58080); // from test
 
         ret = httpServer.stop();
 
@@ -36,7 +36,7 @@ class ProtocolsTest {
 
     @test("should change resource from 'off' to 'on' and try to invoke and delete")
     http_resource(done : Function) {
-        let httpServer = new HttpServer();
+        let httpServer = new HttpServer(0);
         httpServer.addResource("/", new AssetResourceListener("off") );
         let ret = httpServer.start();
 
@@ -86,11 +86,11 @@ class ProtocolsTest {
 
     @test("should start a coap server")
     coap_start_stop() {
-        let coapServer = new CoapServer();
+        let coapServer = new CoapServer(56831);
         let ret = coapServer.start();
 
         expect(ret).to.eq(true);
-        expect(coapServer.getPort()).to.eq(5683); // from default
+        expect(coapServer.getPort()).to.eq(56831); // from default
 
         ret = coapServer.stop();
 
@@ -101,7 +101,7 @@ class ProtocolsTest {
     @skip
     @test("should cause EADDRINUSE error")
     coap_conflicting_port(done : Function) {
-        let coapServer1 = new CoapServer(56831); // cannot use 0, since getPort() does not work
+        let coapServer1 = new CoapServer(56832); // cannot use 0, since getPort() does not work
         coapServer1.addResource("/", new AssetResourceListener("One") );
         let ret1 = coapServer1.start();
 
@@ -114,7 +114,7 @@ class ProtocolsTest {
         expect(ret2).to.eq(false);
         expect(coapServer2.getPort()).to.eq(-1);
 
-        let req = coap.request({ method: "GET", hostname: "localhost", port: 56831, path: "/" });
+        let req = coap.request({ method: "GET", hostname: "localhost", port: 56832, path: "/" });
         req.on("response", (res : any) => {
             expect(res.payload.toString()).to.equal("One");
         
@@ -129,7 +129,7 @@ class ProtocolsTest {
     @test("resource listeners should work cross-protocol")
     all_resource_listeners(done : Function) {
         let httpServer = new HttpServer(0);
-        let coapServer = new CoapServer(5683);
+        let coapServer = new CoapServer(56833);
 
         let asset = new AssetResourceListener("test");
 
@@ -144,14 +144,14 @@ class ProtocolsTest {
         rp.get(uri).then(body => {
             expect(body).to.equal("test");
 
-            let req1 = coap.request({ method: "PUT", hostname: "localhost", port: 5683, path: "/" } );
+            let req1 = coap.request({ method: "PUT", hostname: "localhost", port: 56833, path: "/" } );
             req1.on("response", (res1 : any) => {
                 expect(res1.code).to.equal("2.04");
                 rp.get(uri).then(body => {
                     expect(body).to.equal("by-coap");
 
                     rp.put(uri, {body: "by-http"}).then(body => {
-                        let req2 = coap.request({ method: "GET", hostname: "localhost", port: 5683, path: "/" } );
+                        let req2 = coap.request({ method: "GET", hostname: "localhost", port: 56833, path: "/" } );
                         req2.on("response", (res2 : any) => {
                                 expect(res2.payload.toString()).to.equal("by-http");
 
