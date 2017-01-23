@@ -52,10 +52,10 @@ export function transformTDV2StringToV1String(td2 : string) : Object {
 
       if(inter["@type"] != null && Array.isArray(inter["@type"]) ) {
         if(inter["@type"].indexOf("Property") >= 0) {
-          if(td1["property"] == null) {
-            td1["property"] = []; // new Array();
+          if(td1["properties"] == null) {
+            td1["properties"] = []; // new Array();
           }
-          td1["property"].push(inter);
+          td1["properties"].push(inter);
 
           // outputData.valueType --> valueType
           if(inter["outputData"] != null && inter["outputData"]["valueType"] != null) {
@@ -68,10 +68,10 @@ export function transformTDV2StringToV1String(td2 : string) : Object {
           fixLinksV2toHrefsEncodingsV1(td1, inter);
         }
         if(inter["@type"].indexOf("Action") >= 0) {
-          if(td1["action"] == null) {
-            td1["action"] = []; // new Array();
+          if(td1["actions"] == null) {
+            td1["actions"] = []; // new Array();
           }
-          td1["action"].push(inter);
+          td1["actions"].push(inter);
 
           // inputData and outputData did not change for Action
 
@@ -80,10 +80,10 @@ export function transformTDV2StringToV1String(td2 : string) : Object {
           fixLinksV2toHrefsEncodingsV1(td1, inter);
         }
         if(inter["@type"].indexOf("Event") >= 0) {
-          if(td1["event"] == null) {
-            td1["event"] = []; // new Array();
+          if(td1["events"] == null) {
+            td1["events"] = []; // new Array();
           }
-          td1["event"].push(inter);
+          td1["events"].push(inter);
 
           // outputData.valueType --> valueType
           if(inter["outputData"] != null && inter["outputData"]["valueType"] != null) {
