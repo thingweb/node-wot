@@ -63,12 +63,16 @@ export default class HttpServer implements ProtocolServer {
         logger.info("HttpServer starting on " + (this.address!==undefined ? this.address+" " : "") + "port " + this.port);
         this.server.listen(this.port, this.address);
         // FIXME .listen() is async, but works for http
-        return this.server.listening;
+        // this.server.listening not available on v4.2
+        // synchronous return useless anyway due to async server API
+        return true;
     }
 
     public stop() : boolean {
         this.server.close();
-        return !this.server.listening;
+        // FIXME useless return
+        // this.server.listening not available on v4.2
+        return true;
     }
 
     public getPort() : number {
