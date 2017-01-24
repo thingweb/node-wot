@@ -17,6 +17,31 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import ServedThing from '../servedthing'
+import * as TD from '../td/thingdescription'
+
 /**
  * Interaction resource that provides an Action
  */
+export default class ActionResourceListener implements ResourceListener {
+    constructor(thing: ServedThing, action: TD.TDInteraction) {
+
+    }
+
+    public onRead(): Promise<Buffer> {
+        return Promise.reject("not implemented yet")
+    }
+
+    public onWrite(value: Buffer): Promise<void> {
+        return Promise.reject("not implemented yet")
+    }
+
+    public onInvoke(value: Buffer): Promise<Buffer> {
+        return Promise.reject("not implemented yet")
+    }
+
+    public onUnlink(): Promise<void> {
+        return Promise.reject("not implemented yet")
+    }
+
+}

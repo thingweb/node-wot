@@ -24,7 +24,6 @@ import ServedThing from './servedthing';
 import WoTImpl from './wot-impl';
 import ThingDescription from './td/thingdescription'
 import * as TD from './td/thingdescription'
-//import {Dictionary} from 'typescript-collections' //seems TS2.1 still does not polyfill ES6 Map for ES5
 import * as Helpers from './helpers'
 
 
@@ -32,14 +31,27 @@ export default class Servient {
     private servers: Array<ProtocolServer> = [];
     private clientFactories: Map<string, ProtocolClientFactory> = new Map<string, ProtocolClientFactory>();
     private things: Map<string, ServedThing> = new Map<string, ServedThing>();
+    private listeners : Map<string,ResourceListener> = new Map<string,ResourceListener>();
 
     public chooseLink(links: Array<TD.TDInteractionLink>): string {
-        // some way choosing a link
+        // TODO add an effective way of choosing a link
         return (links.length > 0) ? links[0].href : "nope://none";
+    }
+
+    public addResourceListener(path : string, resourceListener : ResourceListener) {
+        this.listeners.set(path,resourceListener);
+        //TODO add to all servers
+    }
+
+
+    public removeResourceListener(path : string) {
+        this.listeners.delete(path);
+        // TODO remove from all servers
     }
 
     public addServer(server: ProtocolServer): boolean {
         this.servers.push(server);
+        this.listeners.forEach((listener,path) => server.addResource(path,listener));
         return true;
     }
 
@@ -68,7 +80,6 @@ export default class Servient {
     public addThingFromTD(thing: ThingDescription): boolean {
         return false;
     }
-
 
     public addThing(thing: ServedThing): boolean {
         if (!this.things.has(thing.name)) {

@@ -17,15 +17,19 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/// <reference path="protocols/protocol-server.ts"  />
+
 import * as TDParser from './td/tdparser'
 import * as TD from './td/thingdescription'
+import * as Rest from './resource-listeners/all-resource-listeners'
 import ThingDescription from './td/thingdescription'
 import Servient from './servient'
 
 export default class ServedThing implements WoT.DynamicThing {
     // these arrays and their contents are mutable
     private interactions: Array<TD.TDInteraction> = [];
-    private interactionStates: { [key: string]: InteractionState } = {};
+    private interactionStates: { [key: string]: InteractionState } = {}; //TODO migrate to Map
+    private restListeners: Map<string,ResourceListener> = new Map<string,ResourceListener>();
 
     private readonly srv: Servient;
 
@@ -35,9 +39,20 @@ export default class ServedThing implements WoT.DynamicThing {
     constructor(servient: Servient, name: string) {
         this.srv = servient;
         this.name = name;
+        this.addResourceListener(this.name,new Rest.TDResourceListener(this));
     }
 
-    public getInteractions() {
+    private addResourceListener(path : string, resourceListener : ResourceListener) {
+        this.restListeners.set(path,resourceListener);
+        this.srv.addResourceListener(path,resourceListener);
+    }
+
+    private removeResourceListener(path : string) {
+        this.restListeners.delete(path);
+        this.srv.removeResourceListener(path);
+    }
+
+    public getInteractions() : Array<TD.TDInteraction> {
         // returns a copy
         return this.interactions.slice(0);
     }
@@ -173,10 +188,11 @@ export default class ServedThing implements WoT.DynamicThing {
 
         let propState = new InteractionState();
         propState.value = initialValue;
-        propState.path = "properties/" + propertyName;
         propState.handlers = [];
 
         this.interactionStates[propertyName] = propState;
+
+        this.addResourceListener(this.name + "/properties/" + propertyName, new Rest.ActionResourceListener(this,newProp));
 
         return this;
     }
@@ -198,10 +214,11 @@ export default class ServedThing implements WoT.DynamicThing {
         this.interactions.push(newAction);
 
         let actionState = new InteractionState();
-        actionState.path = "actions/" + actionName;
         actionState.handlers = [];
 
         this.interactionStates[actionName] = actionState;
+
+        this.addResourceListener(this.name + "/actions/" + actionName, new Rest.ActionResourceListener(this,newAction));
 
         return this;
     }
@@ -216,15 +233,17 @@ export default class ServedThing implements WoT.DynamicThing {
      */
     removeProperty(propertyName: string): boolean {
         delete this.interactionStates[propertyName];
-        return false;
+        this.removeResourceListener(this.name + "/properties/" + propertyName)
+        return true;
     }
 
     /**
      * remove an action from the ServedThing
      */
     removeAction(actionName: string): boolean {
-        delete this.interactionStates[actionName];
-        return false
+        delete this .interactionStates[actionName];
+        this.removeResourceListener(this.name + "/actions/" + actionName)
+        return true
     }
 
     /**
