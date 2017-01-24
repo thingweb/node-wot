@@ -17,25 +17,33 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import HttpServer from "../protocols/http/http-server";
-import CoapServer from "../protocols/coap/coap-server";
-import AssetResourceListener from "../resource-listeners/asset-resource-listener";
+/**
+ * HTTP client Factory
+ */
 
-import { logger } from "../logger";
+import {logger} from "../../logger";
+import HttpClient from "./http-client";
 
-logger.level = "debug";
+export default class HttpClientFactory implements ProtocolClientFactory {
 
-var res1 = new AssetResourceListener("Hello World");
-var res2 = new AssetResourceListener("Goodbye World")
+    public static readonly schemes : Array<string> = ["http"];
 
-var hServer = new HttpServer(8081);
-hServer.addResource("/test", res1);
-hServer.addResource("/exit", res2);
-hServer.start();
-console.log("HTTP listening on port " + hServer.getPort());
+    public getClient() : ProtocolClient {
+        console.log("getClient for scheme 'http'");
+        return new HttpClient();
+    }
+    
+    public init() : boolean {
+        console.log("init client-factory for scheme 'http'");
+        return true;
+    }
 
-var cServer = new CoapServer();
-cServer.addResource("/test", res1);
-cServer.addResource("/exit", res2);
-cServer.start();
-console.log("CoAP listening on port " + cServer.getPort());
+    public destroy() : boolean {
+        console.log("destroy client-factory for scheme 'http'");
+        return true;
+    }
+   
+    public getSchemes() : Array<string> {
+        return HttpClientFactory.schemes;
+    }
+}

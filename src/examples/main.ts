@@ -93,7 +93,7 @@ dc.readResource("dummy://foo").then(console.log).catch(console.error);
 // async calls
 console.log("start async calls...");
 for (var i = 0; i < 5; i++) {
-    dc.readResourceAsync("dummy://foo_" + i).then(function (val) {
+    dc.readResource("dummy://foo_" + i).then(function (val) {
         console.log(val);
     }).catch(function (err) {
         logger.error('readResourceAsync error', err.message)
