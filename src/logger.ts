@@ -17,18 +17,24 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var winston = require('winston');
+import winston = require('winston');
 
 const tsFormat = () => (new Date()).toLocaleTimeString();
-export const logger = new (winston.Logger)({
-  transports: [
-    // colorize the output to the console
-    new (winston.transports.Console)({
-      timestamp: tsFormat,
-      colorize: true,
-    })
-  ]
+
+const consoleTransport = new winston.transports.Console({
+  timestamp: tsFormat,  
+  // colorize the output to the console
+  colorize: true,
+  humanReadableUnhandledException: true
 });
+
+const loggerOpts: winston.LoggerOptions = {
+  transports: [
+    consoleTransport
+  ]
+}
+
+export const logger: winston.LoggerInstance = new winston.Logger(loggerOpts);
 
 // specify log level
 // logger.level = 'debug'; // { error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }
