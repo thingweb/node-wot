@@ -25,7 +25,7 @@ import WoTImpl from './wot-impl';
 import ThingDescription from './td/thingdescription'
 import * as TD from './td/thingdescription'
 import * as Helpers from './helpers'
-
+import logger from './logger'
 
 export default class Servient {
     private servers: Array<ProtocolServer> = [];
@@ -55,14 +55,12 @@ export default class Servient {
         return true;
     }
 
-    public addClientFactory(clientFactory: ProtocolClientFactory): boolean {
-        for (let scheme in clientFactory.getSchemes()) {
-            this.clientFactories.set(scheme, clientFactory);
-        }
-        return true;
+    public addClientFactory(clientFactory: ProtocolClientFactory): void {
+        clientFactory.getSchemes().forEach(scheme => this.clientFactories.set(scheme, clientFactory));
     }
 
     public hasClientFor(scheme: string) : boolean {
+        logger.info("checking for ", scheme , this.clientFactories)
         return this.clientFactories.has(scheme);
     }
 

@@ -23,40 +23,56 @@ import Servient from './servient'
 import * as TDParser from './td/tdparser'
 import * as Helpers from './helpers'
 
-import {logger} from "./logger";
+import { logger } from "./logger";
+
+interface ClientAndLink {
+    client: ProtocolClient
+    link: TD.TDInteractionLink
+}
 
 export default class ProxyThing implements WoT.ConsumedThing {
 
     readonly name: string;
     private readonly td: ThingDescription;
     private readonly srv: Servient;
-    private clients : Map<string,ProtocolClient> = new Map();
-    
+    private clients: Map<string, ProtocolClient> = new Map();
 
     constructor(servient: Servient, td: ThingDescription) {
-        logger.info("Create ProxyThing '" + this.name + "' created");
         this.srv = servient
         this.name = td.name;
         this.td = td;
+        logger.info("Create ProxyThing '" + this.name + "' created");
     }
 
     // lazy singleton for ProtocolClient per scheme
-    private getClientFor(links : TD.TDInteractionLink[]) : ProtocolClient {
-        if(links.length === 0) return null;
+    private getClientFor(links: TD.TDInteractionLink[]): ClientAndLink {
+        if (links.length === 0) {
+            throw new Error("no links for this interaction")
+        }
 
         let schemes = links.map(link => Helpers.extractScheme(link.href))
         let cacheidx = schemes.findIndex(scheme => this.clients.has(scheme))
-                
-        if(cacheidx !== -1) 
-            return this.clients.get(schemes[cacheidx])
-        else {
+        
+        if (cacheidx !== -1) {
+            let client = this.clients.get(schemes[cacheidx])
+            let link = links[cacheidx]
+            return { client: client, link: link }
+        } else {
+            logger.info("no client in cache ", cacheidx)
             let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme))
-            if(srvIdx === -1) return null;
+            logger.info("chose index ",srvIdx)
+            if (srvIdx === -1) return null;
 
             let client = this.srv.getClientFor(schemes[srvIdx]);
-            if(client) this.clients.set(schemes[srvIdx],client);
-            return client;
-        }            
+            if (client) {
+                this.clients.set(schemes[srvIdx], client);
+                let link = links[srvIdx]
+                return { client: client, link: link }
+            } else {
+                logger.info("no suitable client availiabe")
+                throw new Error("no suitable client")
+            }
+        }
     }
 
     private findInteraction(name: string, type: TD.interactionTypeEnum) {
@@ -75,14 +91,13 @@ export default class ProxyThing implements WoT.ConsumedThing {
             if (!action)
                 reject(new Error("cannot find action " + name + " in " + this.name))
             else {
-                let uri = this.srv.chooseLink(action.links);
-                console.log("getting client for " + uri);
-                let client = this.srv.getClientFor(uri);
+                let {client, link} = this.getClientFor(action.links);
+                logger.info("got client for link:", client, link)
                 if (!client)
-                    reject("no suitable client found for " + uri)
+                    reject(new Error("no suitable client found for " + link.href))
                 else {
-                    console.log("invoking " + uri);
-                    resolve(client.invokeResource(uri, parameter))
+                    console.log("reading " + link.href);
+                    resolve(client.writeResource(link.href, parameter))
                 }
             }
         });
@@ -100,14 +115,12 @@ export default class ProxyThing implements WoT.ConsumedThing {
             if (!property)
                 reject(new Error("cannot find property " + name + " in " + this.name))
             else {
-                let uri = this.srv.chooseLink(property.links);
-                console.log("getting client for " + uri);
-                let client = this.srv.getClientFor(uri);
+                let {client, link} = this.getClientFor(property.links);
                 if (!client)
-                    reject("no suitable client found for " + uri)
+                    reject(new Error("no suitable client found for " + link.href))
                 else {
-                    console.log("writing " + uri);
-                    resolve(client.writeResource(uri, newValue))
+                    console.log("reading " + link.href);
+                    resolve(client.writeResource(link.href, newValue))
                 }
             }
         });
@@ -121,18 +134,16 @@ export default class ProxyThing implements WoT.ConsumedThing {
     getProperty(propertyName: string): Promise<any> {
         logger.info("getProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
-            let property = this.findInteraction(name, TD.interactionTypeEnum.property);
+            let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
             if (!property)
-                reject(new Error("cannot find property " + name + " in " + this.name))
+                reject(new Error("cannot find property " + propertyName + " in " + this.name))
             else {
-                let uri = this.srv.chooseLink(property.links);
-                console.log("getting client for " + uri);
-                let client = this.srv.getClientFor(uri);
+                let {client, link} = this.getClientFor(property.links);
                 if (!client)
-                    reject(new Error("no suitable client found for " + uri))
+                    reject(new Error("no suitable client found for " + link.href))
                 else {
-                    console.log("reading " + uri);
-                    resolve(client.readResource(uri))
+                    console.log("reading " + link.href);
+                    resolve(client.readResource(link.href))
                 }
             }
         });
