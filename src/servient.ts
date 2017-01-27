@@ -72,7 +72,7 @@ export default class Servient {
     }
 
     public getClientSchemes() : string[] {
-        return [...this.clientFactories.keys()];
+        return Array.from(this.clientFactories.keys());
     }
 
     public addThingFromTD(thing: ThingDescription): boolean {
