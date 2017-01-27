@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"target": "es5",
-		"lib" : ["ES2015","ScriptHost","dom"] ,
+		"lib" : ["ES2015","ScriptHost","dom"],
 		"module": "commonjs",
 		"outDir": "dist",
 		"sourceMap": true,
