@@ -33,9 +33,9 @@ import Servient from '../src/servient'
 
 class TrapClient implements ProtocolClient {
 
-    private trap: (any) => any
+    private trap: Function
 
-    public setTrap(callback: (any) => any) {
+    public setTrap(callback: Function) {
         this.trap = callback
     }
 
@@ -44,11 +44,11 @@ class TrapClient implements ProtocolClient {
     }
 
     public writeResource(uri: string, payload: any): Promise<any> {
-        return Promise.resolve(this.trap({ 'uri': uri, 'payload': payload }))
+        return Promise.resolve(this.trap(uri,payload))
     }
 
     public invokeResource(uri: String, payload: any): Promise<any> {
-        return Promise.resolve(this.trap({ 'uri': uri, 'payload': payload }))
+        return Promise.resolve(this.trap(uri,payload))
     }
 
     public unlinkResource(uri: string): Promise<any> {
@@ -67,7 +67,7 @@ class TrapClient implements ProtocolClient {
 class TrapClientFactory implements ProtocolClientFactory {
     client = new TrapClient();
 
-    public setTrap(callback: (any) => any) {
+    public setTrap(callback: Function) {
         this.client.setTrap(callback)
     }
 
@@ -120,32 +120,30 @@ let myThingDesc = {
 
 @only
 @suite("client flow of servient")
-class ServientClient {
+class WoTClientTest {
 
-    servient: Servient;
-    clientFactory: TrapClientFactory;
-    WoT: WoT.WoTFactory;
+    static servient: Servient;
+    static clientFactory: TrapClientFactory;
+    static WoT: WoT.WoTFactory;
 
-    before() {
+    static before() {
         this.servient = new Servient()
         this.clientFactory = new TrapClientFactory();
         this.servient.addClientFactory(this.clientFactory);
         this.WoT = this.servient.start();
-        logger.info("starting test suite")
+        logger.debug("starting test suite")
     }
 
-    after() {
-        logger.info("finishing up")
+    static after() {
+        logger.debug("finishing up")
         this.servient.shutdown()
     }
 
     @test "read a value"(done) {
-        logger.info("preparing test")
         //let the client return 42
-        this.clientFactory.setTrap((uri) => 42)
+        WoTClientTest.clientFactory.setTrap((uri) => 42)
 
-        logger.info("running test")
-        this.WoT.consumeDescription(myThingDesc)
+        WoTClientTest.WoT.consumeDescription(myThingDesc)
             .then((thing) => {
                 expect(thing).not.to.be.null
                 thing.name.should.equal("aThing")
@@ -155,6 +153,49 @@ class ServientClient {
                 expect(value).not.to.be.null
                 expect(value).to.equal(42)
                 value.should.equal(42)
+                done()
+            })
+            .catch(err => { throw err })
+    }
+
+    @test "write a value"(done) {
+        //verify the value transmitted
+        WoTClientTest.clientFactory.setTrap(
+            (uri,value) => {
+                logger.verbose("assign value", value)
+                value.should.equal(23)
+            }
+        )
+
+        WoTClientTest.WoT.consumeDescription(myThingDesc)
+            .then((thing) => {
+                expect(thing).not.to.be.null
+                thing.name.should.equal("aThing")
+                return thing.setProperty("aProperty",23)
+            })
+            .then(() => done())
+            .catch(err => { throw err })
+    }
+
+    @test "call an action"(done) {
+        //an action
+        WoTClientTest.clientFactory.setTrap(
+            (uri,value) => {
+                logger.verbose("called action with", value)
+                value.should.equal(23)
+                return 42
+            }
+        )
+
+        WoTClientTest.WoT.consumeDescription(myThingDesc)
+            .then((thing) => {
+                expect(thing).not.to.be.null
+                thing.name.should.equal("aThing")
+                return thing.invokeAction("anAction",23)
+            })
+            .then((result) => {
+                expect(result).not.to.be.null;
+                result.should.equal(42)
                 done()
             })
             .catch(err => { throw err })

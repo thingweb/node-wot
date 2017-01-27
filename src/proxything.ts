@@ -41,7 +41,7 @@ export default class ProxyThing implements WoT.ConsumedThing {
         this.srv = servient
         this.name = td.name;
         this.td = td;
-        logger.info("Create ProxyThing '" + this.name + "' created");
+        logger.verbose("Create ProxyThing '" + this.name + "' created");
     }
 
     // lazy singleton for ProtocolClient per scheme
@@ -54,15 +54,16 @@ export default class ProxyThing implements WoT.ConsumedThing {
         let cacheidx = schemes.findIndex(scheme => this.clients.has(scheme))
         
         if (cacheidx !== -1) {
+            logger.verbose("chose protocol ",schemes[cacheidx])
             let client = this.clients.get(schemes[cacheidx])
             let link = links[cacheidx]
             return { client: client, link: link }
         } else {
-            logger.info("no client in cache ", cacheidx)
+            logger.silly("no client in cache ", cacheidx)
             let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme))
-            logger.info("chose index ",srvIdx)
-            if (srvIdx === -1) return null;
+            if (srvIdx === -1) throw new Error("no suitable client")
 
+            logger.verbose("chose protocol ",schemes[srvIdx])
             let client = this.srv.getClientFor(schemes[srvIdx]);
             if (client) {
                 this.clients.set(schemes[srvIdx], client);
@@ -85,14 +86,14 @@ export default class ProxyThing implements WoT.ConsumedThing {
      * @param parameter optional json object to supply parameters
     */
     invokeAction(actionName: string, parameter?: any): Promise<any> {
-        logger.info("invokeAction '" + actionName + "' for ProxyThing '" + this.name + "'");
+        logger.verbose("invokeAction '" + actionName + "' for ProxyThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
-            let action = this.findInteraction(name, TD.interactionTypeEnum.action);
+            let action = this.findInteraction(actionName, TD.interactionTypeEnum.action);
             if (!action)
-                reject(new Error("cannot find action " + name + " in " + this.name))
+                reject(new Error("cannot find action " + actionName + " in " + this.name))
             else {
                 let {client, link} = this.getClientFor(action.links);
-                logger.info("got client for link:", client, link)
+                logger.silly("got client for link:", client, link)
                 if (!client)
                     reject(new Error("no suitable client found for " + link.href))
                 else {
@@ -109,17 +110,17 @@ export default class ProxyThing implements WoT.ConsumedThing {
      * @param newValue value to be set
      */
     setProperty(propertyName: string, newValue: any): Promise<any> {
-        logger.info("setProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
+        logger.verbose("setProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
-            let property = this.findInteraction(name, TD.interactionTypeEnum.property);
+            let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
             if (!property)
-                reject(new Error("cannot find property " + name + " in " + this.name))
+                reject(new Error("cannot find property " + propertyName + " in " + this.name))
             else {
                 let {client, link} = this.getClientFor(property.links);
                 if (!client)
                     reject(new Error("no suitable client found for " + link.href))
                 else {
-                    console.log("reading " + link.href);
+                    console.log("assigning " + link.href + " with " + newValue);
                     resolve(client.writeResource(link.href, newValue))
                 }
             }
@@ -132,7 +133,7 @@ export default class ProxyThing implements WoT.ConsumedThing {
      * @param propertyName Name of the property
      */
     getProperty(propertyName: string): Promise<any> {
-        logger.info("getProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
+        logger.verbose("getProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
             if (!property)

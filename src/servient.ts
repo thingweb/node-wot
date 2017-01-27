@@ -60,7 +60,7 @@ export default class Servient {
     }
 
     public hasClientFor(scheme: string) : boolean {
-        logger.info("checking for ", scheme , this.clientFactories)
+        logger.silly("checking scheme in ", scheme ,this.clientFactories)
         return this.clientFactories.has(scheme);
     }
 
