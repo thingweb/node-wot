@@ -29,11 +29,6 @@ logger.info("INFO");
 logger.debug("DEBUG");
 logger.silly("SILLY");
 
-let test = "Testing";
-
-console.log(test.slice(-1));
-console.log(test.slice(1));
-
 let servient = new Servient();
 
 servient.addClientFactory(new HttpClientFactory());
@@ -42,6 +37,18 @@ console.log("Starting servient");
 let wot = servient.start();
 
 wot.consumeDescriptionUri("http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld").then( (thing) => {
-        console.log(thing.name);
-    })
-    .catch( (err) => console.error(err) );
+        console.log(`Thing name: ${thing.name}`);
+        
+        thing.getProperty("myProp").then( (res) => {
+            console.log(`myProp value: ${res}`);
+        }).catch( (err) => console.error(err) );
+
+        thing.setProperty("myProp", "4711").then( (res) => {
+            console.log(`myProp set successfully`);
+        }).catch( (err) => console.error(err) );
+
+        thing.invokeAction("myAction", "").then( (res) => {
+            console.log(`myAction result: ${res}`);
+        }).catch( (err) => console.error(err) );
+
+    }).catch( (err) => console.error(err) );

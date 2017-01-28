@@ -89,13 +89,13 @@ export default class ProxyThing implements WoT.ConsumedThing {
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
             if (!property) {
-                reject(new Error("cannot find property '" + propertyName + "' in " + this.name))
+                reject(new Error(`ProxyThing ${this.name} cannot find Property '${propertyName}'`));
             } else {
                 let {client, link} = this.getClientFor(property.links);
                 if (!client) {
-                    reject(new Error("no suitable client found for " + link.href))
+                    reject(new Error(`ProxyThing did not get suitable client for ${link.href}`));
                 } else {
-                    logger.info("getting " + link.href);
+                    logger.info(`ProxyThing ${this.name} getting '${link.href}'`);
                     resolve(client.readResource(link.href));
                 }
             }
@@ -112,14 +112,14 @@ export default class ProxyThing implements WoT.ConsumedThing {
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
             if (!property) {
-                reject(new Error("cannot find Property " + propertyName + " in " + this.name))
+                reject(new Error(`ProxyThing ${this.name} cannot find Property '${propertyName}'`));
             } else {
                 let {client, link} = this.getClientFor(property.links);
                 if (!client) {
-                    reject(new Error("no suitable client found for " + link.href))
+                    reject(new Error(`ProxyThing did not get suitable client for ${link.href}`));
                 } else {
-                    logger.info("setting " + link.href + " to " + newValue);
-                    resolve(client.writeResource(link.href, newValue));
+                    logger.info("ProxyThing setting " + link.href + " to " + newValue);
+                    resolve(client.writeResource(link.href, new Buffer(newValue)));
                 }
             }
         });
@@ -134,15 +134,15 @@ export default class ProxyThing implements WoT.ConsumedThing {
         return new Promise<any>((resolve, reject) => {
             let action = this.findInteraction(actionName, TD.interactionTypeEnum.action);
             if (!action) {
-                reject(new Error("cannot find Action '" + actionName + "' in " + this.name))
+                reject(new Error(`ProxyThing ${this.name} cannot find Action '${actionName}'`));
             } else {
                 let {client, link} = this.getClientFor(action.links);
                 logger.silly("got client for link:", client, link)
                 if (!client) {
-                    reject(new Error("no suitable client found for " + link.href))
+                    reject(new Error(`ProxyThing did not get suitable client for ${link.href}`));
                 } else {
                     logger.info("invoking " + link.href);
-                    resolve(client.invokeResource(link.href, parameter));
+                    resolve(client.invokeResource(link.href, new Buffer(parameter)));
                 }
             }
         });
