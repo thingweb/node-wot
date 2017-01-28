@@ -22,10 +22,10 @@
  */
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import {expect,should} from 'chai'
-import ThingDescription from "../src/td/thingdescription";
-import * as TDParser from "../src/td/tdparser"
-should()
+import { expect, should } from "chai";
+
+import ThingDescription from "../src/td/thing-description";
+import * as TDParser from "../src/td/td-parser";
 
 /** sample TD json-ld string from the CP page*/
 let td_cpexample_jsonld = '{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": "Thing","name": "MyTemperatureThing","interactions": [{"@type": ["Property"],"name": "temperature","outputData": {"valueType": { "type": "number" }},"writable": false,"links": [{"href" : "coap://mytemp.example.com:5683/temp","mediaType": "application/json"}]}]}';

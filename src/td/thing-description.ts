@@ -32,14 +32,14 @@ export default class ThingDescription {
     public base : string
 
     @JsonMember({isRequired:true,  elements: Object })  /** interactions of this thing */
-    public interactions : Array<TDInteraction>;
+    public interactions : Array<Interaction>;
 
 }
 
 /**
  * Internal data structure for an interaction
  */
-export class TDInteraction {
+export class Interaction {
 
     @JsonMember({isRequired:true, name : "@type",  elements: String }) /** @ type information of the interaction */
     public  rdfType : Array<string>
@@ -51,7 +51,7 @@ export class TDInteraction {
     public interactionType : interactionTypeEnum
 
     @JsonMember({isRequired:true,  elements: Object})  /** link information of the interaction resources */
-    public links : Array<TDInteractionLink>;
+    public links : Array<InteractionLink>;
 
     @JsonMember({type: Boolean}) /* writable flag for the property*/
     public writable : boolean;
@@ -67,7 +67,7 @@ export class TDInteraction {
 /**
 * Internal links information of an interaction
 */
-export class TDInteractionLink {
+export class InteractionLink {
   @JsonMember({isRequired:true, type: String})   /* relativ or absulut URI path of the interaction resource */
   public href : string
 

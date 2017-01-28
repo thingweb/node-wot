@@ -23,11 +23,11 @@
  * ```
  * import * as TDHelpers from './tdhelpers'
  *
-
  */
 
- import * as TD from './thingdescription'
- import ThingDescription from './thingdescription'
+import logger from '../logger';
+import ThingDescription from "./thing-description";
+import * as TD from "./thing-description";
 
 /**
 * Find interaction by name

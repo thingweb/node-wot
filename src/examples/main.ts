@@ -18,13 +18,13 @@
  */
 
 
-'use strict'
+"use strict"
 
 import fs = require("fs");
 import Servient from "../servient";
 import {DummyClientFactory} from "../protocols/dummy/dummy-protocol-client";
-import ProxyThing from "../proxything";
-import ThingDescription from "../td/thingdescription";
+import ConsumedThing from "../consumed-thing";
+import ThingDescription from "../td/thing-description";
 
 /**
  * Servient control for scripts
@@ -100,9 +100,9 @@ for (var i = 0; i < 5; i++) {
 console.log("all async calls started (wait for responses)");
 
 
-// proxy thing tests
+// consumed thing tests
 // let servient: Servient, let td: ThingDescription;
 let td = new ThingDescription();
 td.name = "test";
-let pt = new ProxyThing(srv, td);
+let pt = new ConsumedThing(srv, td);
 pt.invokeAction("foo");

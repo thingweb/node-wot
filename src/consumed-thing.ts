@@ -19,18 +19,18 @@
 
 import logger from "./logger";
 
-import Servient from './servient'
-import ThingDescription from './td/thingdescription'
-import * as TD from './td/thingdescription'
-import * as TDParser from './td/tdparser'
-import * as Helpers from './helpers'
+import Servient from "./servient";
+import ThingDescription from "./td/thing-description";
+import * as TD from "./td/thing-description";
+import * as TDParser from "./td/td-parser";
+import * as Helpers from "./helpers";
 
 interface ClientAndLink {
     client: ProtocolClient
-    link: TD.TDInteractionLink
+    link: TD.InteractionLink
 }
 
-export default class ProxyThing implements WoT.ConsumedThing {
+export default class ConsumedThing implements WoT.ConsumedThing {
 
     readonly name: string;
     private readonly td: ThingDescription;
@@ -41,36 +41,36 @@ export default class ProxyThing implements WoT.ConsumedThing {
         this.srv = servient
         this.name = td.name;
         this.td = td;
-        logger.info("ProxyThing '" + this.name + "' created");
+        logger.info("ConsumedThing '" + this.name + "' created");
     }
 
     // lazy singleton for ProtocolClient per scheme
-    private getClientFor(links: TD.TDInteractionLink[]): ClientAndLink {
+    private getClientFor(links: TD.InteractionLink[]): ClientAndLink {
         if (links.length === 0) {
-            throw new Error("ProxyThing has no links for this interaction");
+            throw new Error("ConsumedThing has no links for this interaction");
         }
 
         let schemes = links.map(link => Helpers.extractScheme(link.href))
         let cacheIdx = schemes.findIndex(scheme => this.clients.has(scheme))
         
         if (cacheIdx !== -1) {
-            logger.debug(`ProxyThing chose cached client for '${schemes[cacheIdx]}'`);
+            logger.debug(`ConsumedThing chose cached client for '${schemes[cacheIdx]}'`);
             let client = this.clients.get(schemes[cacheIdx]);
             let link = links[cacheIdx];
             return { client: client, link: link };
         } else {
-            logger.silly(`ProxyThing has no client in cache (${cacheIdx})`);
+            logger.silly(`ConsumedThing has no client in cache (${cacheIdx})`);
             let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme));
-            if (srvIdx === -1) throw new Error(`ProxyThing misses '${schemes[srvIdx]}' client in Servient`);
-            logger.silly(`ProxyThing chose protocol '${schemes[srvIdx]}'`);
+            if (srvIdx === -1) throw new Error(`ConsumedThing misses '${schemes[srvIdx]}' client in Servient`);
+            logger.silly(`ConsumedThing chose protocol '${schemes[srvIdx]}'`);
             let client = this.srv.getClientFor(schemes[srvIdx]);
             if (client) {
-                logger.debug(`ProxyThing got new client for '${schemes[cacheIdx]}'`);
+                logger.debug(`ConsumedThing got new client for '${schemes[cacheIdx]}'`);
                 this.clients.set(schemes[srvIdx], client);
                 let link = links[srvIdx];
                 return { client: client, link: link }
             } else {
-                throw new Error(`ProxyThing could not get client for '${schemes[srvIdx]}'`);
+                throw new Error(`ConsumedThing could not get client for '${schemes[srvIdx]}'`);
             }
         }
     }
@@ -85,17 +85,17 @@ export default class ProxyThing implements WoT.ConsumedThing {
      * @param propertyName Name of the property
      */
     getProperty(propertyName: string): Promise<any> {
-        logger.verbose("getProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
+        logger.verbose("getProperty '" + propertyName + "' for ConsumedThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
             if (!property) {
-                reject(new Error(`ProxyThing ${this.name} cannot find Property '${propertyName}'`));
+                reject(new Error(`ConsumedThing ${this.name} cannot find Property '${propertyName}'`));
             } else {
                 let {client, link} = this.getClientFor(property.links);
                 if (!client) {
-                    reject(new Error(`ProxyThing did not get suitable client for ${link.href}`));
+                    reject(new Error(`ConsumedThing did not get suitable client for ${link.href}`));
                 } else {
-                    logger.info(`ProxyThing ${this.name} getting '${link.href}'`);
+                    logger.info(`ConsumedThing ${this.name} getting '${link.href}'`);
                     resolve(client.readResource(link.href));
                 }
             }
@@ -108,17 +108,17 @@ export default class ProxyThing implements WoT.ConsumedThing {
      * @param newValue value to be set
      */
     setProperty(propertyName: string, newValue: any): Promise<any> {
-        logger.verbose("setProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
+        logger.verbose("setProperty '" + propertyName + "' for ConsumedThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
             if (!property) {
-                reject(new Error(`ProxyThing ${this.name} cannot find Property '${propertyName}'`));
+                reject(new Error(`ConsumedThing ${this.name} cannot find Property '${propertyName}'`));
             } else {
                 let {client, link} = this.getClientFor(property.links);
                 if (!client) {
-                    reject(new Error(`ProxyThing did not get suitable client for ${link.href}`));
+                    reject(new Error(`ConsumedThing did not get suitable client for ${link.href}`));
                 } else {
-                    logger.info("ProxyThing setting " + link.href + " to " + newValue);
+                    logger.info("ConsumedThing setting " + link.href + " to " + newValue);
                     resolve(client.writeResource(link.href, new Buffer(newValue)));
                 }
             }
@@ -130,16 +130,16 @@ export default class ProxyThing implements WoT.ConsumedThing {
      * @param parameter optional json object to supply parameters
     */
     invokeAction(actionName: string, parameter?: any): Promise<any> {
-        logger.verbose("invokeAction '" + actionName + "' for ProxyThing '" + this.name + "'");
+        logger.verbose("invokeAction '" + actionName + "' for ConsumedThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
             let action = this.findInteraction(actionName, TD.interactionTypeEnum.action);
             if (!action) {
-                reject(new Error(`ProxyThing ${this.name} cannot find Action '${actionName}'`));
+                reject(new Error(`ConsumedThing ${this.name} cannot find Action '${actionName}'`));
             } else {
                 let {client, link} = this.getClientFor(action.links);
                 logger.silly("got client for link:", client, link)
                 if (!client) {
-                    reject(new Error(`ProxyThing did not get suitable client for ${link.href}`));
+                    reject(new Error(`ConsumedThing did not get suitable client for ${link.href}`));
                 } else {
                     logger.info("invoking " + link.href);
                     resolve(client.invokeResource(link.href, new Buffer(parameter)));
@@ -148,9 +148,9 @@ export default class ProxyThing implements WoT.ConsumedThing {
         });
     }
 
-    addListener(eventName: string, listener: (event: Event) => void): ProxyThing { return this }
-    removeListener(eventName: string, listener: (event: Event) => void): ProxyThing { return this }
-    removeAllListeners(eventName: string): ProxyThing { return this }
+    addListener(eventName: string, listener: (event: Event) => void): ConsumedThing { return this }
+    removeListener(eventName: string, listener: (event: Event) => void): ConsumedThing { return this }
+    removeAllListeners(eventName: string): ConsumedThing { return this }
 
     /**
      * Retrive the thing description for this object

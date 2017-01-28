@@ -17,15 +17,14 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import ServedThing from '../servedthing'
-import * as TD from '../td/thingdescription'
+import ExposedThing from "../exposed-thing";
+import * as TD from "../td/thing-description";
 
 /**
  * Resource that provides a Thing Description
  */
-
 export default class TDResourceListener {
-    constructor(thing : ServedThing) {
+    constructor(thing : ExposedThing) {
         
     }
 

@@ -16,6 +16,7 @@
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 /**
  * Generic helper functions used across the code
  * These Helpers are used like this:
@@ -28,7 +29,7 @@
  * ```
  */
 
-import logger from './logger';
+import logger from "./logger";
 import * as url from "url";
 
 export function extractScheme(uri: string) {

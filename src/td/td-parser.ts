@@ -19,15 +19,15 @@
 
 import logger from "../logger";
 
-import * as TD from "./thingdescription";
-import ThingDescription from "./thingdescription";
-import TDInteraction from "./thingdescription";
-import ServedThing from "../servedthing";
+import ThingDescription from "./thing-description";
+import * as TD from "./thing-description";
 import Servient from "../servient";
+import ExposedThing from "../exposed-thing";
 
 import { JsonMember, JsonObject, TypedJSON } from "typedjson";
 
-export function generateTD(thing : ServedThing, servient : Servient ) : ThingDescription {
+// @mkovatsc Dependency on ExposedThing is a bit suspicious... I think generation should go somewhere else
+export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDescription {
     return null;
 }
 

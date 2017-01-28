@@ -17,21 +17,21 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import logger from './logger'
+import logger from "./logger";
 
-import ServedThing from './servedthing';
-import WoTImpl from './wot-impl';
-import ThingDescription from './td/thingdescription'
-import * as TD from './td/thingdescription'
-import * as Helpers from './helpers'
+import ExposedThing from "./exposed-thing";
+import WoTImpl from "./wot-impl";
+import ThingDescription from "./td/thing-description";
+import * as TD from "./td/thing-description";
+import * as Helpers from "./helpers";
 
 export default class Servient {
     private servers: Array<ProtocolServer> = [];
     private clientFactories: Map<string, ProtocolClientFactory> = new Map<string, ProtocolClientFactory>();
-    private things: Map<string, ServedThing> = new Map<string, ServedThing>();
+    private things: Map<string, ExposedThing> = new Map<string, ExposedThing>();
     private listeners : Map<string,ResourceListener> = new Map<string,ResourceListener>();
 
-    public chooseLink(links: Array<TD.TDInteractionLink>): string {
+    public chooseLink(links: Array<TD.InteractionLink>): string {
         // TODO add an effective way of choosing a link
         // @mkovatsc order of ClientFactories added could decide priority
         return (links.length > 0) ? links[0].href : "nope://none";
@@ -80,7 +80,7 @@ export default class Servient {
         return false;
     }
 
-    public addThing(thing: ServedThing): boolean {
+    public addThing(thing: ExposedThing): boolean {
         if (!this.things.has(thing.name)) {
             this.things.set(thing.name, thing);
             return true
@@ -88,7 +88,7 @@ export default class Servient {
             return false
     }
 
-    public getThing(name: string): ServedThing {
+    public getThing(name: string): ExposedThing {
         if (this.things.has(name)) {
             return this.things.get(name);
         } else return null;

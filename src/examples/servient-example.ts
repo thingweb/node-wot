@@ -21,6 +21,9 @@ import Servient from "../servient";
 import HttpClientFactory from "../protocols/http/http-client-factory";
 import CoapClientFactory from "../protocols/coap/coap-client-factory";
 
+import ThingDescription from "../td/thing-description";
+import * as TD from "../td/thing-description";
+
 // for level only - use console for output
 import logger from "../logger";
 logger.level = "silly";
@@ -39,6 +42,27 @@ let wot = servient.start();
 wot.consumeDescriptionUri("http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld").then( (thing) => {
         console.log(`Thing name: ${thing.name}`);
         
+        thing.getProperty("myProp").then( (res) => {
+            console.log(`myProp value: ${res}`);
+        }).catch( (err) => console.error(err) );
+
+        thing.setProperty("myProp", "4711").then( (res) => {
+            console.log(`myProp set successfully`);
+        }).catch( (err) => console.error(err) );
+
+        thing.invokeAction("myAction", "").then( (res) => {
+            console.log(`myAction result: ${res}`);
+        }).catch( (err) => console.error(err) );
+
+    }).catch( (err) => console.error(err) );
+
+let td = new ThingDescription();
+td.name = "PlugtestServer";
+td.interactions.push(new TD.Interaction);
+
+wot.consumeDescription(td).then( (thing) => {
+        console.log(`Thing name: ${thing.name}`);
+
         thing.getProperty("myProp").then( (res) => {
             console.log(`myProp value: ${res}`);
         }).catch( (err) => console.error(err) );

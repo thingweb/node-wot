@@ -17,19 +17,20 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+// FIXME @mkovatsc shouldn't we get rid of this?
 /// <reference path="protocols/protocol-server.ts"  />
 
-import * as TDParser from './td/tdparser'
-import * as TD from './td/thingdescription'
-import * as Rest from './resource-listeners/all-resource-listeners'
-import ThingDescription from './td/thingdescription'
-import Servient from './servient'
+import ThingDescription from "./td/thing-description";
+import * as TD from "./td/thing-description";
+import * as TDParser from "./td/td-parser";
+import * as Rest from "./resource-listeners/all-resource-listeners";
+import Servient from "./servient";
 
-export default class ServedThing implements WoT.DynamicThing {
+export default class ExposedThing implements WoT.DynamicThing {
     // these arrays and their contents are mutable
-    private interactions: Array<TD.TDInteraction> = [];
+    private interactions: Array<TD.Interaction> = [];
     private interactionStates: { [key: string]: InteractionState } = {}; //TODO migrate to Map
-    private restListeners: Map<string,ResourceListener> = new Map<string,ResourceListener>();
+    private restListeners: Map<string, ResourceListener> = new Map<string,ResourceListener>();
 
     private readonly srv: Servient;
 
@@ -52,7 +53,7 @@ export default class ServedThing implements WoT.DynamicThing {
         this.srv.removeResourceListener(path);
     }
 
-    public getInteractions() : Array<TD.TDInteraction> {
+    public getInteractions() : Array<TD.Interaction> {
         // returns a copy
         return this.interactions.slice(0);
     }
@@ -119,25 +120,24 @@ export default class ServedThing implements WoT.DynamicThing {
      */
     public emitEvent(event: Event): void { }
 
-    public addListener(eventName: string, listener: (event: Event) => void): ServedThing {
+    public addListener(eventName: string, listener: (event: Event) => void): ExposedThing {
         return this;
     }
 
-    public removeListener(eventName: string, listener: (event: Event) => void): ServedThing {
+    public removeListener(eventName: string, listener: (event: Event) => void): ExposedThing {
         return this;
     }
 
-    removeAllListeners(eventName: string): ServedThing {
+    removeAllListeners(eventName: string): ExposedThing {
         return this;
     }
-
 
     /**
      * register a handler for an action
      * @param actionName Name of the action
      * @param cb callback to be called when the action gets invoked, optionally is supplied a parameter
      */
-    onInvokeAction(actionName: string, cb: (param?: any) => any): ServedThing {
+    onInvokeAction(actionName: string, cb: (param?: any) => any): ExposedThing {
         let state = this.interactionStates[actionName];
         if (state) {
             if (state.handlers.length > 0) state.handlers.splice(0);
@@ -152,7 +152,7 @@ export default class ServedThing implements WoT.DynamicThing {
      * @param propertyName Name of the property
      * @param cb callback to be called when value changes; signature (newValue,oldValue)
      */
-    onUpdateProperty(propertyName: string, cb: (newValue: any, oldValue?: any) => void): ServedThing {
+    onUpdateProperty(propertyName: string, cb: (newValue: any, oldValue?: any) => void): ExposedThing {
         let state = this.interactionStates[propertyName];
         if (state) {
             state.handlers.push(cb);
@@ -164,20 +164,20 @@ export default class ServedThing implements WoT.DynamicThing {
     }
 
     /**
-     * Retrive the ServedThing description for this object
+     * Retrive the ExposedThing description for this object
      */
     getDescription(): Object {
         return TDParser.generateTD(this, this.srv)
     }
 
     /**
-     * declare a new property for the ServedThing
+     * declare a new property for the ExposedThing
      * @param propertyName Name of the property
      * @param valueType type specification of the value (JSON schema)
      */
-    addProperty(propertyName: string, valueType: Object, initialValue?: any): ServedThing {
+    addProperty(propertyName: string, valueType: Object, initialValue?: any): ExposedThing {
         // new way
-        let newProp = new TD.TDInteraction();
+        let newProp = new TD.Interaction();
         newProp.interactionType = TD.interactionTypeEnum.property;
         newProp.name = propertyName;
         newProp.inputData = valueType;
@@ -198,14 +198,14 @@ export default class ServedThing implements WoT.DynamicThing {
     }
 
     /**
-     * declare a new action for the ServedThing
+     * declare a new action for the ExposedThing
      * @param actionName Name of the action
      * @param inputType type specification of the parameter (optional, JSON schema)
      * @param outputType type specification of the return value (optional, JSON schema)
      */
-    addAction(actionName: string, inputType?: Object, outputType?: Object): ServedThing {
+    addAction(actionName: string, inputType?: Object, outputType?: Object): ExposedThing {
         // new way
-        let newAction = new TD.TDInteraction();
+        let newAction = new TD.Interaction();
         newAction.interactionType = TD.interactionTypeEnum.property;
         newAction.name = actionName;
         newAction.inputData = inputType;
@@ -224,12 +224,12 @@ export default class ServedThing implements WoT.DynamicThing {
     }
 
     /**
-     * declare a new eventsource for the ServedThing
+     * declare a new eventsource for the ExposedThing
      */
-    addEvent(eventName: string): ServedThing { return this; }
+    addEvent(eventName: string): ExposedThing { return this; }
 
     /**
-     * remove a property from the ServedThing
+     * remove a property from the ExposedThing
      */
     removeProperty(propertyName: string): boolean {
         delete this.interactionStates[propertyName];
@@ -238,7 +238,7 @@ export default class ServedThing implements WoT.DynamicThing {
     }
 
     /**
-     * remove an action from the ServedThing
+     * remove an action from the ExposedThing
      */
     removeAction(actionName: string): boolean {
         delete this .interactionStates[actionName];

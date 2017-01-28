@@ -17,13 +17,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import logger from './logger'
+import logger from "./logger";
 
-import Servient from './servient'
-import ServedThing from './servedthing'
-import ProxyThing from './proxything'
-import * as Helpers from './helpers'
-import * as TDParser from './td/tdparser'
+import Servient from "./servient";
+import ExposedThing from "./exposed-thing";
+import ConsumedThing from "./consumed-thing";
+import * as Helpers from "./helpers";
+import * as TDParser from "./td/td-parser";
 
 import * as WoT from 'wot-typescript-definitions';
 
@@ -50,7 +50,7 @@ export default class WoTImpl implements WoT.WoTFactory {
             logger.info(`WoTImpl consuming TD at ${uri} with ${client}`);
             client.readResource(uri).then((body) => {
                 let thingdesc = TDParser.parseTDString(body.toString());
-                let pt = new ProxyThing(this.srv, thingdesc);
+                let pt = new ConsumedThing(this.srv, thingdesc);
                 client.stop();
                 resolve(pt);
             })
@@ -67,7 +67,7 @@ export default class WoTImpl implements WoT.WoTFactory {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
             logger.info(`WoTImpl consuming TD from object`);
             let thingdesc = TDParser.parseTDObj(thingDescription);
-            let pt = new ProxyThing(this.srv, thingdesc);
+            let pt = new ConsumedThing(this.srv, thingdesc);
             resolve(pt);
         });
     }
@@ -79,8 +79,8 @@ export default class WoTImpl implements WoT.WoTFactory {
      */
     createThing(name: string): Promise<WoT.DynamicThing> {
         return new Promise<WoT.DynamicThing>((resolve, reject) => {
-            logger.info(`WoTImpl creating new ServedThing '${name}'`);
-            let mything = new ServedThing(this.srv, name);
+            logger.info(`WoTImpl creating new ExposedThing '${name}'`);
+            let mything = new ExposedThing(this.srv, name);
             if(this.srv.addThing(mything)) {
                 resolve(mything);
             } else {
@@ -97,25 +97,24 @@ export default class WoTImpl implements WoT.WoTFactory {
     createFromDescriptionUri(uri: string): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
             let client = this.srv.getClientFor(uri);
-            logger.info(`WoTImpl creating new ServedThing from TD at ${uri} with ${client}`);
+            logger.info(`WoTImpl creating new ExposedThing from TD at ${uri} with ${client}`);
             client.readResource(uri).then((td) => {
                 let thingdesc = TDParser.parseTDObj(td);
-                let mything = new ServedThing(this.srv, thingdesc.name);
+                let mything = new ExposedThing(this.srv, thingdesc.name);
                 if(this.srv.addThing(mything)) {
                     resolve(mything);
                 } else {
                     reject(new Error("WoTImpl could not create Thing from TD: " + mything))
                 }
-            }
-        );
+            });
         });
     }
 
     createFromDescription(thingDescription: Object): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
             let thingdesc = TDParser.parseTDObj(thingDescription);
-            logger.info(`WoTImpl creating new ServedThing from object`);
-            let mything = new ServedThing(this.srv, thingdesc.name);
+            logger.info(`WoTImpl creating new ExposedThing from object`);
+            let mything = new ExposedThing(this.srv, thingdesc.name);
             if(this.srv.addThing(mything)) {
                 resolve(mything);
             } else {

@@ -17,8 +17,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import ThingDescription from "../td/thingdescription";
-import * as TDParser from "../td/tdparser";
+import ThingDescription from "../td/thing-description";
+import * as TDParser from "../td/td-parser";
 
 /* sample TD json-ld string from the CP page*/
 var td_jsonld = '{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": "Thing","name": "MyTemperatureThing","interactions": [{"@type": ["Property"],"name": "temperature","outputData": {"valueType": { "type": "number" }},"writable": false,"links": [{"href" : "coap://mytemp.example.com:5683/temp","mediaType": "application/json"}]}]}';

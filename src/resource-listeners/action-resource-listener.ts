@@ -17,14 +17,14 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import ServedThing from '../servedthing'
-import * as TD from '../td/thingdescription'
+import ExposedThing from "../exposed-thing";
+import * as TD from "../td/thing-description";
 
 /**
  * Interaction resource that provides an Action
  */
 export default class ActionResourceListener implements ResourceListener {
-    constructor(thing: ServedThing, action: TD.TDInteraction) {
+    constructor(thing: ExposedThing, action: TD.Interaction) {
 
     }
 
@@ -43,5 +43,4 @@ export default class ActionResourceListener implements ResourceListener {
     public onUnlink(): Promise<void> {
         return Promise.reject("not implemented yet")
     }
-
 }
