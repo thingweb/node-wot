@@ -46,13 +46,15 @@ export default class WoTImpl implements WoT.WoTFactory {
      */
     consumeDescriptionUri(uri: string): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
-            let client = this.srv.getClientFor(uri);
-            logger.info(`consuming TD at ${uri} with ${client}`);
+            let client = this.srv.getClientFor(Helpers.extractScheme(uri));
+            logger.info(`WoTImpl consuming TD at ${uri} with ${client}`);
             client.readResource(uri).then((td) => {
                 let thingdesc = TDParser.parseTDObj(td);
                 let pt = new ProxyThing(this.srv, thingdesc);
+                client.stop();
                 resolve(pt);
             })
+            .catch( (err) => { console.error(err); } );
         });
     }
 
@@ -63,7 +65,7 @@ export default class WoTImpl implements WoT.WoTFactory {
      */
     consumeDescription(thingDescription: Object): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
-            logger.info(`consuming TD from object`);
+            logger.info(`WoTImpl consuming TD from object`);
             let thingdesc = TDParser.parseTDObj(thingDescription);
             let pt = new ProxyThing(this.srv, thingdesc);
             resolve(pt);
@@ -77,12 +79,12 @@ export default class WoTImpl implements WoT.WoTFactory {
      */
     createThing(name: string): Promise<WoT.DynamicThing> {
         return new Promise<WoT.DynamicThing>((resolve, reject) => {
-            logger.info(`creating new ServedThing '${name}'`);
+            logger.info(`WoTImpl creating new ServedThing '${name}'`);
             let mything = new ServedThing(this.srv, name);
             if(this.srv.addThing(mything)) {
                 resolve(mything);
             } else {
-                reject(new Error("could not create Thing: " + mything))
+                reject(new Error("WoTImpl could not create Thing: " + mything))
             }
         });
     }
@@ -95,14 +97,14 @@ export default class WoTImpl implements WoT.WoTFactory {
     createFromDescriptionUri(uri: string): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
             let client = this.srv.getClientFor(uri);
-            logger.info(`creating new ServedThing from TD at ${uri} with ${client}`);
+            logger.info(`WoTImpl creating new ServedThing from TD at ${uri} with ${client}`);
             client.readResource(uri).then((td) => {
                 let thingdesc = TDParser.parseTDObj(td);
                 let mything = new ServedThing(this.srv, thingdesc.name);
                 if(this.srv.addThing(mything)) {
                     resolve(mything);
                 } else {
-                    reject(new Error("could not create Thing from TD: " + mything))
+                    reject(new Error("WoTImpl could not create Thing from TD: " + mything))
                 }
             }
         );
@@ -112,12 +114,12 @@ export default class WoTImpl implements WoT.WoTFactory {
     createFromDescription(thingDescription: Object): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
             let thingdesc = TDParser.parseTDObj(thingDescription);
-            logger.info(`creating new ServedThing from object`);
+            logger.info(`WoTImpl creating new ServedThing from object`);
             let mything = new ServedThing(this.srv, thingdesc.name);
             if(this.srv.addThing(mything)) {
                 resolve(mything);
             } else {
-                reject(new Error("could not create Thing from object: " + mything))
+                reject(new Error("WoTImpl could not create Thing from object: " + mything))
             }
         });
     }
