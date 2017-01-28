@@ -28,7 +28,13 @@
  * ```
  */
 
+import logger from './logger';
+import * as url from "url";
+
 export function extractScheme(uri: string) {
-    let colon = uri.indexOf(':')
-    return uri.substr(0, colon)
+    let parsed = url.parse(uri);
+    // remove trailing ':'
+    let scheme = parsed.protocol.slice(0,-1);
+    logger.debug(`Helpers found scheme '${scheme}'`);
+    return scheme;
 }
