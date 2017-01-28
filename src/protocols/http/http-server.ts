@@ -21,7 +21,7 @@
  * HTTP Server based on http
  */
 
-import {logger} from "../../logger";
+import logger from "../../logger";
 
 import * as http from "http";
 import * as url from "url";

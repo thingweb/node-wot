@@ -21,12 +21,10 @@
 'use strict'
 
 import fs = require("fs");
-import {Servient} from "../thingweb";
-import {DummyClientFactory}  from "../protocols/dummy/dummy-protocol-client";
+import Servient from "../servient";
+import {DummyClientFactory} from "../protocols/dummy/dummy-protocol-client";
 import ProxyThing from "../proxything";
 import ThingDescription from "../td/thingdescription";
-
-import {logger} from "../logger";
 
 /**
  * Servient control for scripts
@@ -46,10 +44,10 @@ class MyServient extends Servient {
     }
 }
 
- let srv = new MyServient();
+let srv = new MyServient();
 
 // ...import servers and clients and add them...
- let dcf = new DummyClientFactory();
+let dcf = new DummyClientFactory();
 srv.addClientFactory(dcf);
 
 let wot = srv.start();
@@ -96,10 +94,10 @@ for (var i = 0; i < 5; i++) {
     dc.readResource("dummy://foo_" + i).then(function (val) {
         console.log(val);
     }).catch(function (err) {
-        logger.error('readResourceAsync error', err.message)
+        console.error('readResourceAsync error', err.message)
     });
 }
-logger.info("all async calls started (wait for responses)");
+console.log("all async calls started (wait for responses)");
 
 
 // proxy thing tests

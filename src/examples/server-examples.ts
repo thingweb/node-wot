@@ -21,8 +21,8 @@ import HttpServer from "../protocols/http/http-server";
 import CoapServer from "../protocols/coap/coap-server";
 import AssetResourceListener from "../resource-listeners/asset-resource-listener";
 
-import { logger } from "../logger";
-
+// for level only - use console for output
+import logger from "../logger";
 logger.level = "debug";
 
 var res1 = new AssetResourceListener("Hello World");

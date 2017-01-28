@@ -17,15 +17,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/// <reference path="protocols/protocol-client.ts"  />
-/// <reference path="protocols/protocol-server.ts"  />
+import logger from './logger'
 
 import ServedThing from './servedthing';
 import WoTImpl from './wot-impl';
 import ThingDescription from './td/thingdescription'
 import * as TD from './td/thingdescription'
 import * as Helpers from './helpers'
-import logger from './logger'
 
 export default class Servient {
     private servers: Array<ProtocolServer> = [];
@@ -35,6 +33,7 @@ export default class Servient {
 
     public chooseLink(links: Array<TD.TDInteractionLink>): string {
         // TODO add an effective way of choosing a link
+        // @mkovatsc order of ClientFactories added could decide priority
         return (links.length > 0) ? links[0].href : "nope://none";
     }
 
@@ -42,7 +41,6 @@ export default class Servient {
         this.listeners.set(path,resourceListener);
         //TODO add to all servers
     }
-
 
     public removeResourceListener(path : string) {
         this.listeners.delete(path);
@@ -60,15 +58,18 @@ export default class Servient {
     }
 
     public hasClientFor(scheme: string) : boolean {
-        logger.silly("checking scheme in ", scheme ,this.clientFactories)
+        logger.debug(`Servient checking for '${scheme}' scheme in ${this.clientFactories.size} ClientFactories`);
         return this.clientFactories.has(scheme);
     }
 
     public getClientFor(scheme: string): ProtocolClient {
-        if(this.clientFactories.has(scheme))
+        if(this.clientFactories.has(scheme)) {
+            logger.debug(`Servient creating client for scheme '${scheme}'`);
             return this.clientFactories.get(scheme).getClient();
-        else
-            return null;
+        } else {
+            // FIXME returning null was bad - Error or Promise?
+            throw new Error(`Servient has no ClientFactory for scheme '${scheme}'`);
+        }
     }
 
     public getClientSchemes() : string[] {
@@ -96,6 +97,7 @@ export default class Servient {
     //will return WoT object
     public start(): WoT.WoTFactory {
         this.servers.forEach((server) => server.start());
+        // FIXME if ClientFactory has multiple schemes it is initialized multiple times
         this.clientFactories.forEach((clientFactory) => clientFactory.init());
         // Clients are to be created / started when a ConsumedThing is created
         return new WoTImpl(this);

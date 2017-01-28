@@ -27,7 +27,6 @@
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
-import { logger } from "../src/logger";
 
 import Servient from '../src/servient'
 
@@ -131,11 +130,11 @@ class WoTClientTest {
         this.clientFactory = new TrapClientFactory();
         this.servient.addClientFactory(this.clientFactory);
         this.WoT = this.servient.start();
-        logger.debug("starting test suite")
+        console.log("starting test suite")
     }
 
     static after() {
-        logger.debug("finishing up")
+        console.log("finishing test suite")
         this.servient.shutdown()
     }
 
@@ -162,7 +161,6 @@ class WoTClientTest {
         //verify the value transmitted
         WoTClientTest.clientFactory.setTrap(
             (uri,value) => {
-                logger.verbose("assign value", value)
                 value.should.equal(23)
             }
         )
@@ -181,7 +179,6 @@ class WoTClientTest {
         //an action
         WoTClientTest.clientFactory.setTrap(
             (uri,value) => {
-                logger.verbose("called action with", value)
                 value.should.equal(23)
                 return 42
             }

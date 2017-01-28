@@ -21,7 +21,7 @@
  * CoAP client based on coap by mcollina
  */
 
-import {logger} from "../../logger";
+import logger from "../../logger";
 
 var coap = require('coap');
 import * as url from "url";
@@ -32,6 +32,10 @@ export default class CoapClient implements ProtocolClient {
     private readonly agent : any = new coap.Agent();
 
     constructor() {
+    }
+
+    public toString() : string {
+        return "[CoapClient]";
     }
 
     private uriToOptions(uri : string) : CoapRequestConfig {

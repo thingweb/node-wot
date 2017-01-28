@@ -17,13 +17,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import logger from "./logger";
+
+import Servient from './servient'
 import ThingDescription from './td/thingdescription'
 import * as TD from './td/thingdescription'
-import Servient from './servient'
 import * as TDParser from './td/tdparser'
 import * as Helpers from './helpers'
-
-import { logger } from "./logger";
 
 interface ClientAndLink {
     client: ProtocolClient
@@ -81,24 +81,23 @@ export default class ProxyThing implements WoT.ConsumedThing {
         return (res.length > 0) ? res[0] : null;
     }
 
-    /** invokes an action on the target thing
-     * @param actionName Name of the action to invoke
-     * @param parameter optional json object to supply parameters
-    */
-    invokeAction(actionName: string, parameter?: any): Promise<any> {
-        logger.verbose("invokeAction '" + actionName + "' for ProxyThing '" + this.name + "'");
+    /**
+     * Read a given property
+     * @param propertyName Name of the property
+     */
+    getProperty(propertyName: string): Promise<any> {
+        logger.verbose("getProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
-            let action = this.findInteraction(actionName, TD.interactionTypeEnum.action);
-            if (!action)
-                reject(new Error("cannot find action " + actionName + " in " + this.name))
-            else {
-                let {client, link} = this.getClientFor(action.links);
-                logger.silly("got client for link:", client, link)
-                if (!client)
+            let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
+            if (!property) {
+                reject(new Error("cannot find property '" + propertyName + "' in " + this.name))
+            } else {
+                let {client, link} = this.getClientFor(property.links);
+                if (!client) {
                     reject(new Error("no suitable client found for " + link.href))
-                else {
-                    console.log("reading " + link.href);
-                    resolve(client.writeResource(link.href, parameter))
+                } else {
+                    logger.info("getting " + link.href);
+                    resolve(client.readResource(link.href));
                 }
             }
         });
@@ -113,38 +112,38 @@ export default class ProxyThing implements WoT.ConsumedThing {
         logger.verbose("setProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
-            if (!property)
-                reject(new Error("cannot find property " + propertyName + " in " + this.name))
-            else {
+            if (!property) {
+                reject(new Error("cannot find Property " + propertyName + " in " + this.name))
+            } else {
                 let {client, link} = this.getClientFor(property.links);
-                if (!client)
+                if (!client) {
                     reject(new Error("no suitable client found for " + link.href))
-                else {
-                    console.log("assigning " + link.href + " with " + newValue);
-                    resolve(client.writeResource(link.href, newValue))
+                } else {
+                    logger.info("setting " + link.href + " to " + newValue);
+                    resolve(client.writeResource(link.href, newValue));
                 }
             }
         });
-
     }
 
-    /**
-     * Read a given property
-     * @param propertyName Name of the property
-     */
-    getProperty(propertyName: string): Promise<any> {
-        logger.verbose("getProperty '" + propertyName + "' for ProxyThing '" + this.name + "'");
+    /** invokes an action on the target thing
+     * @param actionName Name of the action to invoke
+     * @param parameter optional json object to supply parameters
+    */
+    invokeAction(actionName: string, parameter?: any): Promise<any> {
+        logger.verbose("invokeAction '" + actionName + "' for ProxyThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
-            let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
-            if (!property)
-                reject(new Error("cannot find property " + propertyName + " in " + this.name))
-            else {
-                let {client, link} = this.getClientFor(property.links);
-                if (!client)
+            let action = this.findInteraction(actionName, TD.interactionTypeEnum.action);
+            if (!action) {
+                reject(new Error("cannot find Action '" + actionName + "' in " + this.name))
+            } else {
+                let {client, link} = this.getClientFor(action.links);
+                logger.silly("got client for link:", client, link)
+                if (!client) {
                     reject(new Error("no suitable client found for " + link.href))
-                else {
-                    console.log("reading " + link.href);
-                    resolve(client.readResource(link.href))
+                } else {
+                    logger.info("invoking " + link.href);
+                    resolve(client.invokeResource(link.href, parameter));
                 }
             }
         });
@@ -160,6 +159,4 @@ export default class ProxyThing implements WoT.ConsumedThing {
     getDescription(): Object {
         return TDParser.serializeTD(this.td);
     }
-
-
 }

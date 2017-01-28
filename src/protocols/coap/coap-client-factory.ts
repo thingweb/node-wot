@@ -21,7 +21,7 @@
  * HTTP client Factory
  */
 
-import {logger} from "../../logger";
+import logger from "../../logger";
 import CoapClient from "./coap-client";
 
 export default class CoapClientFactory implements ProtocolClientFactory {
@@ -29,17 +29,17 @@ export default class CoapClientFactory implements ProtocolClientFactory {
     public static readonly schemes : Array<string> = ["coap"];
 
     public getClient() : ProtocolClient {
-        console.log("getClient for scheme 'coap'");
+        logger.verbose(`CoapClientFactory creating client for '${this.getSchemes()}'`);
         return new CoapClient();
     }
     
     public init() : boolean {
-        console.log("init client-factory for scheme 'coap'");
+        logger.info(`CoapClientFactory for '${this.getSchemes()}' initializing`);
         return true;
     }
 
     public destroy() : boolean {
-        console.log("destroy client-factory for scheme 'coap'");
+        logger.info(`CoapClientFactory for '${this.getSchemes()}' destroyed`);
         return true;
     }
    

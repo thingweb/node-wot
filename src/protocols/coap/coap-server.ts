@@ -21,7 +21,7 @@
  * CoAP Server based on coap by mcollina
  */
 
-import {logger} from "../../logger";
+import logger from "../../logger";
 import * as url from "url";
 
 var coap = require("coap");

@@ -4,7 +4,6 @@
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
-import { logger } from "../src/logger";
 
 import HttpServer from "../src/protocols/http/http-server";
 import CoapServer from "../src/protocols/coap/coap-server";
@@ -14,8 +13,6 @@ import * as http from "http";
 import * as rp from "request-promise";
 
 const coap = require('coap');
-
-logger.level = "debug";
 
 @suite("tests to verify protocol implementations")
 class ProtocolsTest {

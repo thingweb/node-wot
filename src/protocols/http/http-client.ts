@@ -21,7 +21,7 @@
  * HTTP client based on http
  */
 
-import {logger} from "../../logger";
+import logger from "../../logger";
 
 import * as http from "http";
 import * as url from "url";
@@ -32,6 +32,10 @@ export default class HttpClient implements ProtocolClient {
 
     constructor() {
         this.agent = new http.Agent({ keepAlive: true });
+    }
+
+    public toString() : string {
+        return "[HttpClient]";
     }
 
     private uriToOptions(uri : string) : http.RequestOptions {

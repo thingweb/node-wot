@@ -21,10 +21,7 @@
  * Dummy Protocol code for early testing
  */
 
-// var logger = require('winston');
-// var logger = require('../logger');
-import {logger} from "../../logger";
-// import ThingDescription from "../../logger";
+import logger from "../../logger";
 
 export class DummyClientFactory implements ProtocolClientFactory {
 

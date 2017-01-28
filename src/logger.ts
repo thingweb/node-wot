@@ -35,14 +35,20 @@ const loggerOpts: winston.LoggerOptions = {
 }
 
 export const logger: winston.LoggerInstance = new winston.Logger(loggerOpts);
-
 export default logger;
 
-// specify log level
+/* usage */
+// import logger from "./logger";
+// logger.error('Critical');
+// logger.warn('Note well');
+// logger.info('All normal');
+// logger.verbose('Debugging info');
+// logger.debug('Debugging info');
+// logger.silly('Debugging info');
+
+/* specify log level */
+// import logger from "../logger";
 // logger.level = 'debug'; // { error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }
 
-// specify fil logging etc
-
-// import {logger} from "./logger";
-// logger.info('Hello world');
-// logger.debug('Debugging info');
+/* specify file logging etc. */
+// TODO
