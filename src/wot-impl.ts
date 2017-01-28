@@ -48,8 +48,8 @@ export default class WoTImpl implements WoT.WoTFactory {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
             let client = this.srv.getClientFor(Helpers.extractScheme(uri));
             logger.info(`WoTImpl consuming TD at ${uri} with ${client}`);
-            client.readResource(uri).then((td) => {
-                let thingdesc = TDParser.parseTDObj(td);
+            client.readResource(uri).then((body) => {
+                let thingdesc = TDParser.parseTDString(body.toString());
                 let pt = new ProxyThing(this.srv, thingdesc);
                 client.stop();
                 resolve(pt);

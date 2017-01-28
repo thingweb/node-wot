@@ -41,37 +41,36 @@ export default class ProxyThing implements WoT.ConsumedThing {
         this.srv = servient
         this.name = td.name;
         this.td = td;
-        logger.verbose("Create ProxyThing '" + this.name + "' created");
+        logger.info("ProxyThing '" + this.name + "' created");
     }
 
     // lazy singleton for ProtocolClient per scheme
     private getClientFor(links: TD.TDInteractionLink[]): ClientAndLink {
         if (links.length === 0) {
-            throw new Error("no links for this interaction")
+            throw new Error("ProxyThing has no links for this interaction");
         }
 
         let schemes = links.map(link => Helpers.extractScheme(link.href))
-        let cacheidx = schemes.findIndex(scheme => this.clients.has(scheme))
+        let cacheIdx = schemes.findIndex(scheme => this.clients.has(scheme))
         
-        if (cacheidx !== -1) {
-            logger.verbose("chose protocol ",schemes[cacheidx])
-            let client = this.clients.get(schemes[cacheidx])
-            let link = links[cacheidx]
-            return { client: client, link: link }
+        if (cacheIdx !== -1) {
+            logger.debug(`ProxyThing chose cached client for '${schemes[cacheIdx]}'`);
+            let client = this.clients.get(schemes[cacheIdx]);
+            let link = links[cacheIdx];
+            return { client: client, link: link };
         } else {
-            logger.silly("no client in cache ", cacheidx)
-            let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme))
-            if (srvIdx === -1) throw new Error("no suitable client")
-
-            logger.verbose("chose protocol ",schemes[srvIdx])
+            logger.silly(`ProxyThing has no client in cache (${cacheIdx})`);
+            let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme));
+            if (srvIdx === -1) throw new Error(`ProxyThing misses '${schemes[srvIdx]}' client in Servient`);
+            logger.silly(`ProxyThing chose protocol '${schemes[srvIdx]}'`);
             let client = this.srv.getClientFor(schemes[srvIdx]);
             if (client) {
+                logger.debug(`ProxyThing got new client for '${schemes[cacheIdx]}'`);
                 this.clients.set(schemes[srvIdx], client);
-                let link = links[srvIdx]
+                let link = links[srvIdx];
                 return { client: client, link: link }
             } else {
-                logger.info("no suitable client availiabe")
-                throw new Error("no suitable client")
+                throw new Error(`ProxyThing could not get client for '${schemes[srvIdx]}'`);
             }
         }
     }
