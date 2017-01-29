@@ -29,36 +29,57 @@ should();
 import ThingDescription from "../src/td/thing-description";
 import * as TDParser from "../src/td/td-parser";
 
-/** sample TD json-ld string from the CP page*/
-let td_cpexample_jsonld = '{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": "Thing","name": "MyTemperatureThing","interactions": [{"@type": ["Property"],"name": "temperature","outputData": {"valueType": { "type": "number" }},"writable": false,"links": [{"href" : "coap://mytemp.example.com:5683/temp","mediaType": "application/json"}]}]}';
+import logger from "../src/logger";
+logger.level = "silly";
 
+/** sample TD json-ld string from the CP page*/
+let tdSample = `{
+  "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+  "@type": "Thing",
+  "name": "MyTemperatureThing",
+  "interactions": [
+    {
+      "@type": ["Property"],
+      "name": "temperature",
+      "outputData": {"valueType": { "type": "number" }},
+      "writable": false,
+      "links": [{
+        "href" : "coap://mytemp.example.com:5683/temp",
+        "mediaType": "application/json"
+        }]
+    }
+  ]
+}`;
 
 @suite("TD parsing/serialising")
 class TDParserTest {
 
     @test "should parse the example from Current Practices"() {
-        let td : ThingDescription = TDParser.parseTDString(td_cpexample_jsonld)
+        let td : ThingDescription = TDParser.parseTDString(tdSample)
 
-        //BDD style expect
-        expect(td.name).to.equal("MyTemperatureThing")
+        expect(td).have.property("context").that.has.lengthOf(1);
+        expect(td).have.property("semanticType").that.equals("Thing");
+        expect(td).have.property("name").that.equals("MyTemperatureThing");
+        expect(td).to.not.have.property("base");
+        
         expect(td.interactions).to.have.lengthOf(1);
-        expect(td.interactions[0]).to.have.property('name').that.equals("temperature")
+        expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
+        expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
+        expect(td.interactions[0]).to.have.property("writable").that.equals(false);
 
-        //BDD style should
-        td.interactions[0].links.should.have.lengthOf(1)
-        td.interactions[0].links[0].should.have.property('mediaType').equal("application/json")
-        td.interactions[0].links[0].href.should.equal("coap://mytemp.example.com:5683/temp")
+        expect(td.interactions[0].links).to.have.lengthOf(1);
+        expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
+        expect(td.interactions[0].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
     }
 
     @skip //TODO #8 test is failing because of writable
     @test "should return same TD in round-trip"() {
-        let td : ThingDescription = TDParser.parseTDString(td_cpexample_jsonld)
+        let td : ThingDescription = TDParser.parseTDString(tdSample)
         let newJson = TDParser.serializeTD(td);
 
-        let json_expected = JSON.parse(td_cpexample_jsonld);
-        let json_actual = JSON.parse(newJson);
+        let jsonExpected = JSON.parse(tdSample);
+        let jsonActual = JSON.parse(newJson);
 
-        expect(json_actual).to.deep.equal(json_expected);
+        expect(jsonActual).to.deep.equal(jsonExpected);
     }
-
 }
