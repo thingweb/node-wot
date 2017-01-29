@@ -152,7 +152,6 @@ class WoTClientTest {
             })
             .then((value) => {
                 expect(value).not.to.be.null;
-                // TODO #5 ConsumedThing should return value of type defined by outputData in TD
                 expect(value.toString()).to.equal("42");
                 done();
             })
@@ -162,8 +161,8 @@ class WoTClientTest {
     @test "write a value"(done) {
         //verify the value transmitted
         WoTClientTest.clientFactory.setTrap(
-            (uri,value) => {
-                expect(value.toString()).to.equal("23");
+            (uri,buffer) => {
+                expect(buffer.toString()).to.equal("23");
             }
         )
 
@@ -171,8 +170,7 @@ class WoTClientTest {
             .then((thing) => {
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
-                // TODO #5 ConsumedThing should accept output/inputData valueType and convert it to a proper Buffer (for now we need Buffer<String>)
-                return thing.setProperty("aProperty", "23");
+                return thing.setProperty("aProperty", 23);
             })
             .then(() => done())
             .catch(err => { throw err })
@@ -181,8 +179,8 @@ class WoTClientTest {
     @test "call an action"(done) {
         //an action
         WoTClientTest.clientFactory.setTrap(
-            (uri,value) => {
-                expect(value.toString()).to.equal("23");
+            (uri,buffer) => {
+                expect(buffer.toString()).to.equal("23");
                 return new Buffer("42");
             }
         )
@@ -191,15 +189,13 @@ class WoTClientTest {
             .then((thing) => {
                 thing.should.not.be.null;
                 thing.name.should.equal("aThing");
-                // TODO #5 ConsumedThing should accept inputData valueType and convert it to a proper Buffer (for now we need Buffer<String>)
-                return thing.invokeAction("anAction", "23");
+                return thing.invokeAction("anAction", 23);
             })
             .then((result) => {
                 expect(result).not.to.be.null;
-                // TODO #5 ConsumedThing should return value of type defined by outputData in TD
-                expect(result.toString()).to.equal("42");
+                expect(result).to.equal(42);
                 done();
             })
-            .catch(err => { throw err })
+            .catch(err => { done(err) })
     }
 }

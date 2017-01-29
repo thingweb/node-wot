@@ -24,6 +24,7 @@ import ThingDescription from "./td/thing-description";
 import * as TD from "./td/thing-description";
 import * as TDParser from "./td/td-parser";
 import * as Helpers from "./helpers";
+import ContentSerdes from "./types/content-codec"
 
 interface ClientAndLink {
     client: ProtocolClient
@@ -95,9 +96,8 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
                     logger.info(`ConsumedThing '${this.name}' getting ${link.href}`);
-                    client.readResource(link.href).then( (value) => {
-                        // TODO #5 client returns Buffer on read; ConsumedThing would have the necessary TD valueType rule...
-                        // At the moment Buffer is usually automatically converted to string because we just print value
+                    client.readResource(link.href).then( (buffer) => {
+                        let value = ContentSerdes.bytesToValue(buffer);
                         resolve(value);
                     });
                 }
@@ -121,8 +121,12 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
                     logger.info(`ConsumedThing '${this.name}' setting ${link.href} to '${newValue}'`);
+
+                    let mediaType = link.mediaType; //TODO: I need a function to turn the enum to string
+                    let payload = ContentSerdes.valueToBytes(newValue) 
+
                     // TODO #5 client expects Buffer; ConsumedThing would have the necessary TD valueType rule...
-                    resolve(client.writeResource(link.href, new Buffer(newValue)));
+                    resolve(client.writeResource(link.href, payload));
                 }
             }
         });
@@ -144,8 +148,13 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                 } else {
                     logger.info(`ConsumedThing '${this.name}' invoking ${link.href} with '${parameter}'`);
                     // TODO #5 client expects Buffer; ConsumedThing would have the necessary TD valueType rule...
-                    client.invokeResource(link.href, new Buffer(parameter)).then( (value) => {
+
+                    let mediaType = link.mediaType; //TODO: I need a function to turn the enum to string
+                    let payload = ContentSerdes.valueToBytes(parameter) 
+
+                    client.invokeResource(link.href, payload).then( (payload) => {
                         // TODO #5 client returns Buffer on invoke; ConsumedThing would have the necessary TD valueType rule...
+                        let value = ContentSerdes.bytesToValue(payload)
                         resolve(value);
                     });
                 }
