@@ -119,7 +119,6 @@ let myThingDesc = {
     ]
 }
 
-@only
 @suite("client flow of servient")
 class WoTClientTest {
 

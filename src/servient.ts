@@ -39,12 +39,12 @@ export default class Servient {
 
     public addResourceListener(path : string, resourceListener : ResourceListener) {
         this.listeners.set(path,resourceListener);
-        //TODO add to all servers
+        this.servers.forEach(srv => srv.addResource(path,resourceListener))
     }
 
     public removeResourceListener(path : string) {
         this.listeners.delete(path);
-        // TODO remove from all servers
+        this.servers.forEach(srv => srv.removeResourceListener(path))
     }
 
     public addServer(server: ProtocolServer): boolean {
