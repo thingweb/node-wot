@@ -20,8 +20,25 @@
 /** is a plugin for ContentSerdes for a specific format (such as JSON or EXI) */
 export interface ContentCodec {
     getMediaType() : string
+    bytesToValue(bytes : Buffer) : any
+    valueToBytes(value : any) : Buffer
 }
 
+/** default implementation offerin Json de-/serialisation */
+class JsonCodec implements ContentCodec {
+    getMediaType() : string {
+        return "application/json"
+    }
+
+    bytesToValue(bytes : Buffer) : any {
+        return JSON.parse(bytes.toString());
+    }
+
+    valueToBytes(value : any) : Buffer {
+        let content = JSON.stringify(value);
+        return new Buffer(content)
+    }
+}
 
 /**
  * is a singleton that is used to serialize and deserialize data
@@ -34,7 +51,10 @@ export class ContentSerdes {
     private constructor() {}
 
     public static get() : ContentSerdes {
-        if (!this.instance) this.instance = new ContentSerdes();
+        if (!this.instance)  {
+            this.instance = new ContentSerdes();
+            this.instance.addCodec(new JsonCodec());
+        }
         return this.instance;
     }
 
@@ -42,21 +62,28 @@ export class ContentSerdes {
         this.codecs.set(codec.getMediaType(),codec)
     }
 
-    public bytesToValue(bytes : Buffer, mediaType? : string) : any {
+    public bytesToValue(bytes : Buffer, mediaType = "application/json") : any {
         //choose codec based on mediaType
-        
+        if(!this.codecs.has(mediaType)) {
+            throw new Error(`Unsupported serialisation format: ${mediaType}`)
+        }
+        let codec = this.codecs.get(mediaType)
+
         //use codec to deserialize
-        let res = JSON.parse(bytes.toString());
+        let res = codec.bytesToValue(bytes);
         
         return res;
     }
 
-    public valueToBytes(value : any, mediaType? : string) : Buffer {
+    public valueToBytes(value : any, mediaType= "application/json") : Buffer {
         //choose codec based on mediaType
+        if(!this.codecs.has(mediaType)) {
+            throw new Error(`Unsupported serialisation format: ${mediaType}`)
+        }
+        let codec = this.codecs.get(mediaType)
         
         //use codec to serialize
-        let content = JSON.stringify(value);
-        let res = new Buffer(content)
+        let res = codec.valueToBytes(value)
         
         return res;
     }

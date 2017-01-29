@@ -24,7 +24,7 @@ import ThingDescription from "./td/thing-description";
 import * as TD from "./td/thing-description";
 import * as TDParser from "./td/td-parser";
 import * as Helpers from "./helpers";
-import ContentSerdes from "./types/content-codec"
+import ContentSerdes from "./types/content-serdes"
 
 interface ClientAndLink {
     client: ProtocolClient
