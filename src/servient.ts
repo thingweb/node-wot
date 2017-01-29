@@ -64,7 +64,7 @@ export default class Servient {
 
     public getClientFor(scheme: string): ProtocolClient {
         if(this.clientFactories.has(scheme)) {
-            logger.debug(`Servient creating client for scheme '${scheme}'`);
+            logger.verbose(`Servient creating client for scheme '${scheme}'`);
             return this.clientFactories.get(scheme).getClient();
         } else {
             // FIXME returning null was bad - Error or Promise?

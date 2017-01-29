@@ -44,8 +44,8 @@ import * as TD from "./thing-description";
  * @param td ThingDescription instance that keeps the interactions
  * @param name of the interaction which is searched for
  */
- function findInteractionByNameType(td : ThingDescription,  name: string, type: TD.interactionTypeEnum) {
-     let res = td.interactions.filter((ia) => ia.interactionType === type && ia.name === name)
+ function findInteractionByNameType(td : ThingDescription,  name: string, pattern: TD.InteractionPattern) {
+     let res = td.interactions.filter((ia) => ia.pattern === pattern && ia.name === name)
      return (res.length > 0) ? res[0] : null;
  }
 

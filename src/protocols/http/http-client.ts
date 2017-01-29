@@ -35,7 +35,7 @@ export default class HttpClient implements ProtocolClient {
     }
 
     public toString() : string {
-        return "[HttpClient]";
+        return `[HttpClient]`;
     }
 
     private uriToOptions(uri : string) : http.RequestOptions {

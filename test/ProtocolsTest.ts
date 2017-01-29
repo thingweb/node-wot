@@ -4,6 +4,8 @@
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
+// should must be called to augment all variables
+should();
 
 import HttpServer from "../src/protocols/http/http-server";
 import CoapServer from "../src/protocols/coap/coap-server";
@@ -14,11 +16,10 @@ import * as rp from "request-promise";
 
 const coap = require('coap');
 
-@suite("tests to verify protocol implementations")
-class ProtocolsTest {
+@suite("HTTP implementation")
+class HttpTest {
 
-    @test("should start an http server")
-    http_start_stop() {
+    @test "should start and stop a server"() {
         let httpServer = new HttpServer(58080);
         let ret = httpServer.start();
 
@@ -31,8 +32,7 @@ class ProtocolsTest {
         expect(httpServer.getPort()).to.eq(-1); // from getPort() when not listening
     }
 
-    @test("should change resource from 'off' to 'on' and try to invoke and delete")
-    http_resource(done : Function) {
+    @test "should change resource from 'off' to 'on' and try to invoke and delete"(done : Function) {
         let httpServer = new HttpServer(58081);
         httpServer.addResource("/", new AssetResourceListener("off") );
         let ret = httpServer.start();
@@ -56,8 +56,7 @@ class ProtocolsTest {
             });
     }
     
-    @test("should cause EADDRINUSE error")
-    http_conflicting_port(done : Function) {
+    @test "should cause EADDRINUSE error when already running"(done : Function) {
         let httpServer1 = new HttpServer(58082);
         httpServer1.addResource("/", new AssetResourceListener("One") );
         let ret1 = httpServer1.start();
@@ -81,9 +80,12 @@ class ProtocolsTest {
                 done();
             });
     }
+}
 
-    @test("should start a coap server")
-    coap_start_stop() {
+@suite("CoAP implementation")
+class CoapTest {
+
+    @test "should start and stop a server"() {
         let coapServer = new CoapServer(56831);
         let ret = coapServer.start();
 
@@ -97,8 +99,7 @@ class ProtocolsTest {
     }
 
     @skip
-    @test("should cause EADDRINUSE error")
-    coap_conflicting_port(done : Function) {
+    @test "should cause EADDRINUSE error when already running"(done : Function) {
         let coapServer1 = new CoapServer(56832); // cannot use 0, since getPort() does not work
         coapServer1.addResource("/", new AssetResourceListener("One") );
         let ret1 = coapServer1.start();
@@ -123,9 +124,12 @@ class ProtocolsTest {
         });
         req.end();
     }
+}
 
-    @test("resource listeners should work cross-protocol")
-    all_resource_listeners(done : Function) {
+@suite("Multi-protcol implementation")
+class ProtocolsTest {
+
+    @test "should work cross-protocol"(done : Function) {
         let httpServer = new HttpServer(58083);
         let coapServer = new CoapServer(56833);
 

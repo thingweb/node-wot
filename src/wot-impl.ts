@@ -30,11 +30,11 @@ import * as WoT from 'wot-typescript-definitions';
 export default class WoTImpl implements WoT.WoTFactory {
     private srv : Servient;
 
-    constructor(srv: Servient) {
+    constructor(srv : Servient) {
         this.srv = srv;
     }
 
-    discover(discoveryType: string, filter: Object): Promise<WoT.ConsumedThing> {
+    discover(discoveryType : string, filter : Object) : Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
 
         });
@@ -44,7 +44,7 @@ export default class WoTImpl implements WoT.WoTFactory {
      * consume a thing description by URI and return a client representation object
      * @param uri URI of a thing description
      */
-    consumeDescriptionUri(uri: string): Promise<WoT.ConsumedThing> {
+    consumeDescriptionUri(uri : string) : Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
             let client = this.srv.getClientFor(Helpers.extractScheme(uri));
             logger.info(`WoTImpl consuming TD at ${uri} with ${client}`);
@@ -63,12 +63,12 @@ export default class WoTImpl implements WoT.WoTFactory {
      *
      * @param thingDescription a thing description
      */
-    consumeDescription(thingDescription: Object): Promise<WoT.ConsumedThing> {
+    consumeDescription(thingDescription : Object) : Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
             logger.info(`WoTImpl consuming TD from object`);
-            let thingdesc = TDParser.parseTDObj(thingDescription);
-            let pt = new ConsumedThing(this.srv, thingdesc);
-            resolve(pt);
+            let td = TDParser.parseTDObject(thingDescription);
+            let thing = new ConsumedThing(this.srv, td);
+            resolve(thing);
         });
     }
 
@@ -77,7 +77,7 @@ export default class WoTImpl implements WoT.WoTFactory {
      *
      * @param name name/identifier of the thing to be created
      */
-    createThing(name: string): Promise<WoT.DynamicThing> {
+    createThing(name : string) : Promise<WoT.DynamicThing> {
         return new Promise<WoT.DynamicThing>((resolve, reject) => {
             logger.info(`WoTImpl creating new ExposedThing '${name}'`);
             let mything = new ExposedThing(this.srv, name);
@@ -94,12 +94,12 @@ export default class WoTImpl implements WoT.WoTFactory {
      *
      * @param uri URI of a thing description to be used as "template"
      */
-    createFromDescriptionUri(uri: string): Promise<WoT.ExposedThing> {
+    createFromDescriptionUri(uri : string) : Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
             let client = this.srv.getClientFor(uri);
             logger.info(`WoTImpl creating new ExposedThing from TD at ${uri} with ${client}`);
             client.readResource(uri).then((td) => {
-                let thingdesc = TDParser.parseTDObj(td);
+                let thingdesc = TDParser.parseTDObject(td);
                 let mything = new ExposedThing(this.srv, thingdesc.name);
                 if(this.srv.addThing(mything)) {
                     resolve(mything);
@@ -110,9 +110,9 @@ export default class WoTImpl implements WoT.WoTFactory {
         });
     }
 
-    createFromDescription(thingDescription: Object): Promise<WoT.ExposedThing> {
+    createFromDescription(thingDescription : Object) : Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
-            let thingdesc = TDParser.parseTDObj(thingDescription);
+            let thingdesc = TDParser.parseTDObject(thingDescription);
             logger.info(`WoTImpl creating new ExposedThing from object`);
             let mything = new ExposedThing(this.srv, thingdesc.name);
             if(this.srv.addThing(mything)) {

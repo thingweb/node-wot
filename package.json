@@ -9,7 +9,7 @@
     "start": "node dist/examples/main.js",
     "prestart": "npm run build",
     "prepublish": "npm run build",
-    "dev-test-watch" : "mocha-typescript-watch -p test/tsconfig.test.json"
+    "dev-test-watch": "mocha-typescript-watch -p test/tsconfig.test.json"
   },
   "author": "Johannes Hund (johannes.hund@gmail.com)",
   "license": "MIT",
@@ -28,6 +28,7 @@
     "request-promise": "^4.1.1"
   },
   "dependencies": {
+    "async": "^2.1.4",
     "coap": "^0.19.0",
     "winston": "^2.3.0"
   },

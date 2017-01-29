@@ -27,6 +27,8 @@
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
+// should must be called to augment all variables
+should();
 
 import Servient from '../src/servient'
 
@@ -38,20 +40,20 @@ class TrapClient implements ProtocolClient {
         this.trap = callback
     }
 
-    public readResource(uri: string): Promise<any> {
-        return Promise.resolve(this.trap(uri))
+    public readResource(uri : string) : Promise<Buffer> {
+        return Promise.resolve(this.trap(uri));
     }
 
-    public writeResource(uri: string, payload: any): Promise<any> {
-        return Promise.resolve(this.trap(uri,payload))
+    public writeResource(uri : string, payload: Buffer) : Promise<void> {
+        return Promise.resolve(this.trap(uri, payload));
     }
 
-    public invokeResource(uri: String, payload: any): Promise<any> {
-        return Promise.resolve(this.trap(uri,payload))
+    public invokeResource(uri : String, payload: Buffer) : Promise<Buffer> {
+        return Promise.resolve(this.trap(uri, payload));
     }
 
-    public unlinkResource(uri: string): Promise<any> {
-        return Promise.resolve(this.trap(uri))
+    public unlinkResource(uri : string) : Promise<void> {
+        return Promise.resolve(this.trap(uri));
     }
 
     public start(): boolean {
@@ -66,23 +68,23 @@ class TrapClient implements ProtocolClient {
 class TrapClientFactory implements ProtocolClientFactory {
     client = new TrapClient();
 
-    public setTrap(callback: Function) {
-        this.client.setTrap(callback)
+    public setTrap(callback : Function) {
+        this.client.setTrap(callback);
     }
 
-    public getClient(): ProtocolClient {
+    public getClient() : ProtocolClient {
         return this.client;
     }
 
-    public init(): boolean {
+    public init() : boolean {
         return true;
     }
 
-    public destroy(): boolean {
+    public destroy() : boolean {
         return true;
     }
 
-    public getSchemes(): Array<string> {
+    public getSchemes() : Array<string> {
         return ["test"];
     }
 }
@@ -139,20 +141,20 @@ class WoTClientTest {
     }
 
     @test "read a value"(done) {
-        //let the client return 42
-        WoTClientTest.clientFactory.setTrap((uri) => 42)
+        // let the client return 42
+        WoTClientTest.clientFactory.setTrap((uri) => new Buffer("42"));
 
         WoTClientTest.WoT.consumeDescription(myThingDesc)
             .then((thing) => {
-                expect(thing).not.to.be.null
-                thing.name.should.equal("aThing")
-                return thing.getProperty("aProperty")
+                expect(thing).not.to.be.null;
+                expect(thing.name).to.equal("aThing");
+                return thing.getProperty("aProperty");
             })
             .then((value) => {
-                expect(value).not.to.be.null
-                expect(value).to.equal(42)
-                value.should.equal(42)
-                done()
+                expect(value).not.to.be.null;
+                // TODO #5 ConsumedThing should return value of type defined by outputData in TD
+                expect(value.toString()).to.equal("42");
+                done();
             })
             .catch(err => { throw err })
     }
@@ -161,15 +163,16 @@ class WoTClientTest {
         //verify the value transmitted
         WoTClientTest.clientFactory.setTrap(
             (uri,value) => {
-                value.should.equal(23)
+                expect(value.toString()).to.equal("23");
             }
         )
 
         WoTClientTest.WoT.consumeDescription(myThingDesc)
             .then((thing) => {
-                expect(thing).not.to.be.null
-                thing.name.should.equal("aThing")
-                return thing.setProperty("aProperty",23)
+                expect(thing).not.to.be.null;
+                expect(thing.name).to.equal("aThing");
+                // TODO #5 ConsumedThing should accept output/inputData valueType and convert it to a proper Buffer (for now we need Buffer<String>)
+                return thing.setProperty("aProperty", "23");
             })
             .then(() => done())
             .catch(err => { throw err })
@@ -179,21 +182,23 @@ class WoTClientTest {
         //an action
         WoTClientTest.clientFactory.setTrap(
             (uri,value) => {
-                value.should.equal(23)
-                return 42
+                expect(value.toString()).to.equal("23");
+                return new Buffer("42");
             }
         )
 
         WoTClientTest.WoT.consumeDescription(myThingDesc)
             .then((thing) => {
-                expect(thing).not.to.be.null
-                thing.name.should.equal("aThing")
-                return thing.invokeAction("anAction",23)
+                thing.should.not.be.null;
+                thing.name.should.equal("aThing");
+                // TODO #5 ConsumedThing should accept inputData valueType and convert it to a proper Buffer (for now we need Buffer<String>)
+                return thing.invokeAction("anAction", "23");
             })
             .then((result) => {
                 expect(result).not.to.be.null;
-                result.should.equal(42)
-                done()
+                // TODO #5 ConsumedThing should return value of type defined by outputData in TD
+                expect(result.toString()).to.equal("42");
+                done();
             })
             .catch(err => { throw err })
     }

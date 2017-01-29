@@ -23,6 +23,8 @@
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
+// should must be called to augment all variables
+should();
 
 import ThingDescription from "../src/td/thing-description";
 import * as TDParser from "../src/td/td-parser";
@@ -31,11 +33,10 @@ import * as TDParser from "../src/td/td-parser";
 let td_cpexample_jsonld = '{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": "Thing","name": "MyTemperatureThing","interactions": [{"@type": ["Property"],"name": "temperature","outputData": {"valueType": { "type": "number" }},"writable": false,"links": [{"href" : "coap://mytemp.example.com:5683/temp","mediaType": "application/json"}]}]}';
 
 
-@suite("tests to verify td parsing/serialising")
+@suite("TD parsing/serialising")
 class TDParserTest {
 
-    @test("should parse the example from CP")
-    cp_ex_parsing() {
+    @test "should parse the example from Current Practices"() {
         let td : ThingDescription = TDParser.parseTDString(td_cpexample_jsonld)
 
         //BDD style expect
@@ -49,8 +50,7 @@ class TDParserTest {
         td.interactions[0].links[0].href.should.equal("coap://mytemp.example.com:5683/temp")
     }
 
-    @test("should return same td in round-trip")
-    cp_ex_roundtrip() {
+    @test "should return same TD in round-trip"() {
         let td : ThingDescription = TDParser.parseTDString(td_cpexample_jsonld)
         let newJson = TDParser.serializeTD(td);
 

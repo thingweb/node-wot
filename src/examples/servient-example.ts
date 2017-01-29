@@ -24,6 +24,8 @@ import CoapClientFactory from "../protocols/coap/coap-client-factory";
 import ThingDescription from "../td/thing-description";
 import * as TD from "../td/thing-description";
 
+const async = require("async");
+
 // for level only - use console for output
 import logger from "../logger";
 logger.level = "silly";
@@ -32,47 +34,84 @@ logger.info("INFO");
 logger.debug("DEBUG");
 logger.silly("SILLY");
 
+console.log(`\n# Setting up Servient with HTTP and CoAP\n`);
+
 let servient = new Servient();
 
 servient.addClientFactory(new HttpClientFactory());
+servient.addClientFactory(new CoapClientFactory());
 
 console.log("Starting servient");
 let wot = servient.start();
 
-wot.consumeDescriptionUri("http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld").then( (thing) => {
-        console.log(`Thing name: ${thing.name}`);
-        
-        thing.getProperty("myProp").then( (res) => {
-            console.log(`myProp value: ${res}`);
-        }).catch( (err) => console.error(err) );
+async.series([
+    (next : Function) => {
 
-        thing.setProperty("myProp", "4711").then( (res) => {
-            console.log(`myProp set successfully`);
-        }).catch( (err) => console.error(err) );
+        console.log(`\n# Consuming Thing over HTTP\n`);
 
-        thing.invokeAction("myAction", "").then( (res) => {
-            console.log(`myAction result: ${res}`);
-        }).catch( (err) => console.error(err) );
+        wot.consumeDescriptionUri("http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld").then( (thing) => {
+                console.log(`### Thing name: ${thing.name}`);
+                thing.getProperty("myProp").then( (res) => {
+                    console.log(`### myProp value: ${res}`);
+                    thing.setProperty("myProp", "4711").then( (res) => {
+                        console.log(`### myProp set successfully`);
+                        thing.getProperty("myProp").then( (res) => {
+                            console.log(`### myProp value: ${res}`);
+                            thing.invokeAction("myAction", "").then( (res) => {
+                                console.log(`### myAction result: ${res}`);
+                                next();
+                            }).catch( (err) => console.error(err) );
+                        }).catch( (err) => console.error(err) );
+                    }).catch( (err) => console.error(err) );
+                }).catch( (err) => console.error(err) );
+            }).catch( (err) => console.error(err) );
+    },
+    (next : Function) => {
 
-    }).catch( (err) => console.error(err) );
+        console.log(`\n# Consuming Thing over CoAP\n`);
 
-let td = new ThingDescription();
-td.name = "PlugtestServer";
-td.interactions.push(new TD.Interaction);
+        let td = {
+            "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+            "@type": "Thing",
+            "name": "PlugtestServer",
+            "interactions": [
+                {
+                    "@type": ["Property"],
+                    "name": "coapProp",
+                    "outputData": { "valueType": { "type": "string" } },
+                    "writable": false,
+                    "links": [
+                        { "href": "coap://californium.eclipse.org:5683/path/sub1", "mediaType": "application/json" }
+                    ]
+                },
+                {
+                    "@type": ["Action"],
+                    "name": "coapAction",
+                    "outputData": { "valueType": { "type": "string" } },
+                    "inputData": { "valueType": { "type": "string" } },
+                    "links": [
+                        { "href": "coap://californium.eclipse.org:5683/large-post", "mediaType": "application/json" }
+                    ]
+                }
 
-wot.consumeDescription(td).then( (thing) => {
-        console.log(`Thing name: ${thing.name}`);
+            ]
+        };
 
-        thing.getProperty("myProp").then( (res) => {
-            console.log(`myProp value: ${res}`);
-        }).catch( (err) => console.error(err) );
-
-        thing.setProperty("myProp", "4711").then( (res) => {
-            console.log(`myProp set successfully`);
-        }).catch( (err) => console.error(err) );
-
-        thing.invokeAction("myAction", "").then( (res) => {
-            console.log(`myAction result: ${res}`);
-        }).catch( (err) => console.error(err) );
-
-    }).catch( (err) => console.error(err) );
+        wot.consumeDescription(td).then( (thing) => {
+                console.log(`### Thing name: ${thing.name}`);
+                thing.getProperty("coapProp").then( (res) => {
+                    console.log(`### coapProp value: ${res}`);
+                    thing.setProperty("coapProp", "4711").then( (res) => {
+                        console.log(`### coapProp set successfully`);
+                        thing.getProperty("coapProp").then( (res) => {
+                            console.log(`### coapProp value: ${res}`);
+                            thing.invokeAction("coapAction", "lower").then( (res) => {
+                                console.log(`### coapAction result: ${res}`);
+                                next();
+                            }).catch( (err) => console.error(err) );
+                        }).catch( (err) => console.error(err) );
+                    }).catch( (err) => console.error(err) );
+                }).catch( (err) => console.error(err) );
+            }).catch( (err) => console.error(err) );
+    }
+]);

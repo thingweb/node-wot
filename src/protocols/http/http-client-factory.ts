@@ -29,7 +29,7 @@ export default class HttpClientFactory implements ProtocolClientFactory {
     public static readonly schemes : Array<string> = ["http"];
 
     public getClient() : ProtocolClient {
-        logger.verbose(`HttpClientFactory creating client for '${this.getSchemes()}'`);
+        logger.debug(`HttpClientFactory creating client for '${this.getSchemes()}'`);
         return new HttpClient();
     }
     

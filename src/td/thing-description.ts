@@ -17,84 +17,93 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { JsonMember, JsonObject} from 'typedjson';
+import { JsonMember, JsonObject } from "typedjson";
 
 /** structured type representing a TD for internal usage */
+@JsonObject
 export default class ThingDescription {
 
-    @JsonMember({name : "@context",  elements: String }) /** @context information of the TD */
-    private context : Array<string> = ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"]
+    @JsonMember({ name: "@context", elements: String }) /** @context information of the TD */
+    private context : Array<string> = ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"];
 
-    @JsonMember({isRequired:true, type: String}) /** Human readable name identifier of the Thing  */
-    public name : string
+    /** @ type information, usually 'Thing' */
+    @JsonMember({ name: "@type", type: String })
+    public semanticType : string = "Thing";
 
-    @JsonMember({type: String}) /** base uri of the interaction resources */
-    public base : string
+    /** human-readable name of the Thing */
+    @JsonMember({ isRequired: true, type: String })
+    public name : string;
 
-    @JsonMember({isRequired:true,  elements: Object })  /** interactions of this thing */
-    public interactions : Array<Interaction>;
+    /** base URI of the Interaction resources */
+    @JsonMember({ type: String })
+    public base : string;
+
+    /** Interactions of this Thing */
+    @JsonMember({ isRequired: true, elements: Object })
+    public interactions : Array<Interaction> = [];
 
 }
 
 /**
- * Internal data structure for an interaction
+ * Internal data structure for an Interaction
  */
+@JsonObject
 export class Interaction {
 
-    @JsonMember({isRequired:true, name : "@type",  elements: String }) /** @ type information of the interaction */
-    public  rdfType : Array<string>
+    /** @ type information of the Interaction */
+    @JsonMember({ name: "@type", isRequired: true, elements: String })
+    public semanticTypes : Array<string> = [];
 
-    @JsonMember({isRequired:true, type: String})  /** name/identifier of the interaction */
-    public name : string
+    /** name/identifier of the Interaction */
+    @JsonMember({ isRequired: true, type: String })
+    public name : string;
 
-    /** type of the interaction (action, property, event) */
-    public interactionType : interactionTypeEnum
+    /** type of the Interaction (action, property, event) */
+    public pattern : InteractionPattern;
 
-    @JsonMember({isRequired:true,  elements: Object})  /** link information of the interaction resources */
-    public links : Array<InteractionLink>;
+    /** link information of the Interaction resources */
+    @JsonMember({ isRequired: true,  elements: Object })
+    public links : Array<InteractionLink> = [];
 
-    @JsonMember({type: Boolean}) /* writable flag for the property*/
+    /** writable flag for the Property */
+    @JsonMember({ type: Boolean })
     public writable : boolean;
 
     //TODO: how to handle types internally?
-    @JsonMember({type: String}) // json schema objects
-    public inputData : any
+    /** JSON Schema for input */
+    @JsonMember({ type: Object })
+    public inputData : any;
 
-    @JsonMember({type: String})
-    public outputDate : any
+    /** JSON Schema for output */
+    @JsonMember({ type: Object })
+    public outputData : any;
 }
 
 /**
-* Internal links information of an interaction
+* Internal links information of an Interaction
 */
 export class InteractionLink {
-  @JsonMember({isRequired:true, type: String})   /* relativ or absulut URI path of the interaction resource */
-  public href : string
 
-  @JsonMember({isRequired:true, type: String})   /* used mediaType of the interacion resources */
-  public mediaType : mediaTypeEnum
+    /** relativ or absulut URI path of the Interaction resource */
+    @JsonMember({ isRequired: true, type: String })
+    public href : string;
+
+    /** used mediaType of the interacion resources */
+    @JsonMember({ isRequired: true, type: String })
+    public mediaType : MediaType;
 }
 
-/* media type selection */
-export enum mediaTypeEnum {
+/** Internet Media Types */
+export enum MediaType {
     "application/json",
     "application/xml",
     "application/exi"
     /* TODO: add more media types here */
 }
 
-/* interaction type selection */
-export enum interactionTypeEnum {
-    property,
-    action,
-    event
-}
-/* simple type selection */
-export enum dataTypePrimitiveEnum {
-    string,
-    boolean,
-    number,
-    array,
-    object,
-    null
+/** Interaction pattern */
+export enum InteractionPattern {
+    Property,
+    Action,
+    Event
 }

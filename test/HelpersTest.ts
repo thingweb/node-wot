@@ -25,32 +25,30 @@
  */
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import * as Helpers from '../src/helpers'
-import {expect} from 'chai'
+import { expect } from "chai";
+
+import * as Helpers from "../src/helpers";
+
 
 @suite("tests to verify the helpers")
 class HelperTest {
     
-    @test("should extract the http scheme")
-    simple_http() {
+    @test "should extract the http scheme"() {
         let scheme = Helpers.extractScheme("http://blablupp.de")
         expect(scheme).to.eq("http")
     }
     
-    @test("should extract https scheme")
-    simple_https() {
+    @test "should extract https scheme"() {
         let scheme = Helpers.extractScheme("https://blablupp.de")
         expect(scheme).to.eq("https")
     }
     
-    @test("should extract scheme when a port is given")
-    http_with_port() {
+    @test "should extract scheme when a port is given"() {
         let scheme = Helpers.extractScheme("http://blablupp.de:8080")
         expect(scheme).to.eq("http")
     }
 
-    @test("should extract combined scheme")
-    combined_scheme() {
+    @test "should extract combined scheme"() {
         let scheme = Helpers.extractScheme("coap+ws://blablupp.de")
         expect(scheme).to.eq("coap+ws")
     }

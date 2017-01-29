@@ -41,42 +41,42 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         this.srv = servient
         this.name = td.name;
         this.td = td;
-        logger.info("ConsumedThing '" + this.name + "' created");
+        logger.info(`ConsumedThing '${this.name}' created`);
     }
 
     // lazy singleton for ProtocolClient per scheme
     private getClientFor(links: TD.InteractionLink[]): ClientAndLink {
         if (links.length === 0) {
-            throw new Error("ConsumedThing has no links for this interaction");
+            throw new Error("ConsumedThing '${this.name}' has no links for this interaction");
         }
 
         let schemes = links.map(link => Helpers.extractScheme(link.href))
         let cacheIdx = schemes.findIndex(scheme => this.clients.has(scheme))
         
         if (cacheIdx !== -1) {
-            logger.debug(`ConsumedThing chose cached client for '${schemes[cacheIdx]}'`);
+            logger.debug(`ConsumedThing '${this.name}' chose cached client for '${schemes[cacheIdx]}'`);
             let client = this.clients.get(schemes[cacheIdx]);
             let link = links[cacheIdx];
             return { client: client, link: link };
         } else {
-            logger.silly(`ConsumedThing has no client in cache (${cacheIdx})`);
+            logger.silly(`ConsumedThing '${this.name}' has no client in cache (${cacheIdx})`);
             let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme));
-            if (srvIdx === -1) throw new Error(`ConsumedThing misses '${schemes[srvIdx]}' client in Servient`);
-            logger.silly(`ConsumedThing chose protocol '${schemes[srvIdx]}'`);
+            if (srvIdx === -1) throw new Error(`ConsumedThing '${this.name}' missing ClientFactory for '${schemes}'`);
+            logger.silly(`ConsumedThing '${this.name}' chose protocol '${schemes[srvIdx]}'`);
             let client = this.srv.getClientFor(schemes[srvIdx]);
             if (client) {
-                logger.debug(`ConsumedThing got new client for '${schemes[cacheIdx]}'`);
+                logger.debug(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
                 this.clients.set(schemes[srvIdx], client);
                 let link = links[srvIdx];
                 return { client: client, link: link }
             } else {
-                throw new Error(`ConsumedThing could not get client for '${schemes[srvIdx]}'`);
+                throw new Error(`ConsumedThing '${this.name}' could not get client for '${schemes[srvIdx]}'`);
             }
         }
     }
 
-    private findInteraction(name: string, type: TD.interactionTypeEnum) {
-        let res = this.td.interactions.filter((ia) => ia.interactionType === type && ia.name === name)
+    private findInteraction(name: string, type: TD.InteractionPattern) {
+        let res = this.td.interactions.filter((ia) => ia.pattern === type && ia.name === name)
         return (res.length > 0) ? res[0] : null;
     }
 
@@ -85,18 +85,21 @@ export default class ConsumedThing implements WoT.ConsumedThing {
      * @param propertyName Name of the property
      */
     getProperty(propertyName: string): Promise<any> {
-        logger.verbose("getProperty '" + propertyName + "' for ConsumedThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
-            let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
+            let property = this.findInteraction(propertyName, TD.InteractionPattern.Property);
             if (!property) {
-                reject(new Error(`ConsumedThing ${this.name} cannot find Property '${propertyName}'`));
+                reject(new Error(`ConsumedThing '${this.name}' cannot find Property '${propertyName}'`));
             } else {
                 let {client, link} = this.getClientFor(property.links);
                 if (!client) {
-                    reject(new Error(`ConsumedThing did not get suitable client for ${link.href}`));
+                    reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
-                    logger.info(`ConsumedThing ${this.name} getting '${link.href}'`);
-                    resolve(client.readResource(link.href));
+                    logger.info(`ConsumedThing '${this.name}' getting ${link.href}`);
+                    client.readResource(link.href).then( (value) => {
+                        // TODO #5 client returns Buffer on read; ConsumedThing would have the necessary TD valueType rule...
+                        // At the moment Buffer is usually automatically converted to string because we just print value
+                        resolve(value);
+                    });
                 }
             }
         });
@@ -108,17 +111,17 @@ export default class ConsumedThing implements WoT.ConsumedThing {
      * @param newValue value to be set
      */
     setProperty(propertyName: string, newValue: any): Promise<any> {
-        logger.verbose("setProperty '" + propertyName + "' for ConsumedThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
-            let property = this.findInteraction(propertyName, TD.interactionTypeEnum.property);
+            let property = this.findInteraction(propertyName, TD.InteractionPattern.Property);
             if (!property) {
-                reject(new Error(`ConsumedThing ${this.name} cannot find Property '${propertyName}'`));
+                reject(new Error(`ConsumedThing '${this.name}' cannot find Property '${propertyName}'`));
             } else {
                 let {client, link} = this.getClientFor(property.links);
                 if (!client) {
-                    reject(new Error(`ConsumedThing did not get suitable client for ${link.href}`));
+                    reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
-                    logger.info("ConsumedThing setting " + link.href + " to " + newValue);
+                    logger.info(`ConsumedThing '${this.name}' setting ${link.href} to '${newValue}'`);
+                    // TODO #5 client expects Buffer; ConsumedThing would have the necessary TD valueType rule...
                     resolve(client.writeResource(link.href, new Buffer(newValue)));
                 }
             }
@@ -130,19 +133,21 @@ export default class ConsumedThing implements WoT.ConsumedThing {
      * @param parameter optional json object to supply parameters
     */
     invokeAction(actionName: string, parameter?: any): Promise<any> {
-        logger.verbose("invokeAction '" + actionName + "' for ConsumedThing '" + this.name + "'");
         return new Promise<any>((resolve, reject) => {
-            let action = this.findInteraction(actionName, TD.interactionTypeEnum.action);
+            let action = this.findInteraction(actionName, TD.InteractionPattern.Action);
             if (!action) {
-                reject(new Error(`ConsumedThing ${this.name} cannot find Action '${actionName}'`));
+                reject(new Error(`ConsumedThing '${this.name}' cannot find Action '${actionName}'`));
             } else {
                 let {client, link} = this.getClientFor(action.links);
-                logger.silly("got client for link:", client, link)
                 if (!client) {
-                    reject(new Error(`ConsumedThing did not get suitable client for ${link.href}`));
+                    reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
-                    logger.info("invoking " + link.href);
-                    resolve(client.invokeResource(link.href, new Buffer(parameter)));
+                    logger.info(`ConsumedThing '${this.name}' invoking ${link.href} with '${parameter}'`);
+                    // TODO #5 client expects Buffer; ConsumedThing would have the necessary TD valueType rule...
+                    client.invokeResource(link.href, new Buffer(parameter)).then( (value) => {
+                        // TODO #5 client returns Buffer on invoke; ConsumedThing would have the necessary TD valueType rule...
+                        resolve(value);
+                    });
                 }
             }
         });

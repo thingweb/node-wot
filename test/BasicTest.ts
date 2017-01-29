@@ -27,7 +27,7 @@
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 
 @suite("basic tests to verify test setup")
-class Basic {
+class BasicTest {
     
     @test("should pass when asserts are fine")
     asserts_pass() {

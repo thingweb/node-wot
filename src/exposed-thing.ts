@@ -28,24 +28,24 @@ import Servient from "./servient";
 
 export default class ExposedThing implements WoT.DynamicThing {
     // these arrays and their contents are mutable
-    private interactions: Array<TD.Interaction> = [];
-    private interactionStates: { [key: string]: InteractionState } = {}; //TODO migrate to Map
-    private restListeners: Map<string, ResourceListener> = new Map<string,ResourceListener>();
+    private interactions : Array<TD.Interaction> = [];
+    private interactionStates : { [key : string] : InteractionState } = {}; //TODO migrate to Map
+    private restListeners : Map<string, ResourceListener> = new Map<string, ResourceListener>();
 
-    private readonly srv: Servient;
+    private readonly srv : Servient;
 
     /** name of the Thing */
-    public readonly name: string
+    public readonly name : string
 
-    constructor(servient: Servient, name: string) {
+    constructor(servient : Servient, name : string) {
         this.srv = servient;
         this.name = name;
-        this.addResourceListener(this.name,new Rest.TDResourceListener(this));
+        this.addResourceListener(this.name, new Rest.TDResourceListener(this));
     }
 
     private addResourceListener(path : string, resourceListener : ResourceListener) {
-        this.restListeners.set(path,resourceListener);
-        this.srv.addResourceListener(path,resourceListener);
+        this.restListeners.set(path, resourceListener);
+        this.srv.addResourceListener(path, resourceListener);
     }
 
     private removeResourceListener(path : string) {
@@ -62,7 +62,7 @@ export default class ExposedThing implements WoT.DynamicThing {
      * @param actionName Name of the action to invoke
      * @param parameter optional json object to supply parameters
     */
-    public invokeAction(actionName: string, parameter?: any): Promise<any> {
+    public invokeAction(actionName : string, parameter? : any) : Promise<any> {
         return new Promise<any>((resolve, reject) => {
             let state = this.interactionStates[actionName];
             if (state) {
@@ -83,7 +83,7 @@ export default class ExposedThing implements WoT.DynamicThing {
      * @param Name of the property
      * @param newValue value to be set
      */
-    public setProperty(propertyName: string, newValue: any): Promise<any> {
+    public setProperty(propertyName : string, newValue : any) : Promise<any> {
         return new Promise<any>((resolve, reject) => {
             let state = this.interactionStates[propertyName];
             if (state) {
@@ -104,7 +104,7 @@ export default class ExposedThing implements WoT.DynamicThing {
      * Read a given property
      * @param propertyName Name of the property
      */
-    public getProperty(propertyName: string): Promise<any> {
+    public getProperty(propertyName : string) : Promise<any> {
         return new Promise<any>((resolve, reject) => {
             let state = this.interactionStates[propertyName];
             if (state) {
@@ -118,17 +118,17 @@ export default class ExposedThing implements WoT.DynamicThing {
     /**
      * Emit event to all listeners
      */
-    public emitEvent(event: Event): void { }
+    public emitEvent(event : Event) : void { }
 
-    public addListener(eventName: string, listener: (event: Event) => void): ExposedThing {
+    public addListener(eventName : string, listener : (event : Event) => void) : ExposedThing {
         return this;
     }
 
-    public removeListener(eventName: string, listener: (event: Event) => void): ExposedThing {
+    public removeListener(eventName : string, listener : (event : Event) => void) : ExposedThing {
         return this;
     }
 
-    removeAllListeners(eventName: string): ExposedThing {
+    removeAllListeners(eventName : string) : ExposedThing {
         return this;
     }
 
@@ -137,7 +137,7 @@ export default class ExposedThing implements WoT.DynamicThing {
      * @param actionName Name of the action
      * @param cb callback to be called when the action gets invoked, optionally is supplied a parameter
      */
-    onInvokeAction(actionName: string, cb: (param?: any) => any): ExposedThing {
+    onInvokeAction(actionName : string, cb : (param? : any) => any) : ExposedThing {
         let state = this.interactionStates[actionName];
         if (state) {
             if (state.handlers.length > 0) state.handlers.splice(0);
@@ -152,7 +152,7 @@ export default class ExposedThing implements WoT.DynamicThing {
      * @param propertyName Name of the property
      * @param cb callback to be called when value changes; signature (newValue,oldValue)
      */
-    onUpdateProperty(propertyName: string, cb: (newValue: any, oldValue?: any) => void): ExposedThing {
+    onUpdateProperty(propertyName : string, cb : (newValue : any, oldValue? : any) => void) : ExposedThing {
         let state = this.interactionStates[propertyName];
         if (state) {
             state.handlers.push(cb);
@@ -166,7 +166,7 @@ export default class ExposedThing implements WoT.DynamicThing {
     /**
      * Retrive the ExposedThing description for this object
      */
-    getDescription(): Object {
+    getDescription() : Object {
         return TDParser.generateTD(this, this.srv)
     }
 
@@ -175,13 +175,13 @@ export default class ExposedThing implements WoT.DynamicThing {
      * @param propertyName Name of the property
      * @param valueType type specification of the value (JSON schema)
      */
-    addProperty(propertyName: string, valueType: Object, initialValue?: any): ExposedThing {
+    addProperty(propertyName : string, valueType : Object, initialValue? : any) : ExposedThing {
         // new way
         let newProp = new TD.Interaction();
-        newProp.interactionType = TD.interactionTypeEnum.property;
+        newProp.pattern = TD.InteractionPattern.Property;
         newProp.name = propertyName;
         newProp.inputData = valueType;
-        newProp.outputDate = valueType;
+        newProp.outputData = valueType;
         newProp.writable = true; //we need a param for this
 
         this.interactions.push(newProp);
@@ -203,13 +203,13 @@ export default class ExposedThing implements WoT.DynamicThing {
      * @param inputType type specification of the parameter (optional, JSON schema)
      * @param outputType type specification of the return value (optional, JSON schema)
      */
-    addAction(actionName: string, inputType?: Object, outputType?: Object): ExposedThing {
+    addAction(actionName : string, inputType? : Object, outputType? : Object) : ExposedThing {
         // new way
         let newAction = new TD.Interaction();
-        newAction.interactionType = TD.interactionTypeEnum.property;
+        newAction.pattern = TD.InteractionPattern.Action;
         newAction.name = actionName;
         newAction.inputData = inputType;
-        newAction.outputDate = outputType;
+        newAction.outputData = outputType;
 
         this.interactions.push(newAction);
 
@@ -226,12 +226,12 @@ export default class ExposedThing implements WoT.DynamicThing {
     /**
      * declare a new eventsource for the ExposedThing
      */
-    addEvent(eventName: string): ExposedThing { return this; }
+    addEvent(eventName : string) : ExposedThing { return this; }
 
     /**
      * remove a property from the ExposedThing
      */
-    removeProperty(propertyName: string): boolean {
+    removeProperty(propertyName : string) : boolean {
         delete this.interactionStates[propertyName];
         this.removeResourceListener(this.name + "/properties/" + propertyName)
         return true;
@@ -240,7 +240,7 @@ export default class ExposedThing implements WoT.DynamicThing {
     /**
      * remove an action from the ExposedThing
      */
-    removeAction(actionName: string): boolean {
+    removeAction(actionName : string) : boolean {
         delete this .interactionStates[actionName];
         this.removeResourceListener(this.name + "/actions/" + actionName)
         return true
@@ -249,11 +249,11 @@ export default class ExposedThing implements WoT.DynamicThing {
     /**
      * remove an event from the thing
      */
-    removeEvent(eventName: string): boolean { return false }
+    removeEvent(eventName : string) : boolean { return false }
 }
 
 class InteractionState {
-    public value: any;
-    public handlers: Array<(param?: any) => any> = [];
-    public path: string;
+    public value : any;
+    public handlers : Array<(param? : any) => any> = [];
+    public path : string;
 }

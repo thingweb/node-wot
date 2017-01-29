@@ -26,18 +26,20 @@ import ExposedThing from "../exposed-thing";
 
 import { JsonMember, JsonObject, TypedJSON } from "typedjson";
 
-// @mkovatsc Dependency on ExposedThing is a bit suspicious... I think generation should go somewhere else
 export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDescription {
     return null;
 }
 
-export function parseTDObj(td : Object) : ThingDescription {
+export function parseTDObject(td : Object) : ThingDescription {
+
+    // FIXME TD.Internaction.pattern must be moved to @type - how is the best way?
+
     // @mkovatsc Why are we going back to string instead of validating the structure?
     // TODO we do not gain anything from the JSON tooling...
-    return parseTDString(JSON.stringify(td))
+    return parseTDString(TypedJSON.stringify(td, {enableTypeHints: false})); // false, otherwise __type member is added
 }
 
-export function parseTDString(td: string): ThingDescription {
+export function parseTDString(td : string) : ThingDescription {
 
     logger.silly(`parseTDString() parsing\n\`\`\`${td}\n\`\`\``);
 
@@ -51,16 +53,22 @@ export function parseTDString(td: string): ThingDescription {
     for (let interaction of tdObject.interactions) {
 
         // TODO: not very nice, maybe there is a more better way (check JSON-LD module)
-        var interactionType = TypedJSON.stringify(interaction)
+        let interactionType = TypedJSON.stringify(interaction);
 
         if (interactionType.match("\"Property\"")) {
-            interaction.interactionType = TD.interactionTypeEnum.property;
+            interaction.pattern = TD.InteractionPattern.Property;
+
+            if (interaction.writable===undefined) {
+                logger.silly(`parseTDString() setting implicit writable to false`);
+                interaction.writable = false;
+            }
+
         } else if (interactionType.match("\"Action\"")) {
-            interaction.interactionType = TD.interactionTypeEnum.action;
+            interaction.pattern = TD.InteractionPattern.Action;
         } else if (interactionType.match("\"Event\"")) {
-            interaction.interactionType = TD.interactionTypeEnum.event;
+            interaction.pattern = TD.InteractionPattern.Event;
         } else {
-            logger.error(`parseTDString() found unknown Interaction '${interactionType}'`);
+            logger.error(`parseTDString() found unknown Interaction pattern '${interactionType}'`);
         }
 
         /* if a base uri is used normalize all relative hrefs in links */
@@ -84,18 +92,26 @@ export function parseTDString(td: string): ThingDescription {
             interaction.links[0].href = tdObject.base + href;
         }
     }
+
     return tdObject;
 }
 
-export function serializeTD(td: ThingDescription): string {
+export function serializeTD(td : ThingDescription) : string {
 
-    // cp td object
-    let td_cp: ThingDescription = TypedJSON.parse(TypedJSON.stringify(td), ThingDescription);
+    let tdObject : ThingDescription = TypedJSON.parse(TypedJSON.stringify(td), ThingDescription);
+
+    // remove undefined base
+    if (tdObject.base===undefined) delete tdObject.base;
 
     /* remove here all helper properties in the TD model before serializiation  */
-    for (let interaction of td_cp.interactions) {
-        delete interaction.interactionType
+    for (let interaction of tdObject.interactions) {
+        console.log("### WRITEABLE " + interaction.writable);
+        if (interaction.pattern === TD.InteractionPattern.Property) {
+            // make writable=false implicit
+            if (interaction.writable === false) delete interaction.writable;
+        }
+        delete interaction.pattern;
     }
 
-    return TypedJSON.stringify(td_cp);
+    return TypedJSON.stringify(tdObject, {enableTypeHints: false});
 }
