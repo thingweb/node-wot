@@ -32,48 +32,50 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
 export function parseTDObject(td : Object) : ThingDescription {
 
-    // FIXME TD.Internaction.pattern must be moved to @type - how is the best way?
-
-    // @mkovatsc Why are we going back to string instead of validating the structure?
-    // TODO we do not gain anything from the JSON tooling...
+    // FIXME Is this the best way to verify?
     return parseTDString(TypedJSON.stringify(td, {enableTypeHints: false})); // false, otherwise __type member is added
 }
 
-export function parseTDString(td : string) : ThingDescription {
+export function parseTDString(json : string) : ThingDescription {
 
-    logger.silly(`parseTDString() parsing\n\`\`\`${td}\n\`\`\``);
+    logger.silly(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
 
-    let tdObject = TypedJSON.parse(td, ThingDescription);
+    let td = TypedJSON.parse(json, ThingDescription);
 
-    logger.debug(`parseTDString() found ${tdObject.interactions.length} Interactions`);
+    // FIXME #8 "writable" property is gone! Why?
+    logger.silly(">>> TD object contains:");
+    for (let x in td) logger.silly(">>> - " + x);
 
-    /** for each interaction assign the interaction type (Property, Action,
-    EVent) and, if it the case, normalize each link information of the
-    interaction */
-    for (let interaction of tdObject.interactions) {
+    logger.debug(`parseTDString() found ${td.interactions.length} Interaction${td.interactions.length==1?"":"s"}`);
 
-        // TODO: not very nice, maybe there is a more better way (check JSON-LD module)
-        let interactionType = TypedJSON.stringify(interaction);
+    /** for each interaction assign the Interaction type (Property, Action, Event)
+     * and, if "base" is given, normalize each Interaction link */
+    for (let interaction of td.interactions) {
 
-        if (interactionType.match("\"Property\"")) {
+        // FIXME #8 "writable" property is gone! Why?
+        logger.silly(">>> Interaction object contains:");
+        for (let x in interaction) logger.silly(">>> - " + x);
+
+        if (interaction["@type"].includes(TD.InteractionPattern.Property)) {
             interaction.pattern = TD.InteractionPattern.Property;
 
+            // FIXME #8 helps to pass TDParseTest
             if (interaction.writable===undefined) {
                 logger.silly(`parseTDString() setting implicit writable to false`);
                 interaction.writable = false;
             }
 
-        } else if (interactionType.match("\"Action\"")) {
+        } else if (interaction["@type"].includes(TD.InteractionPattern.Action)) {
             interaction.pattern = TD.InteractionPattern.Action;
-        } else if (interactionType.match("\"Event\"")) {
+        } else if (interaction["@type"].includes(TD.InteractionPattern.Event)) {
             interaction.pattern = TD.InteractionPattern.Event;
         } else {
-            logger.error(`parseTDString() found unknown Interaction pattern '${interactionType}'`);
+            logger.error(`parseTDString() found unknown Interaction pattern '${interaction["@type"]}'`);
         }
 
         /* if a base uri is used normalize all relative hrefs in links */
-        if (tdObject.base !== undefined) {
-            logger.debug(`parseTDString() applying base '${tdObject.base}' to href '${interaction.links[0].href}'`);
+        if (td.base !== undefined) {
+            logger.debug(`parseTDString() applying base '${td.base}' to href '${interaction.links[0].href}'`);
 
             let href = interaction.links[0].href;
 
@@ -81,37 +83,39 @@ export function parseTDString(td : string) : ThingDescription {
 
             /* add '/' character if it is missing at the end of the base and
             beginning of the href field*/
-            if (tdObject.base.slice(-1) !== '/' && href.charAt(0) !== '/') {
+            if (td.base.slice(-1) !== '/' && href.charAt(0) !== '/') {
                 href = '/' + href;
             }
             /* remove '/' if it occurs at the end of base and
             beginning of the href field */
-            else if (tdObject.base.slice(-1) === '/' && href.charAt(0) === '/') {
+            else if (td.base.slice(-1) === '/' && href.charAt(0) === '/') {
                 href = href.substr(1)
             }
-            interaction.links[0].href = tdObject.base + href;
+            interaction.links[0].href = td.base + href;
         }
     }
 
-    return tdObject;
+    return td;
 }
 
 export function serializeTD(td : ThingDescription) : string {
 
-    let tdObject : ThingDescription = TypedJSON.parse(TypedJSON.stringify(td), ThingDescription);
+    let copy : ThingDescription = TypedJSON.parse(TypedJSON.stringify(td), ThingDescription);
 
     // remove undefined base
-    if (tdObject.base===undefined) delete tdObject.base;
+    if (copy.base===null || copy.base===undefined) {
+        // FIXME #8 still appears with value null
+        delete copy.base;
+    }
 
-    /* remove here all helper properties in the TD model before serializiation  */
-    for (let interaction of tdObject.interactions) {
-        console.log("### WRITEABLE " + interaction.writable);
-        if (interaction.pattern === TD.InteractionPattern.Property) {
-            // make writable=false implicit
-            if (interaction.writable === false) delete interaction.writable;
-        }
+    // remove here all helper properties in the TD model before serializiation
+    for (let interaction of copy.interactions) {
         delete interaction.pattern;
     }
 
-    return TypedJSON.stringify(tdObject, {enableTypeHints: false});
+    let json = TypedJSON.stringify(copy);
+
+    logger.silly(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
+
+    return json;
 }

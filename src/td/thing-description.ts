@@ -41,7 +41,6 @@ export default class ThingDescription {
     /** Interactions of this Thing */
     @JsonMember({ isRequired: true, elements: Object })
     public interactions : Array<Interaction> = [];
-
 }
 
 /**
@@ -49,6 +48,9 @@ export default class ThingDescription {
  */
 @JsonObject
 export class Interaction {
+
+    /* enable bracket notation to access @type property */
+    [key: string]: any;
 
     /** @ type information of the Interaction */
     @JsonMember({ name: "@type", isRequired: true, elements: String })
@@ -95,15 +97,15 @@ export class InteractionLink {
 
 /** Internet Media Types */
 export enum MediaType {
-    "application/json",
-    "application/xml",
-    "application/exi"
+    JSON = <any>"application/json",
+    XML = <any>"application/xml",
+    EXI = <any>"application/exi"
     /* TODO: add more media types here */
 }
 
 /** Interaction pattern */
 export enum InteractionPattern {
-    Property,
-    Action,
-    Event
+    Property = <any>"Property",
+    Action = <any>"Action",
+    Event = <any>"Event"
 }
