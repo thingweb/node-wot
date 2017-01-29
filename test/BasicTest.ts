@@ -26,7 +26,9 @@
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 
-@suite("basic tests to verify test setup")
+
+// h0ru5: I am commenting this out to take it out of the test runs but leaving the file in as reference guide how to write tests
+//@suite("basic tests to verify test setup")
 class BasicTest {
     
     @test("should pass when asserts are fine")

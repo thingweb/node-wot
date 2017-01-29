@@ -19,7 +19,7 @@ const coap = require('coap');
 @suite("HTTP implementation")
 class HttpTest {
 
-    // TODO #1 skipping test as it breaks for node 4.x and thus CI is red
+    // TODO #3 skipping test as it breaks for node 4.x and thus CI is red
     @skip
     @test "should start and stop a server"() {
         let httpServer = new HttpServer(58080);

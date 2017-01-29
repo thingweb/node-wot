@@ -50,7 +50,7 @@ class TDParserTest {
         td.interactions[0].links[0].href.should.equal("coap://mytemp.example.com:5683/temp")
     }
 
-    @skip //TDOD test is failing because of writable
+    @skip //TODO #8 test is failing because of writable
     @test "should return same TD in round-trip"() {
         let td : ThingDescription = TDParser.parseTDString(td_cpexample_jsonld)
         let newJson = TDParser.serializeTD(td);
