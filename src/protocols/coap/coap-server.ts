@@ -24,14 +24,16 @@
 import logger from "../../logger";
 import * as url from "url";
 
-var coap = require("coap");
+const coap = require("coap");
+const deasync = require("deasync"); // to convert async calls to blocking calls
 
 export default class CoapServer implements ProtocolServer {
 
     private readonly port : number = 5683;
     private readonly address : string = undefined;
-    private readonly server : any = coap.createServer();
-    private ready : boolean = false;
+    private readonly server : any = coap.createServer( (req : any, res : any) => { this.handleRequest(req, res); } );
+    private running : boolean = false;
+    private failed : boolean = false;
 
     private readonly resources : {[key : string] : ResourceListener } = { };
 
@@ -43,12 +45,12 @@ export default class CoapServer implements ProtocolServer {
             this.address = address;
         }
 
-        this.server.on("error", (err : Error) => logger.error(`CoapServer for port ${this.port} failed: ${err.message}`) );
+        this.server.on("error", (err : Error) => { logger.error(`CoapServer for port ${this.port} failed: ${err.message}`); this.failed = true; } );
     }
 
     public addResource(path: string, res: ResourceListener) : boolean {
         if (this.resources[path]!==undefined) {
-            logger.warn(`Resource ${path} already registered for HTTP`)
+            logger.warn(`CoapServer on port ${this.getPort()} already has ResourceListener ${path}`);
             return false;
         } else {
             this.resources[path] = res;
@@ -61,27 +63,64 @@ export default class CoapServer implements ProtocolServer {
     }
 
     public start() : boolean {
-        // FIXME when starting CoapServer on an ephemeral port, it is not possible to get the actual port in a synchronous way
-        logger.info("Starting CoAP server on " + (this.address!==undefined ? this.address+" " : "") + "port " + this.port);
-        this.server.listen(this.port, this.address);
-        this.server._sock.on('listening', () => { /* only place to figure out ephemeral port */ });
-        this.server.on('request', (req : any, res : any) => { this.handleRequest(req, res); });
-        // FIXME coap always creates a socket
-        // @mkovatsc: Need to figure out how http implements server.listening
-        return this.server._sock!==null;
+        logger.info("CoapServer starting on " + (this.address!==undefined ? this.address+" " : "") + "port " + this.port);
+
+        if (this.socketFree()) {
+            this.server.listen(this.port, this.address);
+            
+            this.server._sock.on('listening', () => { this.running = true; });
+            while (!this.running && !this.failed) {
+                deasync.runLoopOnce();
+            }
+            // synchronous return useless anyway due to async server API
+            return this.running;
+        } else {
+            this.server.emit("error", new Error("listen EADDRINUSE " + this.port));
+            return false;
+        }
+    }
+
+    private socketFree() : boolean {
+
+        if (this.port === 0) return true;
+
+        let dgram = require('dgram');
+
+        let free : boolean = undefined;
+        let tester = dgram.createSocket('udp4')
+            .once('error', (err : any) => {
+                if (err.code != 'EADDRINUSE') throw err;
+                free = false;
+            })
+            .once('listening', () => {
+                tester.once('close', () => { free = true; }).close();
+            })
+            .bind(this.port);
+        
+        while (free === undefined) {
+            deasync.runLoopOnce();
+        }
+        return free;
     }
 
     public stop() : boolean {
-        this.server.close();
-        return this.server._sock===null;
+        logger.info(`CoapServer stopping on port ${this.getPort()} (running=${this.running})`);
+        let closed = this.running;
+        this.server.close(() => { closed = true; });
+
+        while (!closed && !this.failed) {
+            deasync.runLoopOnce();
+        }
+
+        this.running = false;
+        return closed;
     }
 
     public getPort() : number {
-        if (this.server._sock!==null) {
-            // FIXME coap does not provide proper API for this
-            return this.server._port;
+        if (this.running) {
+            return this.server._sock.address().port;
         } else {
-            return -1; //this.port;
+            return -1;
         }
     }
 

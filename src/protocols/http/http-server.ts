@@ -26,11 +26,15 @@ import logger from "../../logger";
 import * as http from "http";
 import * as url from "url";
 
+const deasync = require("deasync");
+
 export default class HttpServer implements ProtocolServer {
 
     private readonly port : number = 8080;
     private readonly address : string = undefined;
     private readonly server : http.Server = http.createServer( (req, res) => {this.handleRequest(req, res)} );
+    private running : boolean = false;
+    private failed : boolean = false;
 
     private readonly resources : {[key : string] : ResourceListener } = { };
 
@@ -42,12 +46,12 @@ export default class HttpServer implements ProtocolServer {
             this.address = address;
         }
 
-        this.server.on("error", (err) => logger.error(`HttpServer for port ${this.port} failed: ${err.message}`) );
+        this.server.on("error", (err) => { logger.error(`HttpServer for port ${this.port} failed: ${err.message}`); this.failed = true; } );
     }
 
     public addResource(path: string, res: ResourceListener) : boolean {
         if (this.resources[path]!==undefined) {
-            logger.warn(`HttpServer on port ${this.getPort()} already has ResourceListener ${path}`)
+            logger.warn(`HttpServer on port ${this.getPort()} already has ResourceListener ${path}`);
             return false;
         } else {
             this.resources[path] = res;
@@ -60,23 +64,34 @@ export default class HttpServer implements ProtocolServer {
     }
     
     public start() : boolean {
-        logger.info("HttpServer starting on " + (this.address!==undefined ? this.address+" " : "") + "port " + this.port);
+        logger.info(`HttpServer starting on ${(this.address!==undefined ? this.address+" " : "")}port ${this.port}`);
         this.server.listen(this.port, this.address);
         // FIXME .listen() is async, but works for http
         // this.server.listening not available on v4.2
+        this.server.once('listening', () => { this.running = true; });
+        while (!this.running && !this.failed) {
+            deasync.runLoopOnce();
+        }
         // synchronous return useless anyway due to async server API
-        return true;
+        return this.running;
     }
 
     public stop() : boolean {
+        logger.info(`HttpServer stopping on port ${this.getPort()} (running=${this.running})`);
+        let closed = this.running;
+        this.server.once("close", () => { closed = true; });
         this.server.close();
-        // FIXME useless return
-        // this.server.listening not available on v4.2
-        return true;
+
+        while (!closed && !this.failed) {
+            deasync.runLoopOnce();
+        }
+
+        this.running = false;
+        return closed;
     }
 
     public getPort() : number {
-        if (this.server.listening) {
+        if (this.running) {
             return this.server.address().port;
         } else {
             return -1;
