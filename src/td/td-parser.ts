@@ -26,26 +26,17 @@ import ExposedThing from "../exposed-thing";
 
 import { JsonMember, JsonObject, TypedJSON } from "typedjson";
 
-export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDescription {
-    return null;
-}
-
 export function parseTDObject(td : Object) : ThingDescription {
-
     // FIXME Is this the best way to verify?
-    return parseTDString(TypedJSON.stringify(td, {enableTypeHints: false})); // false, otherwise __type member is added
+    return parseTDString(TypedJSON.stringify(td, {enableTypeHints: false})); // disable TypeHints, otherwise __type member is added
 }
 
 export function parseTDString(json : string) : ThingDescription {
 
     logger.silly(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
-
     let td : ThingDescription = TypedJSON.parse(json, ThingDescription);
 
-    logger.silly(`>>> TD base: ${td.base}`);
-
     logger.debug(`parseTDString() found ${td.interactions.length} Interaction${td.interactions.length==1?"":"s"}`);
-
     /** for each interaction assign the Interaction type (Property, Action, Event)
      * and, if "base" is given, normalize each Interaction link */
     for (let interaction of td.interactions) {
@@ -91,7 +82,7 @@ export function serializeTD(td : ThingDescription) : string {
     let json = TypedJSON.stringify(td);
 
 
-    // FIXME #8 TypedJSON also stringifies undefined/null optional members
+    // FIXME TypedJSON also stringifies undefined/null optional members
     let raw = JSON.parse(json)
     if (td.base===null || td.base===undefined) {
         delete raw.base
@@ -100,9 +91,14 @@ export function serializeTD(td : ThingDescription) : string {
         if (interaction.inputData===null) delete interaction.inputData;
     }
     json = JSON.stringify(raw);
+    // End of workaround
     
 
     logger.silly(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
 
     return json;
+}
+
+export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDescription {
+    return null;
 }

@@ -29,9 +29,6 @@ should();
 import ThingDescription from "../src/td/thing-description";
 import * as TDParser from "../src/td/td-parser";
 
-import logger from "../src/logger";
-logger.level = "silly";
-
 /** sample TD json-ld string from the CP page*/
 let tdSample1 = `{
   "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
