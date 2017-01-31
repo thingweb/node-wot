@@ -40,7 +40,7 @@ export function parseTDString(json : string) : ThingDescription {
 
     logger.silly(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
 
-    let td = TypedJSON.parse(json, ThingDescription);
+    let td:ThingDescription = TypedJSON.parse(json, ThingDescription);
 
     // FIXME #8 "writable" property is gone! Why?
     logger.silly(">>> TD object contains:");
@@ -59,6 +59,7 @@ export function parseTDString(json : string) : ThingDescription {
         if (interaction["@type"].includes(TD.InteractionPattern.Property)) {
             interaction.pattern = TD.InteractionPattern.Property;
 
+            //console.log("writable????????" + interaction.writable )
             // FIXME #8 helps to pass TDParseTest
             if (interaction.writable===undefined) {
                 logger.silly(`parseTDString() setting implicit writable to false`);
@@ -77,21 +78,20 @@ export function parseTDString(json : string) : ThingDescription {
         if (td.base !== undefined) {
             logger.debug(`parseTDString() applying base '${td.base}' to href '${interaction.links[0].href}'`);
 
-            let href = interaction.links[0].href;
+            var href:string = interaction.links[0].href;
 
-            // FIXME implement proper URI arithmetic
+            var url = require('url');
 
-            /* add '/' character if it is missing at the end of the base and
-            beginning of the href field*/
-            if (td.base.slice(-1) !== '/' && href.charAt(0) !== '/') {
-                href = '/' + href;
-            }
-            /* remove '/' if it occurs at the end of base and
-            beginning of the href field */
-            else if (td.base.slice(-1) === '/' && href.charAt(0) === '/') {
-                href = href.substr(1)
-            }
-            interaction.links[0].href = td.base + href;
+            /* url modul works only for http --> so replace any protocol to
+            http and after resolving replace orign protocol back*/
+            var n:number = td.base.indexOf(":");
+            var pr:string = td.base.substr(0, n+1); // save origin protocol
+            var uri_temp:string = td.base.replace(pr, "http:"); // replace protocol
+            uri_temp = url.resolve(uri_temp, href) // URL resolving
+            uri_temp = uri_temp.replace("http:", pr ); // replace protocol back to origin
+            interaction.links[0].href = uri_temp
+
+
         }
     }
 
@@ -101,11 +101,11 @@ export function parseTDString(json : string) : ThingDescription {
 export function serializeTD(td : ThingDescription) : string {
 
     let copy : ThingDescription = TypedJSON.parse(TypedJSON.stringify(td), ThingDescription);
-
     // remove undefined base
     if (copy.base===null || copy.base===undefined) {
         // FIXME #8 still appears with value null
-        delete copy.base;
+
+        delete copy.base
     }
 
     // remove here all helper properties in the TD model before serializiation
@@ -114,6 +114,15 @@ export function serializeTD(td : ThingDescription) : string {
     }
 
     let json = TypedJSON.stringify(copy);
+
+    /* TODO this is just a work around for the base issue; check for alernative */
+    let t = JSON.parse(json)
+    if (copy.base===null || copy.base===undefined) {
+        // FIXME #8 still appears with value null
+
+            delete t.base
+    }
+    json = JSON.stringify(t)
 
     logger.silly(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
 

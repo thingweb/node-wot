@@ -35,7 +35,7 @@ export default class ThingDescription {
     public name : string;
 
     /** base URI of the Interaction resources */
-    @JsonMember({ type: String })
+    @JsonMember({ name: "base", type: String })
     public base : string;
 
     /** Interactions of this Thing */
@@ -68,7 +68,7 @@ export class Interaction {
     public links : Array<InteractionLink> = [];
 
     /** writable flag for the Property */
-    @JsonMember({ type: Boolean })
+    @JsonMember({ name: "writable", type: Boolean })
     public writable : boolean;
 
     //TODO: how to handle types internally?
