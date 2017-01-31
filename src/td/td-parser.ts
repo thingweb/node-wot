@@ -40,11 +40,9 @@ export function parseTDString(json : string) : ThingDescription {
 
     logger.silly(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
 
-    let td:ThingDescription = TypedJSON.parse(json, ThingDescription);
+    let td : ThingDescription = TypedJSON.parse(json, ThingDescription);
 
-    // FIXME #8 "writable" property is gone! Why?
-    logger.silly(">>> TD object contains:");
-    for (let x in td) logger.silly(">>> - " + x);
+    logger.silly(`>>> TD base: ${td.base}`);
 
     logger.debug(`parseTDString() found ${td.interactions.length} Interaction${td.interactions.length==1?"":"s"}`);
 
@@ -52,26 +50,18 @@ export function parseTDString(json : string) : ThingDescription {
      * and, if "base" is given, normalize each Interaction link */
     for (let interaction of td.interactions) {
 
-        // FIXME #8 "writable" property is gone! Why?
-        logger.silly(">>> Interaction object contains:");
-        for (let x in interaction) logger.silly(">>> - " + x);
-
-        if (interaction["@type"].includes(TD.InteractionPattern.Property)) {
+        // FIXME @mkovatsc Why does array.includes() not work?
+        if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString())!==-1) {
+            logger.debug(` * Property '${interaction.name}'`);
             interaction.pattern = TD.InteractionPattern.Property;
-
-            //console.log("writable????????" + interaction.writable )
-            // FIXME #8 helps to pass TDParseTest
-            if (interaction.writable===undefined) {
-                logger.silly(`parseTDString() setting implicit writable to false`);
-                interaction.writable = false;
-            }
-
-        } else if (interaction["@type"].includes(TD.InteractionPattern.Action)) {
+        } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString())!==-1) {
+            logger.debug(` * Action '${interaction.name}'`);
             interaction.pattern = TD.InteractionPattern.Action;
-        } else if (interaction["@type"].includes(TD.InteractionPattern.Event)) {
+        } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString())!==-1) {
+            logger.debug(` * Event '${interaction.name}'`);
             interaction.pattern = TD.InteractionPattern.Event;
         } else {
-            logger.error(`parseTDString() found unknown Interaction pattern '${interaction["@type"]}'`);
+            logger.error(`parseTDString() found unknown Interaction pattern '${interaction.semanticTypes}'`);
         }
 
         /* if a base uri is used normalize all relative hrefs in links */
@@ -89,9 +79,7 @@ export function parseTDString(json : string) : ThingDescription {
             var uri_temp:string = td.base.replace(pr, "http:"); // replace protocol
             uri_temp = url.resolve(uri_temp, href) // URL resolving
             uri_temp = uri_temp.replace("http:", pr ); // replace protocol back to origin
-            interaction.links[0].href = uri_temp
-
-
+            interaction.links[0].href = uri_temp;
         }
     }
 
@@ -100,29 +88,19 @@ export function parseTDString(json : string) : ThingDescription {
 
 export function serializeTD(td : ThingDescription) : string {
 
-    let copy : ThingDescription = TypedJSON.parse(TypedJSON.stringify(td), ThingDescription);
-    // remove undefined base
-    if (copy.base===null || copy.base===undefined) {
-        // FIXME #8 still appears with value null
+    let json = TypedJSON.stringify(td);
 
-        delete copy.base
+
+    // FIXME #8 TypedJSON also stringifies undefined/null optional members
+    let raw = JSON.parse(json)
+    if (td.base===null || td.base===undefined) {
+        delete raw.base
     }
-
-    // remove here all helper properties in the TD model before serializiation
-    for (let interaction of copy.interactions) {
-        delete interaction.pattern;
+    for (let interaction of raw.interactions) {
+        if (interaction.inputData===null) delete interaction.inputData;
     }
-
-    let json = TypedJSON.stringify(copy);
-
-    /* TODO this is just a work around for the base issue; check for alernative */
-    let t = JSON.parse(json)
-    if (copy.base===null || copy.base===undefined) {
-        // FIXME #8 still appears with value null
-
-            delete t.base
-    }
-    json = JSON.stringify(t)
+    json = JSON.stringify(raw);
+    
 
     logger.silly(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
 

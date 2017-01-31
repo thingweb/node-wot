@@ -33,7 +33,7 @@ import logger from "../src/logger";
 logger.level = "silly";
 
 /** sample TD json-ld string from the CP page*/
-let tdSample = `{
+let tdSample1 = `{
   "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
   "@type": "Thing",
   "name": "MyTemperatureThing",
@@ -50,19 +50,57 @@ let tdSample = `{
     }
   ]
 }`;
+/** sample TD json-ld string from the CP page*/
+let tdSample2 = `{
+  "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+  "@type": "Thing",
+  "name": "MyTemperatureThing2",
+  "interactions": [
+    {
+      "@type": ["Property"],
+      "name": "temperature",
+      "outputData": {"valueType": { "type": "number" }},
+      "writable": true,
+      "links": [{
+        "href" : "coap://mytemp.example.com:5683/temp",
+        "mediaType": "application/json"
+        }]
+    }
+  ]
+}`;
+/** sample TD json-ld string from the CP page*/
+let tdSample3 = `{
+  "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+  "@type": "Thing",
+  "name": "MyTemperatureThing3",
+  "interactions": [
+    {
+      "@type": ["Property"],
+      "name": "temperature",
+      "base": "coap://mytemp.example.com:5683/",
+      "outputData": {"valueType": { "type": "number" }},
+      "writable": true,
+      "links": [{
+        "href" : "temp",
+        "mediaType": "application/json"
+        }]
+    }
+  ]
+}`;
 
 @suite("TD parsing/serialising")
 class TDParserTest {
 
     @test "should parse the example from Current Practices"() {
-        let td : ThingDescription = TDParser.parseTDString(tdSample)
+        let td : ThingDescription = TDParser.parseTDString(tdSample1);
 
-        expect(td).have.property("context").that.has.lengthOf(1);
-        expect(td).have.property("semanticType").that.equals("Thing");
-        expect(td).have.property("name").that.equals("MyTemperatureThing");
+        expect(td).to.have.property("context").that.has.lengthOf(1);
+        expect(td).to.have.property("semanticType").that.equals("Thing");
+        expect(td).to.have.property("name").that.equals("MyTemperatureThing");
         expect(td).to.not.have.property("base");
         
         expect(td.interactions).to.have.lengthOf(1);
+        expect(td.interactions[0]).to.have.property("semanticTypes").that.contains("Property");
         expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
         expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
         expect(td.interactions[0]).to.have.property("writable").that.equals(false);
@@ -72,13 +110,66 @@ class TDParserTest {
         expect(td.interactions[0].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
     }
 
-    @skip //TODO #8 test is failing because of writable
-    @test "should return same TD in round-trip"() {
-        let td : ThingDescription = TDParser.parseTDString(tdSample)
-        let newJson = TDParser.serializeTD(td);
+    @test "should parse writable Property"() {
+        let td : ThingDescription = TDParser.parseTDString(tdSample2);
 
-        let jsonExpected = JSON.parse(tdSample);
-        let jsonActual = JSON.parse(newJson);
+        expect(td).to.have.property("context").that.has.lengthOf(1);
+        expect(td).to.have.property("semanticType").that.equals("Thing");
+        expect(td).to.have.property("name").that.equals("MyTemperatureThing2");
+        expect(td).to.not.have.property("base");
+        
+        expect(td.interactions).to.have.lengthOf(1);
+        expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
+        expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
+        expect(td.interactions[0]).to.have.property("writable").that.equals(true);
+
+        expect(td.interactions[0].links).to.have.lengthOf(1);
+        expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
+        expect(td.interactions[0].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
+    }
+
+    @skip
+    @test "should parse base Property"() {
+        let td : ThingDescription = TDParser.parseTDString(tdSample3);
+
+        expect(td).to.have.property("context").that.has.lengthOf(1);
+        expect(td).to.have.property("semanticType").that.equals("Thing");
+        expect(td).to.have.property("name").that.equals("MyTemperatureThing3");
+        expect(td).to.have.property("base").that.equals("coap://mytemp.example.com:5683/");
+        
+        expect(td.interactions).to.have.lengthOf(1);
+        expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
+        expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
+        expect(td.interactions[0]).to.have.property("writable").that.equals(true);
+
+        expect(td.interactions[0].links).to.have.lengthOf(1);
+        expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
+        expect(td.interactions[0].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
+    }
+
+    //TODO #8 test is failing because of writable
+    @test "should return same TD in round-trips"() {
+        let td1 : ThingDescription = TDParser.parseTDString(tdSample1)
+        let newJson1 = TDParser.serializeTD(td1);
+
+        let jsonExpected = JSON.parse(tdSample1);
+        let jsonActual = JSON.parse(newJson1);
+
+        expect(jsonActual).to.deep.equal(jsonExpected);
+
+        let td2 : ThingDescription = TDParser.parseTDString(tdSample2)
+        let newJson2 = TDParser.serializeTD(td2);
+
+        jsonExpected = JSON.parse(tdSample1);
+        jsonActual = JSON.parse(newJson1);
+
+        expect(jsonActual).to.deep.equal(jsonExpected);
+
+        let td3 : ThingDescription = TDParser.parseTDString(tdSample3)
+        let newJson3 = TDParser.serializeTD(td3);
+
+        jsonExpected = JSON.parse(tdSample1);
+        jsonActual = JSON.parse(newJson1);
 
         expect(jsonActual).to.deep.equal(jsonExpected);
     }
