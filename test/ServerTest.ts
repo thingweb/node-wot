@@ -32,7 +32,7 @@ should();
 
 import logger from '../src/logger'
 import Servient from '../src/servient'
-
+import * as listeners from '../src/resource-listeners/all-resource-listeners'
 
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
@@ -98,11 +98,82 @@ class WoTServerTest {
         })
     }
 
-    @test "should be able to add a property, and a listener should exist"() {
+    @test "should be able to add a property, assign it via listener and read it locally"() {
         return WoTServerTest.WoT.createThing("thing3").then(thing => {
             thing.addProperty("prop1", { "valueType": "number" })
             let listener = WoTServerTest.server.getListenerFor("thing3/properties/prop1");
             expect(listener).to.exist
+            listener.should.be.an.instanceOf(listeners.PropertyResourceListener)
+            return listener.onWrite(new Buffer('5')).then(() => {
+                return thing.getProperty('prop1').then((value) => expect(value).to.equal(5))
+            })
         })
     }
+
+    @test "should be able to add a property, assign it locally and read it via listener"() {
+        return WoTServerTest.WoT.createThing("thing4").then(thing => {
+            thing.addProperty("prop1", { "valueType": "number" })
+            let listener = WoTServerTest.server.getListenerFor("thing4/properties/prop1");
+            expect(listener).to.exist
+            listener.should.be.an.instanceOf(listeners.PropertyResourceListener)
+            return thing.setProperty('prop1', 23).then((value) => {
+                return listener.onRead().then((bytes) => {
+                    bytes.should.deep.equal(new Buffer('23'))
+                })
+            })
+        })
+    }
+
+    @test "should be able to add a property, assign and read it via listener"() {
+        return WoTServerTest.WoT.createThing("thing5").then(thing => {
+            thing.addProperty("prop1", { "valueType": "number" })
+            let listener = WoTServerTest.server.getListenerFor("thing5/properties/prop1");
+            expect(listener).to.exist
+            listener.should.be.an.instanceOf(listeners.PropertyResourceListener)
+            return listener.onWrite(new Buffer('42')).then(() => {
+                return thing.getProperty('prop1').then((value) => {
+                    value.should.equal(42);
+                    return listener.onRead().then((bytes) => {
+                        bytes.should.deep.equal(new Buffer('42'))
+                    })
+                })
+            })
+        })
+    }
+
+    @test "should be able to add an action and invoke it locally"() {
+        return WoTServerTest.WoT.createThing("thing6").then(thing => {
+            thing
+            .addAction("action1", { "valueType": "number" },{ "valueType": "number" })
+            .onInvokeAction('action1',(param) => {
+                param.should.be.a('number')
+                param.should.equal(23)
+                return 42
+            })
+            return thing.invokeAction('action1',23).then((result) => result.should.equal(42))
+        })
+    }
+
+    @test "should be able to add an action and invoke it via listener"() {
+        return WoTServerTest.WoT.createThing("thing7").then(thing => {
+            thing
+            .addAction("action1", { "valueType": "number" },{ "valueType": "number" })
+            .onInvokeAction('action1',(param) => {
+                param.should.be.a('number')
+                param.should.equal(23)
+                return 42
+            })
+            
+            let listener = WoTServerTest.server.getListenerFor("thing7/actions/action1");
+            expect(listener).to.exist
+            listener.should.be.an.instanceOf(listeners.ActionResourceListener)
+            
+            return listener
+            .onInvoke(new Buffer('23'))
+            .then((resBytes => {
+                resBytes.should.deep.equal(new Buffer('42'))
+            }))
+        })
+    }
+
 }

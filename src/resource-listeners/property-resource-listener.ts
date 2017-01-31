@@ -19,29 +19,43 @@
 
 import ExposedThing from "../exposed-thing";
 import * as TD from "../td/thing-description";
+import ContentSerdes from '../types/content-serdes'
+
 
 /**
  * Interaction resource that provides a Property
  */
 
 export default class PropertyResourceListener implements ResourceListener {
+    private readonly thing : ExposedThing
+    private readonly description : TD.Interaction
+    private readonly name : string
+
     constructor(thing : ExposedThing, property : TD.Interaction) {
-        
+        this.thing = thing;
+        this.description = property;
+        this.name = property.name;
     }
 
     public onRead() : Promise<Buffer> {
-        return Promise.reject("not implemented yet")
+        return this.thing
+        .getProperty(this.name)
+        .then((value) =>{
+            let bytes = ContentSerdes.valueToBytes(value) // TODO where to get media type
+            return Promise.resolve(bytes)
+        })
     }
 
-    public onWrite(value : Buffer) : Promise<void> {
-        return Promise.reject("not implemented yet")
+    public onWrite(input : Buffer) : Promise<void> {
+        let value = ContentSerdes.bytesToValue(input) // TODO where to get media type
+        return this.thing.setProperty(this.name,value)
     }
 
-    public onInvoke(value : Buffer) : Promise<Buffer> {
-        return Promise.reject("not implemented yet")
+    public onInvoke(input : Buffer) : Promise<Buffer> {
+        return Promise.reject("not applicable")
     }
 
     public onUnlink() : Promise<void> {
-        return Promise.reject("not implemented yet")
+        return Promise.reject("not applicable")
     }
 }

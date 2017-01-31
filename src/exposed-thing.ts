@@ -192,7 +192,7 @@ export default class ExposedThing implements WoT.DynamicThing {
 
         this.interactionStates[propertyName] = propState;
 
-        this.addResourceListener(this.name + "/properties/" + propertyName, new Rest.ActionResourceListener(this,newProp));
+        this.addResourceListener(this.name + "/properties/" + propertyName, new Rest.PropertyResourceListener(this,newProp));
 
         return this;
     }

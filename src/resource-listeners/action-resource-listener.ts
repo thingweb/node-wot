@@ -19,28 +19,38 @@
 
 import ExposedThing from "../exposed-thing";
 import * as TD from "../td/thing-description";
+import ContentSerdes from '../types/content-serdes'
 
 /**
  * Interaction resource that provides an Action
  */
 export default class ActionResourceListener implements ResourceListener {
-    constructor(thing: ExposedThing, action: TD.Interaction) {
+    private readonly thing : ExposedThing
+    private readonly description : TD.Interaction
+    private readonly name : string
 
+    constructor(thing: ExposedThing, action: TD.Interaction) {
+        this.thing = thing
+        this.description = action
+        this.name = action.name
     }
 
     public onRead(): Promise<Buffer> {
-        return Promise.reject("not implemented yet")
+        return Promise.reject("illegal method")
     }
 
     public onWrite(value: Buffer): Promise<void> {
-        return Promise.reject("not implemented yet")
+        return Promise.reject("illegal method")
     }
 
     public onInvoke(value: Buffer): Promise<Buffer> {
-        return Promise.reject("not implemented yet")
+        let param = ContentSerdes.bytesToValue(value) // TODO get mediatype
+        return this.thing.invokeAction(this.name,param).then((value) => {
+            return ContentSerdes.valueToBytes(value)
+        })
     }
 
     public onUnlink(): Promise<void> {
-        return Promise.reject("not implemented yet")
+        return Promise.reject("illegal method")
     }
 }
