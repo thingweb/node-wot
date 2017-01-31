@@ -70,15 +70,35 @@ let tdSample3 = `{
   "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
   "@type": "Thing",
   "name": "MyTemperatureThing3",
+  "base": "coap://mytemp.example.com:5683/interactions/",
   "interactions": [
     {
       "@type": ["Property"],
       "name": "temperature",
-      "base": "coap://mytemp.example.com:5683/",
       "outputData": {"valueType": { "type": "number" }},
       "writable": true,
       "links": [{
         "href" : "temp",
+        "mediaType": "application/json"
+        }]
+    },
+    {
+      "@type": ["Property"],
+      "name": "temperature2",
+      "outputData": {"valueType": { "type": "number" }},
+      "writable": false,
+      "links": [{
+        "href" : "./temp",
+        "mediaType": "application/json"
+        }]
+    },
+    {
+      "@type": ["Property"],
+      "name": "humidity",
+      "outputData": {"valueType": { "type": "number" }},
+      "writable": false,
+      "links": [{
+        "href" : "/humid",
         "mediaType": "application/json"
         }]
     }
@@ -125,26 +145,40 @@ class TDParserTest {
         expect(td.interactions[0].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
     }
 
-    @skip
-    @test "should parse base Property"() {
+    @test "should parse and apply base Property"() {
         let td : ThingDescription = TDParser.parseTDString(tdSample3);
 
         expect(td).to.have.property("context").that.has.lengthOf(1);
         expect(td).to.have.property("semanticType").that.equals("Thing");
         expect(td).to.have.property("name").that.equals("MyTemperatureThing3");
-        expect(td).to.have.property("base").that.equals("coap://mytemp.example.com:5683/");
+        expect(td).to.have.property("base").that.equals("coap://mytemp.example.com:5683/interactions/");
         
-        expect(td.interactions).to.have.lengthOf(1);
+        expect(td.interactions).to.have.lengthOf(3);
         expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
         expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
         expect(td.interactions[0]).to.have.property("writable").that.equals(true);
 
         expect(td.interactions[0].links).to.have.lengthOf(1);
         expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
-        expect(td.interactions[0].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
+        expect(td.interactions[0].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
+
+        expect(td.interactions[1]).to.have.property("name").that.equals("temperature2");
+        expect(td.interactions[1]).to.have.property("pattern").that.equals("Property");
+        expect(td.interactions[1]).to.have.property("writable").that.equals(false);
+
+        expect(td.interactions[1].links).to.have.lengthOf(1);
+        expect(td.interactions[1].links[0]).to.have.property("mediaType").that.equals("application/json");
+        expect(td.interactions[1].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
+        
+        expect(td.interactions[2]).to.have.property("name").that.equals("humidity");
+        expect(td.interactions[2]).to.have.property("pattern").that.equals("Property");
+        expect(td.interactions[2]).to.have.property("writable").that.equals(false);
+
+        expect(td.interactions[2].links).to.have.lengthOf(1);
+        expect(td.interactions[2].links[0]).to.have.property("mediaType").that.equals("application/json");
+        expect(td.interactions[2].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/humid");
     }
 
-    //TODO #8 test is failing because of writable
     @test "should return same TD in round-trips"() {
         let td1 : ThingDescription = TDParser.parseTDString(tdSample1)
         let newJson1 = TDParser.serializeTD(td1);
