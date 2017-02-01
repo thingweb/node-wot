@@ -129,7 +129,6 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
       interaction.links[0].href = thing_base + "/" + interaction.name // dummy
       logger.debug(`generateTD() assign href  ${interaction.links[0].href } for interaction ${interaction.name}`);
 
-
     }
 
     return genTD;

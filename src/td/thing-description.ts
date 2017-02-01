@@ -20,12 +20,12 @@
 import { JsonMember, JsonObject } from "typedjson";
 
 /** Internet Media Types */
-export enum MediaType {
+/*export enum MediaType {
     JSON = <any>"application/json",
     XML = <any>"application/xml",
     EXI = <any>"application/exi"
-    /* TODO: add more media types here */
-}
+
+} */
 
 /** Interaction pattern */
 export enum InteractionPattern {
@@ -47,7 +47,7 @@ export class InteractionLink {
 
     /** used mediaType of the interacion resources */
     @JsonMember({ isRequired: true, type: String })
-    public mediaType : MediaType;
+    public mediaType : string;
 }
 
 /**
