@@ -92,13 +92,45 @@ export function serializeTD(td : ThingDescription) : string {
     }
     json = JSON.stringify(raw);
     // End of workaround
-    
+
 
     logger.silly(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
 
     return json;
 }
 
+/** Based on the current definition of things'S/servient's  a TD represent is
+* generated
+* @param thing
+* @param servient
+*/
 export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDescription {
-    return null;
+
+    logger.silly(`generateTD() \n\`\`\`\n${thing}\n\`\`\``);
+
+    /* new td model instance */
+    let genTD:ThingDescription = new ThingDescription()
+
+    // TODO function for IP:PORT or domain name is needed for absolut link assignemnt
+    // TODO need function to get knowledge about protocol support
+    let thing_base:string = "coap://127.0.0.1:5863/" + thing.name // dummy uri
+
+    logger.debug(`generateTD() assign name ${thing.name}`);
+    genTD.name = thing.name
+
+    /* assign all interactions from ExposedThing */
+    genTD.interactions = thing.getInteractions()
+
+    logger.debug(`generateTD() found ${genTD.interactions.length} Interaction${genTD.interactions.length==1?"":"s"}`);
+    for (let interaction of   genTD.interactions) {
+
+      // TODO depending of the number of the protocols assign each of them a link
+      // TODO a helper function should construct the right URI
+      interaction.links[0].href = thing_base + "/" + interaction.name // dummy
+      logger.debug(`generateTD() assign href  ${interaction.links[0].href } for interaction ${interaction.name}`);
+
+
+    }
+
+    return genTD;
 }
