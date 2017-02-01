@@ -62,6 +62,10 @@ export class ContentSerdes {
         this.codecs.set(codec.getMediaType(),codec)
     }
 
+    public getSupportedMediaTypes() : Array<string> {
+        return Array.from(this.codecs.keys())
+    }
+
     public bytesToValue(bytes : Buffer, mediaType = "application/json") : any {
         //choose codec based on mediaType
         if(!this.codecs.has(mediaType)) {

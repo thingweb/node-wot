@@ -24,12 +24,31 @@ import WoTImpl from "./wot-impl";
 import ThingDescription from "./td/thing-description";
 import * as TD from "./td/thing-description";
 import * as Helpers from "./helpers";
+import {default as ContentSerdes,ContentCodec} from "./types/content-serdes"
+import * as vm from 'vm'
 
 export default class Servient {
     private servers: Array<ProtocolServer> = [];
     private clientFactories: Map<string, ProtocolClientFactory> = new Map<string, ProtocolClientFactory>();
     private things: Map<string, ExposedThing> = new Map<string, ExposedThing>();
     private listeners : Map<string,ResourceListener> = new Map<string,ResourceListener>();
+
+    /** UNTESTED runs the script in a new sandbox */
+    public runScript(code : string) {
+        let script = new vm.Script(code);
+        let context = vm.createContext({ 'WoT' : new WoTImpl(this)})
+        script.runInContext(context)
+    }
+
+    /** add a new codec to support a mediatype */
+    public addMediaType(codec : ContentCodec) : void {
+        ContentSerdes.addCodec(codec)
+    }
+
+    /** retun all media types that this servient supports */
+    public getSupportedMediaTypes() : Array<string> {
+        return ContentSerdes.getSupportedMediaTypes();
+    }
 
     public chooseLink(links: Array<TD.InteractionLink>): string {
         // TODO add an effective way of choosing a link
@@ -67,7 +86,8 @@ export default class Servient {
             logger.verbose(`Servient creating client for scheme '${scheme}'`);
             return this.clientFactories.get(scheme).getClient();
         } else {
-            // FIXME returning null was bad - Error or Promise?
+            // FIXME returning null was bad - Error or Promise? 
+            // h0ru5: caller cannot react gracefully - I'd throw Error
             throw new Error(`Servient has no ClientFactory for scheme '${scheme}'`);
         }
     }
@@ -77,6 +97,8 @@ export default class Servient {
     }
 
     public addThingFromTD(thing: ThingDescription): boolean {
+        // TODO loop through all properties and add properties
+        // TODO loop through all actions and add actions
         return false;
     }
 
