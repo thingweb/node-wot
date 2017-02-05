@@ -51,7 +51,7 @@ class TestProtocolServer implements ProtocolServer {
         this.listeners.set(path, res)
     }
 
-    removeResourceListener(path: string): boolean {
+    removeResource(path: string): boolean {
         return true;
     }
 
@@ -105,7 +105,7 @@ class WoTServerTest {
     @test "should be able to add a property, assign it via listener and read it locally"() {
         return WoTServerTest.WoT.createThing("thing3").then(thing => {
             thing.addProperty("prop1", { "valueType": "number" })
-            let listener = WoTServerTest.server.getListenerFor("thing3/properties/prop1");
+            let listener = WoTServerTest.server.getListenerFor("/thing3/properties/prop1");
             expect(listener).to.exist
             listener.should.be.an.instanceOf(listeners.PropertyResourceListener)
             return listener.onWrite(new Buffer('5')).then(() => {
@@ -117,7 +117,7 @@ class WoTServerTest {
     @test "should be able to add a property, assign it locally and read it via listener"() {
         return WoTServerTest.WoT.createThing("thing4").then(thing => {
             thing.addProperty("prop1", { "valueType": "number" })
-            let listener = WoTServerTest.server.getListenerFor("thing4/properties/prop1");
+            let listener = WoTServerTest.server.getListenerFor("/thing4/properties/prop1");
             expect(listener).to.exist
             listener.should.be.an.instanceOf(listeners.PropertyResourceListener)
             return thing.setProperty('prop1', 23).then((value) => {
@@ -131,7 +131,7 @@ class WoTServerTest {
     @test "should be able to add a property, assign and read it via listener"() {
         return WoTServerTest.WoT.createThing("thing5").then(thing => {
             thing.addProperty("prop1", { "valueType": "number" })
-            let listener = WoTServerTest.server.getListenerFor("thing5/properties/prop1");
+            let listener = WoTServerTest.server.getListenerFor("/thing5/properties/prop1");
             expect(listener).to.exist
             listener.should.be.an.instanceOf(listeners.PropertyResourceListener)
             return listener.onWrite(new Buffer('42')).then(() => {
@@ -168,7 +168,7 @@ class WoTServerTest {
                 return 42
             })
             
-            let listener = WoTServerTest.server.getListenerFor("thing7/actions/action1");
+            let listener = WoTServerTest.server.getListenerFor("/thing7/actions/action1");
             expect(listener).to.exist
             listener.should.be.an.instanceOf(listeners.ActionResourceListener)
             
