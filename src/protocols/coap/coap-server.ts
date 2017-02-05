@@ -57,12 +57,14 @@ export default class CoapServer implements ProtocolServer {
             logger.warn(`CoapServer on port ${this.getPort()} already has ResourceListener ${path}`);
             return false;
         } else {
+            logger.debug(`CoapServer on port ${this.getPort()} addeding resource '${path}'`);
             this.resources[path] = res;
             return true;
         }
     }
 
     public removeResource(path: string): boolean {
+        logger.debug(`CoapServer on port ${this.getPort()} removing resource '${path}'`);
         return delete this.resources[path];
     }
 

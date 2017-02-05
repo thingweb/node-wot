@@ -72,11 +72,13 @@ export default class Servient {
     }
 
     public addResourceListener(path : string, resourceListener : ResourceListener) {
+        logger.verbose(`Servient adding ResourceListener '${path}'`);
         this.listeners.set(path,resourceListener);
         this.servers.forEach(srv => srv.addResource(path,resourceListener))
     }
 
     public removeResourceListener(path : string) {
+        logger.verbose(`Servient removing ResourceListener '${path}'`);
         this.listeners.delete(path);
         this.servers.forEach(srv => srv.removeResource(path))
     }

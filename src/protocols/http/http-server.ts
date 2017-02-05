@@ -58,12 +58,14 @@ export default class HttpServer implements ProtocolServer {
             logger.warn(`HttpServer on port ${this.getPort()} already has ResourceListener ${path}`);
             return false;
         } else {
+            logger.debug(`HttpServer on port ${this.getPort()} addeding resource '${path}'`);
             this.resources[path] = res;
             return true;
         }
     }
 
     public removeResource(path: string): boolean {
+        logger.debug(`HttpServer on port ${this.getPort()} removing resource '${path}'`);
         return delete this.resources[path];
     }
     
