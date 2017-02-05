@@ -23,6 +23,7 @@
 import Servient from '../src/servient'
 import TestProtocolServer from './ServerTest'
 
+
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
 // should must be called to augment all variables
@@ -211,7 +212,8 @@ class TDParserTest {
 
 // TODO write a test for the TD genertaion
           let servient: Servient = new Servient();
-//          let WoT: WoT.WoTFactory  = new TestProtocolServer();
+          let server: TestProtocolServer= new TestProtocolServer();
+
   //        let server: TestProtocolServer =servient.addServer(this.server);
     //      this.WoT = this.servient.start();
 

@@ -51,6 +51,12 @@ export default class TestProtocolServer implements ProtocolServer {
         return true;
     }
 
+    // @sebsatinkb add this here, to compile correctly
+    getScheme(): string {
+
+        return ""
+    }
+
     start(): boolean { return true }
     stop(): boolean { return true }
     getPort(): number { return -1 }

@@ -41,7 +41,7 @@ class PlugfestServient extends Servient {
             }
             if(data) {
                 let config = JSON.parse(data);
-                logger.info("using config", config) 
+                logger.info("using config", config)
             }
         });
     }
@@ -66,20 +66,17 @@ fs.readdir(path.join(__dirname,'autorun'),(err,files) => {
         logger.warn("autorun of scripts encountered error",err)
         return
     }
-    
+
     logger.info("found scripts", files.length)
     files.forEach((file) => {
         let fname = path.join(__dirname,'autorun',file)
         logger.info("running file ",fname)
-        fs.readFile(fname,'utf8',(err,data) => 
+        fs.readFile(fname,'utf8',(err,data) =>
         {
             if(err) logger.error("cannot read script",err)
             logger.info("read code from file",file,data)
-            srv.runPriviledgedScript(data)
-        })    
+          //  srv.runPriviledgedScript(data) @sebastiankb does not exist yet
+        })
     })
 
 })
-
-
-
