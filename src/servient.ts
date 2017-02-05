@@ -33,19 +33,26 @@ export default class Servient {
     private things: Map<string, ExposedThing> = new Map<string, ExposedThing>();
     private listeners : Map<string,ResourceListener> = new Map<string,ResourceListener>();
 
-    /** UNTESTED runs the script in a new sandbox */
-    public runScript(code : string) {
+    /** runs the script in a new sandbox */
+    public runScript(code : string, filename = 'script') {
         let script = new vm.Script(code)
         let context = vm.createContext({ 'WoT' : new WoTImpl(this) , 'console' : console })
-        script.runInContext(context)
+        let options = {
+            "filename" : filename,
+            "displayErrors" : true
+        };
+        script.runInContext(context,options)
     }
 
-    /** runs the script in thi context (dangerous) */
-    public runPriviledgedScript(code : string) {
+    /** runs the script in priviledged context (dangerous) - means here: scripts can require */
+    public runPriviledgedScript(code : string, filename = 'script') {
         let script = new vm.Script(code)
         let context = vm.createContext({ 'WoT' : new WoTImpl(this) , 'console' : console, 'require' : require })
-        script.runInContext(context)
-//        script.runInThisContext()
+        let options = {
+            "filename" : filename,
+            "displayErrors" : true
+        };
+        script.runInContext(context, options)
     }
 
     /** add a new codec to support a mediatype */
