@@ -40,7 +40,7 @@ export default class ExposedThing implements WoT.DynamicThing {
     constructor(servient : Servient, name : string) {
         this.srv = servient;
         this.name = name;
-        this.addResourceListener(this.name, new Rest.TDResourceListener(this));
+        this.addResourceListener("/" + this.name, new Rest.TDResourceListener(this));
     }
 
     private addResourceListener(path : string, resourceListener : ResourceListener) {
