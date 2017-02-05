@@ -114,9 +114,7 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
     /* new td model instance */
     let genTD:ThingDescription = new ThingDescription()
 
-    // TODO function for IP:PORT or domain name is needed for absolut link assignemnt
-    // TODO need function to get knowledge about protocol support
-    let thing_base:string = "coap://127.0.0.1:5863/" + thing.name // dummy uri
+
 
     logger.debug(`generateTD() assign name ${thing.name}`);
     genTD.name = thing.name
@@ -130,13 +128,10 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
       let l = 0
       /* for each address, supported protocol, and media type an intreaction resouce is generated */
       for (let add of   AddressHelper.getAddresses()) {
-
-        console.log(add)
         for(let pro of servient.getServerProtocols()) {
-            console.log(pro)
-
           for(let med of servient.getSupportedMediaTypes()) {
-              console.log(med)
+
+              /* depending of the resource pattern, uri is constructed */
               if(interaction.pattern === TD.InteractionPattern.Property) {
                     interaction.links[l] = new TD.InteractionLink()
                     interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/properties/" + interaction.name
@@ -146,7 +141,6 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
                     interaction.links[l] = new TD.InteractionLink()
                     interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/actions/" + interaction.name
                     interaction.links[l].mediaType = med
-
               }
               if(interaction.pattern === TD.InteractionPattern.Event) {
                     interaction.links[l] = new TD.InteractionLink()
@@ -160,7 +154,7 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
         }
 
       }
-      l=0
+      l=0 /* reset for next interactions */
 
 
     }
