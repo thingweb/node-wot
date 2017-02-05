@@ -20,6 +20,8 @@
 import Servient from "../../servient";
 import HttpClientFactory from "../../protocols/http/http-client-factory";
 import CoapClientFactory from "../../protocols/coap/coap-client-factory";
+import HttpServer from "../../protocols/http/http-server";
+import CoapServer from "../../protocols/coap/coap-server";
 
 import ThingDescription from "../../td/thing-description";
 import * as TD from "../../td/thing-description";
@@ -113,5 +115,42 @@ async.series([
                     }).catch( (err) => console.error(err) );
                 }).catch( (err) => console.error(err) );
             }).catch( (err) => console.error(err) );
+    },
+    (next : Function) => {
+
+        console.log(`\n# Exposing Thing\n`);
+
+        let srv = new Servient();
+        logger.info("created servient");
+
+        srv.addServer(new HttpServer());
+        srv.addServer(new CoapServer());
+
+        logger.info("added servers");
+
+        let WoT = srv.start();
+        logger.info("started servient")
+
+        WoT.createThing("led").then(led => {
+            led
+                .addProperty("brightness", { type: "integer", minimum: 0, maximum: 255 })
+                .addProperty("color", { type: "object",
+                                        properties: {
+                                            r: { type: "integer", minimum: 0, maximum: 255 },
+                                            g: { type: "integer", minimum: 0, maximum: 255 },
+                                            b: { type: "integer", minimum: 0, maximum: 255 }
+                                        }})
+                .addAction("gradient");
+            led.onUpdateProperty("brightness", (nu, old) => {
+                console.log("New brightness: " + nu);
+            });
+            led.onUpdateProperty("color", (nu, old) => {
+                console.log("New color: " + nu);
+            });
+            led.setProperty("brightness", 0);
+            led.setProperty("color", {r:0,g:0,b:0});
+
+            next();
+        });
     }
 ]);
