@@ -19,7 +19,7 @@
 
 import ExposedThing from "../exposed-thing";
 import * as TD from "../td/thing-description";
-
+import ContentSerdes from "../types/content-serdes"
 /**
  * Resource that provides a Thing Description
  */
@@ -31,18 +31,18 @@ export default class TDResourceListener {
     }
 
     public onRead() : Promise<Buffer> {
-        return Promise.resolve(this.thing.getDescription())
+        return Promise.resolve(ContentSerdes.valueToBytes(this.thing.getDescription()))
     }
 
     public onWrite(value : Buffer) : Promise<void> {
-        return Promise.reject("not implemented yet")
+        return Promise.reject(new Error("not implemented yet"))
     }
 
     public onInvoke(value : Buffer) : Promise<Buffer> {
-        return Promise.reject("not implemented yet")
+        return Promise.reject(new Error("not implemented yet"))
     }
 
     public onUnlink() : Promise<void> {
-        return Promise.reject("not implemented yet")
+        return Promise.reject(new Error("not implemented yet"))
     }
 }
