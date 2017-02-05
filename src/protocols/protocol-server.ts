@@ -23,7 +23,7 @@
  */
 declare interface ProtocolServer {
     addResource(path : string, res : ResourceListener) : boolean;
-    removeResourceListener(path : string) : boolean;
+    removeResource(path : string) : boolean;
     start() : boolean;
     stop() : boolean;
     getPort() : number;
