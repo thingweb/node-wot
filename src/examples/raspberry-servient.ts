@@ -33,10 +33,23 @@ client.on('connect', () => {
     main();
 
 });
-client.on('error', (err : Error) => { console.log('Error: ' + err.message);});
-client.on('data', (data : Buffer) => { console.log('Data: ' + data.toString());});
-client.on('drain', ()=>{ console.log('Bytes written: ' + client.bytesWritten);});
+client.on('error', (err : Error) => { console.log('unicornd error: ' + err.message);});
+client.on('data', (data : Buffer) => { console.log('unicornd data: ' + data.toString());});
+client.on('drain', () => { console.log('Bytes written: ' + client.bytesWritten);});
 
+declare interface Color {
+    r : number,
+    g : number,
+    b : number
+}
+
+var unicorn : WoT.DynamicThing;
+var gradient : Array<Color>;
+var gradientTimer : any;
+var gradIndex : number = 0;
+var gradNow : Color;
+var gradNext : Color;
+var gradVector : Color;
 
 function main() {
 
@@ -44,14 +57,15 @@ function main() {
     logger.info("created servient");
 
     srv.addServer(new HttpServer());
-    //srv.addServer(new CoapServer());
+    srv.addServer(new CoapServer());
 
     logger.info("added servers");
 
     let WoT = srv.start();
     logger.info("started servient")
 
-    WoT.createThing("unicorn").then(unicorn => {
+    WoT.createThing("unicorn").then(thing => {
+        unicorn = thing;
         unicorn
             .addProperty("brightness", { type: "integer", minimum: 0, maximum: 255 })
             .addProperty("color", { type: "object",
@@ -60,16 +74,66 @@ function main() {
                                         g: { type: "integer", minimum: 0, maximum: 255 },
                                         b: { type: "integer", minimum: 0, maximum: 255 }
                                     }})
-            .addAction("gradient");
-        unicorn.onUpdateProperty("brightness", (nu, old) => {
-            setBrightness(nu);
-        });
-        unicorn.onUpdateProperty("color", (nu, old) => {
-            setAll(nu.r, nu.g, nu.b);
-        });
+            .addAction("gradient", { type: "array",
+                                     items: { type: "object",
+                                        properties: {
+                                            r: { type: "integer", minimum: 0, maximum: 255 },
+                                            g: { type: "integer", minimum: 0, maximum: 255 },
+                                            b: { type: "integer", minimum: 0, maximum: 255 }
+                                        }
+                                     },
+                                     minItems: 2 })
+            .addAction("cancel");
+        // implementations
+        unicorn
+            .onUpdateProperty("brightness", (nu, old) => {
+                setBrightness(nu);
+            })
+            .onUpdateProperty("color", (nu, old) => {
+                if (gradientTimer) gradientTimer.cancel();
+                setAll(nu.r, nu.g, nu.b);
+            })
+            .onInvokeAction("gradient", (input : Array<Color>) => {
+                if (input.length<2) return "minItems: 2";
+                gradient = input;
+                gradIndex = 0;
+                gradNow = gradient[0];
+                gradNext = gradient[1];
+                gradVector = {
+                    r: (gradNext.r - gradNow.r)/20,
+                    g: (gradNext.g - gradNow.g)/20,
+                    b: (gradNext.b - gradNow.b)/20
+                };
+                gradientTimer = setInterval(grdientStep, 50);
+                return "ok";
+            })
+            .onInvokeAction("cancel", (input) => {
+                if (gradientTimer) gradientTimer.cancel();
+            });
+        // initialize
         unicorn.setProperty("brightness", 0);
         unicorn.setProperty("color", {r:0,g:0,b:0});
     });
+}
+
+function grdientStep() {
+    gradNow = {
+            r: (gradNow.r + gradVector.r),
+            g: (gradNow.g + gradVector.g),
+            b: (gradNow.b + gradVector.b)
+        };
+    unicorn.setProperty("color", gradNow);
+    if (gradNow.r===gradNext.r && gradNow.g===gradNext.g && gradNow.b===gradNext.b) {
+        gradNow = gradient[gradIndex];
+        gradIndex = ++gradIndex % gradient.length;
+        gradNext = gradient[gradIndex];
+        console.log("Gradient: new index " + gradIndex);
+        gradVector = {
+                r: (gradNext.r - gradNow.r)/20,
+                g: (gradNext.g - gradNow.g)/20,
+                b: (gradNext.b - gradNow.b)/20
+            };
+    }
 }
 
 function setBrightness(val : number) {
