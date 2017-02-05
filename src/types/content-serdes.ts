@@ -17,6 +17,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import logger from "../logger";
+
 /** is a plugin for ContentSerdes for a specific format (such as JSON or EXI) */
 export interface ContentCodec {
     getMediaType() : string
@@ -31,12 +33,25 @@ class JsonCodec implements ContentCodec {
     }
 
     bytesToValue(bytes : Buffer) : any {
-        return JSON.parse(bytes.toString());
+        logger.debug(`JsonCodec parsing '${bytes.toString()}'`);
+        let parsed : string;
+        try {
+            parsed = JSON.parse(bytes.toString());
+        } catch(err) {
+            if (err instanceof SyntaxError) {
+                // be relaxed about what is received (-> string without quotes)
+                parsed = bytes.toString();
+            } else {
+                throw err;
+            }
+        }
+        return parsed;
     }
 
     valueToBytes(value : any) : Buffer {
+        logger.debug(`JsonCodec serializing '${value}'`);
         let content = JSON.stringify(value);
-        return new Buffer(content)
+        return new Buffer(content);
     }
 }
 
