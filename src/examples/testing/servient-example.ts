@@ -17,17 +17,17 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import Servient from "../servient";
-import HttpClientFactory from "../protocols/http/http-client-factory";
-import CoapClientFactory from "../protocols/coap/coap-client-factory";
+import Servient from "../../servient";
+import HttpClientFactory from "../../protocols/http/http-client-factory";
+import CoapClientFactory from "../../protocols/coap/coap-client-factory";
 
-import ThingDescription from "../td/thing-description";
-import * as TD from "../td/thing-description";
+import ThingDescription from "../../td/thing-description";
+import * as TD from "../../td/thing-description";
 
 const async = require("async");
 
 // for level only - use console for output
-import logger from "../logger";
+import logger from "../../logger";
 logger.level = "silly";
 
 logger.info("INFO");

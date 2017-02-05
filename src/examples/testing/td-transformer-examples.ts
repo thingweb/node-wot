@@ -17,7 +17,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as TDTransformer from "../td/td-transformer";
+import * as TDTransformer from "../../td/td-transformer";
 // var prettyjson = require("prettyjson");
 
 /* sample TD json-ld string from the CP page */

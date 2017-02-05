@@ -17,8 +17,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import HttpClientFactory from "../protocols/http/http-client-factory";
-import CoapClientFactory from "../protocols/coap/coap-client-factory";
+import HttpClientFactory from "../../protocols/http/http-client-factory";
+import CoapClientFactory from "../../protocols/coap/coap-client-factory";
 
 let myHttpFactory = new HttpClientFactory();
 let myCoapFactory = new CoapClientFactory();

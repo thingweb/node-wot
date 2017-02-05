@@ -21,10 +21,10 @@
 "use strict"
 
 import fs = require("fs");
-import Servient from "../servient";
-import {DummyClientFactory} from "../protocols/dummy/dummy-protocol-client";
-import ConsumedThing from "../consumed-thing";
-import ThingDescription from "../td/thing-description";
+import Servient from "../../servient";
+import {DummyClientFactory} from "../../protocols/dummy/dummy-protocol-client";
+import ConsumedThing from "../../consumed-thing";
+import ThingDescription from "../../td/thing-description";
 
 /**
  * Servient control for scripts

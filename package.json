@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p .",
     "test": "tsc -p test/tsconfig.test.json && mocha",
-    "start": "node dist/examples/main.js",
+    "start": "node dist/examples/servient-launcher.js",
     "prestart": "npm run build",
     "prepublish": "npm run build",
     "dev-test-watch": "mocha-typescript-watch -p test/tsconfig.test.json"

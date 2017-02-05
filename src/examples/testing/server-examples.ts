@@ -17,12 +17,12 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import HttpServer from "../protocols/http/http-server";
-import CoapServer from "../protocols/coap/coap-server";
-import AssetResourceListener from "../resource-listeners/asset-resource-listener";
+import HttpServer from "../../protocols/http/http-server";
+import CoapServer from "../../protocols/coap/coap-server";
+import AssetResourceListener from "../../resource-listeners/asset-resource-listener";
 
 // for level only - use console for output
-import logger from "../logger";
+import logger from "../../logger";
 logger.level = "debug";
 
 var res1 = new AssetResourceListener("Hello World");
