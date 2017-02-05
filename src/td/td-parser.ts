@@ -131,17 +131,27 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
       /* for each address, supported protocol, and media type an intreaction resouce is generated */
       for (let add of   AddressHelper.getAddresses()) {
 
+        console.log(add)
         for(let pro of servient.getServerProtocols()) {
+            console.log(pro)
 
           for(let med of servient.getSupportedMediaTypes()) {
+              console.log(med)
               if(interaction.pattern === TD.InteractionPattern.Property) {
+                    interaction.links[l] = new TD.InteractionLink()
                     interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/properties/" + interaction.name
+                    interaction.links[l].mediaType = med
               }
               else if(interaction.pattern === TD.InteractionPattern.Action) {
+                    interaction.links[l] = new TD.InteractionLink()
                     interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/actions/" + interaction.name
+                    interaction.links[l].mediaType = med
+
               }
               if(interaction.pattern === TD.InteractionPattern.Event) {
+                    interaction.links[l] = new TD.InteractionLink()
                     interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/events/" + interaction.name
+                    interaction.links[l].mediaType = med
               }
               logger.debug(`generateTD() assign href  ${interaction.links[l].href } for interaction ${interaction.name}`);
               l++

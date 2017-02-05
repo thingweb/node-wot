@@ -63,7 +63,7 @@ export default class HttpServer implements ProtocolServer {
         }
     }
 
-    public removeResourceListener(path: string): boolean {
+    public removeResource(path: string): boolean {
         return delete this.resources[path];
     }
     

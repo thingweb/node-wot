@@ -22,9 +22,10 @@
  */
 import Servient from '../src/servient'
 import ExposedThing from '../src/exposed-thing'
+import HttpServer from "../src/protocols/http/http-server"
 
-
-import {default as ContentSerdes,ContentCodec} from "../src/types/content-serdes"
+import ContentSerdes from '../src/types/content-serdes'
+import {ContentCodec} from '../src/types/content-serdes'
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
 // should must be called to augment all variables
@@ -32,6 +33,7 @@ should();
 
 import ThingDescription from "../src/td/thing-description";
 import * as TDParser from "../src/td/td-parser";
+import AddressHelper from "../src/protocols/address-helper";
 
 /** sample TD json-ld string from the CP page*/
 let tdSample1 = `{
@@ -212,31 +214,27 @@ class TDParserTest {
     @test "TD generation tets"() {
 
           let servient: Servient = new Servient();
-          
+
           let WoT = servient.start();
           return WoT.createThing("TDGeneratorTest").then((thing) => {
 
-
+            servient.addServer(new HttpServer())
             thing.addProperty("prop1", "number");
-          thing.addAction("act1", "", "string");
+            thing.addAction("act1", "", "string");
 
-          //TODO how to add media types?
-        //  let codec : ContentCodec=  ContentCodec.get();
+            let td:ThingDescription = TDParser.generateTD(thing as ExposedThing, servient);
 
-      //  let td:string = TDParser.serializeTD(TDParser.generateTD(thing, servient));
+            expect(td).to.have.property("name").that.equals("TDGeneratorTest");
 
-        let td:ThingDescription = TDParser.generateTD(thing as ExposedThing, servient);
+            let add =  AddressHelper.getAddresses()[0];
+            expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
+            expect(td.interactions[0].links[0]).to.have.property("href").that.equals("http://"+add+"/TDGeneratorTest/properties/prop1");
+            expect(td.interactions[1].links[0]).to.have.property("mediaType").that.equals("application/json");
+            expect(td.interactions[1].links[0]).to.have.property("href").that.equals("http://"+add+"/TDGeneratorTest/actions/act1");
 
-        expect(td).to.have.property("name").that.equals("TDGeneratorTest");
-        // @h0ru5: they don't have any links yet  - just the interactions.
-        //expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
-        
-          //expect(td.interactions[1].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/humid");
-
-            // TODO add mote tests here
           })
-          
 
-          
+
+
     }
 }

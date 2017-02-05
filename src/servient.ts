@@ -78,7 +78,7 @@ export default class Servient {
 
     public removeResourceListener(path : string) {
         this.listeners.delete(path);
-        this.servers.forEach(srv => srv.removeResourceListener(path))
+        this.servers.forEach(srv => srv.removeResource(path))
     }
 
     public addServer(server: ProtocolServer): boolean {
