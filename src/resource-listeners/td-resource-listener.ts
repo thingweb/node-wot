@@ -24,12 +24,14 @@ import * as TD from "../td/thing-description";
  * Resource that provides a Thing Description
  */
 export default class TDResourceListener {
+    private readonly thing : ExposedThing;
+
     constructor(thing : ExposedThing) {
-        
+        this.thing = thing;
     }
 
     public onRead() : Promise<Buffer> {
-        return Promise.reject("not implemented yet")
+        return Promise.resolve(this.thing.getDescription())
     }
 
     public onWrite(value : Buffer) : Promise<void> {

@@ -46,6 +46,7 @@ class PlugfestServient extends Servient {
         });
     }
 }
+logger.level = 'silly'
 
 logger.info("i am running from", __dirname)
 
@@ -59,6 +60,15 @@ logger.info("added servers and clientfactories")
 let WoT = srv.start();
 logger.info("started servient")
 srv.readConf()
+
+WoT.createThing("servient").then(thing => {
+    thing
+    .addAction("log",{ "valueType" : "string"})
+    .onInvokeAction("log",(msg) => {
+        logger.info(msg);
+        return "logged " + msg;
+    })
+})
 
 logger.info("looking for scripts")
 fs.readdir(path.join(__dirname,'autorun'),(err,files) => {
