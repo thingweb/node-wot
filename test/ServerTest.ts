@@ -38,6 +38,10 @@ import * as listeners from '../src/resource-listeners/all-resource-listeners'
 class TestProtocolServer implements ProtocolServer {
     private listeners: Map<string, ResourceListener> = new Map();
 
+    getScheme() : string {
+        return "test"
+    }
+
     getListenerFor(path: string): ResourceListener {
         return this.listeners.get(path);
     }
