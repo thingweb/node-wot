@@ -75,7 +75,7 @@ fs.readdir(path.join(__dirname,'autorun'),(err,files) => {
         {
             if(err) logger.error("cannot read script",err)
             logger.info("read code from file",file,data)
-            srv.runScript(data)
+            srv.runPriviledgedScript(data)
         })    
     })
 

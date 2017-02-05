@@ -35,9 +35,17 @@ export default class Servient {
 
     /** UNTESTED runs the script in a new sandbox */
     public runScript(code : string) {
-        let script = new vm.Script(code);
-        let context = vm.createContext({ 'WoT' : new WoTImpl(this)})
+        let script = new vm.Script(code)
+        let context = vm.createContext({ 'WoT' : new WoTImpl(this) , 'console' : console })
         script.runInContext(context)
+    }
+
+    /** runs the script in thi context (dangerous) */
+    public runPriviledgedScript(code : string) {
+        let script = new vm.Script(code)
+        let context = vm.createContext({ 'WoT' : new WoTImpl(this) , 'console' : console, 'require' : require })
+        script.runInContext(context)
+//        script.runInThisContext()
     }
 
     /** add a new codec to support a mediatype */
