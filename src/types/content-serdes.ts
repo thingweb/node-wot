@@ -75,7 +75,7 @@ export class ContentSerdes {
 
         //use codec to deserialize
         let res = codec.bytesToValue(bytes);
-        
+
         return res;
     }
 
@@ -85,10 +85,10 @@ export class ContentSerdes {
             throw new Error(`Unsupported serialisation format: ${mediaType}`)
         }
         let codec = this.codecs.get(mediaType)
-        
+
         //use codec to serialize
         let res = codec.valueToBytes(value)
-        
+
         return res;
     }
 }

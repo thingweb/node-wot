@@ -21,9 +21,10 @@
  * Basic test suite for TD parsing
  */
 import Servient from '../src/servient'
-import TestProtocolServer from './ServerTest'
+import ExposedThing from '../src/exposed-thing'
 
 
+import {default as ContentSerdes,ContentCodec} from "../src/types/content-serdes"
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
 // should must be called to augment all variables
@@ -210,12 +211,23 @@ class TDParserTest {
 
     @test "TD generation tets"() {
 
-// TODO write a test for the TD genertaion
           let servient: Servient = new Servient();
-          let server: TestProtocolServer= new TestProtocolServer();
+          let thing: ExposedThing = new ExposedThing(servient, "TDGeneratorTest");
 
-  //        let server: TestProtocolServer =servient.addServer(this.server);
-    //      this.WoT = this.servient.start();
+          thing.addProperty("prop1", "number");
+          thing.addAction("act1", "", "string");
 
+          //TODO how to add media types?
+        //  let codec : ContentCodec=  ContentCodec.get();
+
+      //  let td:string = TDParser.serializeTD(TDParser.generateTD(thing, servient));
+
+        let td:ThingDescription = TDParser.generateTD(thing, servient);
+
+        expect(td).to.have.property("name").that.equals("TDGeneratorTest");
+        expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
+        //expect(td.interactions[1].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/humid");
+
+        // TODO add mote tests here
     }
 }
