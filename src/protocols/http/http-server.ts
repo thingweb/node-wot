@@ -49,6 +49,10 @@ export default class HttpServer implements ProtocolServer {
         this.server.on("error", (err) => { logger.error(`HttpServer for port ${this.port} failed: ${err.message}`); this.failed = true; } );
     }
 
+    public getScheme() : string {
+        return "http"
+    }
+
     public addResource(path: string, res: ResourceListener) : boolean {
         if (this.resources[path]!==undefined) {
             logger.warn(`HttpServer on port ${this.getPort()} already has ResourceListener ${path}`);

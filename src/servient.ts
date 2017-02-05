@@ -72,6 +72,10 @@ export default class Servient {
         return true;
     }
 
+    public getServerProtocols() : Array<string> {
+        return this.servers.map(server => server.getScheme())
+    }
+
     public addClientFactory(clientFactory: ProtocolClientFactory): void {
         clientFactory.getSchemes().forEach(scheme => this.clientFactories.set(scheme, clientFactory));
     }

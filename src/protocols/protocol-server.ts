@@ -27,6 +27,7 @@ declare interface ProtocolServer {
     start() : boolean;
     stop() : boolean;
     getPort() : number;
+    getScheme() : string;
 }
 
 /**

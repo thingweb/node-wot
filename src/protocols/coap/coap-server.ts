@@ -48,6 +48,10 @@ export default class CoapServer implements ProtocolServer {
         this.server.on("error", (err : Error) => { logger.error(`CoapServer for port ${this.port} failed: ${err.message}`); this.failed = true; } );
     }
 
+    public getScheme() : string {
+        return "coap"
+    }
+
     public addResource(path: string, res: ResourceListener) : boolean {
         if (this.resources[path]!==undefined) {
             logger.warn(`CoapServer on port ${this.getPort()} already has ResourceListener ${path}`);
