@@ -212,9 +212,12 @@ class TDParserTest {
     @test "TD generation tets"() {
 
           let servient: Servient = new Servient();
-          let thing: ExposedThing = new ExposedThing(servient, "TDGeneratorTest");
+          
+          let WoT = servient.start();
+          return WoT.createThing("TDGeneratorTest").then((thing) => {
 
-          thing.addProperty("prop1", "number");
+
+            thing.addProperty("prop1", "number");
           thing.addAction("act1", "", "string");
 
           //TODO how to add media types?
@@ -222,12 +225,18 @@ class TDParserTest {
 
       //  let td:string = TDParser.serializeTD(TDParser.generateTD(thing, servient));
 
-        let td:ThingDescription = TDParser.generateTD(thing, servient);
+        let td:ThingDescription = TDParser.generateTD(thing as ExposedThing, servient);
 
         expect(td).to.have.property("name").that.equals("TDGeneratorTest");
-        expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
-        //expect(td.interactions[1].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/humid");
+        // @h0ru5: they don't have any links yet  - just the interactions.
+        //expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
+        
+          //expect(td.interactions[1].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/humid");
 
-        // TODO add mote tests here
+            // TODO add mote tests here
+          })
+          
+
+          
     }
 }
