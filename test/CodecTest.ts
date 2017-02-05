@@ -29,12 +29,12 @@ should();
 import ContentSerdes from '../src/types/content-serdes'
 import {ContentCodec} from '../src/types/content-serdes'
 
-let checkJsonToJs = (value) => {
+let checkJsonToJs = (value : any) : void => {
         let jsonBuffer = new Buffer(JSON.stringify(value));
         expect(ContentSerdes.bytesToValue(jsonBuffer)).to.deep.equal(value);
 }
 
-let checkJsToJson = (value) => {
+let checkJsToJson = (value: any) : void => {
         let jsonBuffer = ContentSerdes.valueToBytes(value)
         let reparsed = JSON.parse(jsonBuffer.toString());
         expect(reparsed).to.deep.equal(value);
