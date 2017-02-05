@@ -97,7 +97,9 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                 } else {
                     logger.info(`ConsumedThing '${this.name}' getting ${link.href}`);
                     client.readResource(link.href).then( (buffer) => {
-                        let value = ContentSerdes.bytesToValue(buffer);
+                        let mediaType = link.mediaType
+                        logger.info(`decoding media type ${mediaType} in readProperty`)
+                        let value = ContentSerdes.bytesToValue(buffer,mediaType.toString());
                         resolve(value);
                     });
                 }
@@ -121,11 +123,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
                     logger.info(`ConsumedThing '${this.name}' setting ${link.href} to '${newValue}'`);
-
-                    let mediaType = link.mediaType; //TODO: I need a function to turn the enum to string
-                    let payload = ContentSerdes.valueToBytes(newValue) 
-
-                    // TODO #5 client expects Buffer; ConsumedThing would have the necessary TD valueType rule...
+                    let payload = ContentSerdes.valueToBytes(newValue,link.mediaType) 
                     resolve(client.writeResource(link.href, payload));
                 }
             }
@@ -154,7 +152,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
 
                     client.invokeResource(link.href, payload).then( (payload) => {
                         // TODO #5 client returns Buffer on invoke; ConsumedThing would have the necessary TD valueType rule...
-                        let value = ContentSerdes.bytesToValue(payload)
+                        let value = ContentSerdes.bytesToValue(payload,link.mediaType)
                         resolve(value);
                     });
                 }
