@@ -20,6 +20,8 @@
 /**
  * Basic test suite for TD parsing
  */
+import Servient from '../src/servient'
+import TestProtocolServer from './ServerTest'
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
@@ -115,7 +117,7 @@ class TDParserTest {
         expect(td).to.have.property("semanticType").that.equals("Thing");
         expect(td).to.have.property("name").that.equals("MyTemperatureThing");
         expect(td).to.not.have.property("base");
-        
+
         expect(td.interactions).to.have.lengthOf(1);
         expect(td.interactions[0]).to.have.property("semanticTypes").that.contains("Property");
         expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
@@ -134,7 +136,7 @@ class TDParserTest {
         expect(td).to.have.property("semanticType").that.equals("Thing");
         expect(td).to.have.property("name").that.equals("MyTemperatureThing2");
         expect(td).to.not.have.property("base");
-        
+
         expect(td.interactions).to.have.lengthOf(1);
         expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
         expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
@@ -152,7 +154,7 @@ class TDParserTest {
         expect(td).to.have.property("semanticType").that.equals("Thing");
         expect(td).to.have.property("name").that.equals("MyTemperatureThing3");
         expect(td).to.have.property("base").that.equals("coap://mytemp.example.com:5683/interactions/");
-        
+
         expect(td.interactions).to.have.lengthOf(3);
         expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
         expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
@@ -169,7 +171,7 @@ class TDParserTest {
         expect(td.interactions[1].links).to.have.lengthOf(1);
         expect(td.interactions[1].links[0]).to.have.property("mediaType").that.equals("application/json");
         expect(td.interactions[1].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
-        
+
         expect(td.interactions[2]).to.have.property("name").that.equals("humidity");
         expect(td.interactions[2]).to.have.property("pattern").that.equals("Property");
         expect(td.interactions[2]).to.have.property("writable").that.equals(false);
@@ -203,5 +205,15 @@ class TDParserTest {
         jsonActual = JSON.parse(newJson1);
 
         expect(jsonActual).to.deep.equal(jsonExpected);
+    }
+
+    @test "TD generation tets"() {
+
+// TODO write a test for the TD genertaion
+          let servient: Servient = new Servient();
+//          let WoT: WoT.WoTFactory  = new TestProtocolServer();
+  //        let server: TestProtocolServer =servient.addServer(this.server);
+    //      this.WoT = this.servient.start();
+
     }
 }

@@ -20,7 +20,7 @@
 /**
  * Basic test suite to demonstrate test setup
  * uncomment the @skip to see failing tests
- * 
+ *
  * h0ru5: there is currently some problem with VSC failing to recognize experimentalDecorators option, it is present in both tsconfigs
  */
 /// <reference path="../src/protocols/protocol-server.ts"  />
@@ -35,7 +35,7 @@ import Servient from '../src/servient'
 import * as listeners from '../src/resource-listeners/all-resource-listeners'
 
 // implement a testserver to mock a server
-class TestProtocolServer implements ProtocolServer {
+export default class TestProtocolServer implements ProtocolServer {
     private listeners: Map<string, ResourceListener> = new Map();
 
     getListenerFor(path: string): ResourceListener {
@@ -163,11 +163,11 @@ class WoTServerTest {
                 param.should.equal(23)
                 return 42
             })
-            
+
             let listener = WoTServerTest.server.getListenerFor("thing7/actions/action1");
             expect(listener).to.exist
             listener.should.be.an.instanceOf(listeners.ActionResourceListener)
-            
+
             return listener
             .onInvoke(new Buffer('23'))
             .then((resBytes => {
