@@ -20,7 +20,11 @@
 /**
  * Basic test suite for TD parsing
  */
+import Servient from '../src/servient'
+import ExposedThing from '../src/exposed-thing'
 
+
+import {default as ContentSerdes,ContentCodec} from "../src/types/content-serdes"
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
 // should must be called to augment all variables
@@ -115,7 +119,7 @@ class TDParserTest {
         expect(td).to.have.property("semanticType").that.equals("Thing");
         expect(td).to.have.property("name").that.equals("MyTemperatureThing");
         expect(td).to.not.have.property("base");
-        
+
         expect(td.interactions).to.have.lengthOf(1);
         expect(td.interactions[0]).to.have.property("semanticTypes").that.contains("Property");
         expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
@@ -134,7 +138,7 @@ class TDParserTest {
         expect(td).to.have.property("semanticType").that.equals("Thing");
         expect(td).to.have.property("name").that.equals("MyTemperatureThing2");
         expect(td).to.not.have.property("base");
-        
+
         expect(td.interactions).to.have.lengthOf(1);
         expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
         expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
@@ -152,7 +156,7 @@ class TDParserTest {
         expect(td).to.have.property("semanticType").that.equals("Thing");
         expect(td).to.have.property("name").that.equals("MyTemperatureThing3");
         expect(td).to.have.property("base").that.equals("coap://mytemp.example.com:5683/interactions/");
-        
+
         expect(td.interactions).to.have.lengthOf(3);
         expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
         expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
@@ -169,7 +173,7 @@ class TDParserTest {
         expect(td.interactions[1].links).to.have.lengthOf(1);
         expect(td.interactions[1].links[0]).to.have.property("mediaType").that.equals("application/json");
         expect(td.interactions[1].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
-        
+
         expect(td.interactions[2]).to.have.property("name").that.equals("humidity");
         expect(td.interactions[2]).to.have.property("pattern").that.equals("Property");
         expect(td.interactions[2]).to.have.property("writable").that.equals(false);
@@ -203,5 +207,27 @@ class TDParserTest {
         jsonActual = JSON.parse(newJson1);
 
         expect(jsonActual).to.deep.equal(jsonExpected);
+    }
+
+    @test "TD generation tets"() {
+
+          let servient: Servient = new Servient();
+          let thing: ExposedThing = new ExposedThing(servient, "TDGeneratorTest");
+
+          thing.addProperty("prop1", "number");
+          thing.addAction("act1", "", "string");
+
+          //TODO how to add media types?
+        //  let codec : ContentCodec=  ContentCodec.get();
+
+      //  let td:string = TDParser.serializeTD(TDParser.generateTD(thing, servient));
+
+        let td:ThingDescription = TDParser.generateTD(thing, servient);
+
+        expect(td).to.have.property("name").that.equals("TDGeneratorTest");
+        expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
+        //expect(td.interactions[1].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/humid");
+
+        // TODO add mote tests here
     }
 }

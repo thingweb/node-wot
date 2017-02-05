@@ -23,6 +23,7 @@ import ThingDescription from "./thing-description";
 import * as TD from "./thing-description";
 import Servient from "../servient";
 import ExposedThing from "../exposed-thing";
+import AddressHelper from "../protocols/address-helper";
 
 import { JsonMember, JsonObject, TypedJSON } from "typedjson";
 
@@ -108,6 +109,8 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
     logger.silly(`generateTD() \n\`\`\`\n${thing}\n\`\`\``);
 
+
+
     /* new td model instance */
     let genTD:ThingDescription = new ThingDescription()
 
@@ -124,10 +127,31 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
     logger.debug(`generateTD() found ${genTD.interactions.length} Interaction${genTD.interactions.length==1?"":"s"}`);
     for (let interaction of   genTD.interactions) {
 
-      // TODO depending of the number of the protocols assign each of them a link
-      // TODO a helper function should construct the right URI
-      interaction.links[0].href = thing_base + "/" + interaction.name // dummy
-      logger.debug(`generateTD() assign href  ${interaction.links[0].href } for interaction ${interaction.name}`);
+      let l = 0
+      /* for each address, supported protocol, and media type an intreaction resouce is generated */
+      for (let add of   AddressHelper.getAddresses()) {
+
+        for(let pro of servient.getServerProtocols()) {
+
+          for(let med of servient.getSupportedMediaTypes()) {
+              if(interaction.pattern === TD.InteractionPattern.Property) {
+                    interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/properties/" + interaction.name
+              }
+              else if(interaction.pattern === TD.InteractionPattern.Action) {
+                    interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/actions/" + interaction.name
+              }
+              if(interaction.pattern === TD.InteractionPattern.Event) {
+                    interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/events/" + interaction.name
+              }
+              logger.debug(`generateTD() assign href  ${interaction.links[l].href } for interaction ${interaction.name}`);
+              l++
+          }
+
+        }
+
+      }
+      l=0
+
 
     }
 

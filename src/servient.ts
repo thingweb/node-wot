@@ -105,7 +105,7 @@ export default class Servient {
             logger.verbose(`Servient creating client for scheme '${scheme}'`);
             return this.clientFactories.get(scheme).getClient();
         } else {
-            // FIXME returning null was bad - Error or Promise? 
+            // FIXME returning null was bad - Error or Promise?
             // h0ru5: caller cannot react gracefully - I'd throw Error
             throw new Error(`Servient has no ClientFactory for scheme '${scheme}'`);
         }
