@@ -144,23 +144,25 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
       let l = 0
       /* for each address, supported protocol, and media type an intreaction resouce is generated */
       for (let add of   AddressHelper.getAddresses()) {
-        for(let pro of servient.getServerProtocols()) {
+        for(let ser of servient.getServers()) {
           for(let med of servient.getSupportedMediaTypes()) {
+
+              let href:string = ser.getScheme()+":" +add+":"+ser.getPort()+"/" + thing.name
 
               /* depending of the resource pattern, uri is constructed */
               if(interaction.pattern === TD.InteractionPattern.Property) {
                     interaction.links[l] = new TD.InteractionLink()
-                    interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/properties/" + interaction.name
+                    interaction.links[l].href = href+"/properties/" + interaction.name
                     interaction.links[l].mediaType = med
               }
               else if(interaction.pattern === TD.InteractionPattern.Action) {
                     interaction.links[l] = new TD.InteractionLink()
-                    interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/actions/" + interaction.name
+                    interaction.links[l].href = href+"/actions/" + interaction.name
                     interaction.links[l].mediaType = med
               }
               if(interaction.pattern === TD.InteractionPattern.Event) {
                     interaction.links[l] = new TD.InteractionLink()
-                    interaction.links[l].href = pro + "://"+add+"/" + thing.name+"/events/" + interaction.name
+                    interaction.links[l].href = href+"/events/" + interaction.name
                     interaction.links[l].mediaType = med
               }
               logger.debug(`generateTD() assign href  ${interaction.links[l].href } for interaction ${interaction.name}`);

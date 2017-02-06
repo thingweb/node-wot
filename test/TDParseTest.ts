@@ -227,11 +227,14 @@ class TDParserTest {
             expect(td).to.have.property("name").that.equals("TDGeneratorTest");
 
             let add =  AddressHelper.getAddresses()[0];
+            let ser: Array<ProtocolServer>  = servient.getServers();
+
+
             expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
-            expect(td.interactions[0].links[0]).to.have.property("href").that.equals("http://"+add+"/TDGeneratorTest/properties/prop1");
+            expect(td.interactions[0].links[0]).to.have.property("href").that.equals("http://"+add+":"+ser[0].getPort()+"/TDGeneratorTest/properties/prop1");
             expect(td.interactions[0]).to.have.property("semanticTypes").that.include("Property");
             expect(td.interactions[1].links[0]).to.have.property("mediaType").that.equals("application/json");
-            expect(td.interactions[1].links[0]).to.have.property("href").that.equals("http://"+add+"/TDGeneratorTest/actions/act1");
+            expect(td.interactions[1].links[0]).to.have.property("href").that.equals("http://"+add+":"+ser[0].getPort()+"/TDGeneratorTest/actions/act1");
             expect(td.interactions[1]).to.have.property("semanticTypes").that.include("Action");
           })
 
