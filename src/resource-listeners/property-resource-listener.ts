@@ -17,21 +17,22 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import BasicResourceListener from "./basic-resource-listener";
 import ExposedThing from "../exposed-thing";
 import * as TD from "../td/thing-description";
-import ContentSerdes from '../types/content-serdes'
-
+import ContentSerdes from "../types/content-serdes";
 
 /**
  * Interaction resource that provides a Property
  */
+export default class PropertyResourceListener extends BasicResourceListener implements ResourceListener {
 
-export default class PropertyResourceListener implements ResourceListener {
-    private readonly thing : ExposedThing
-    private readonly description : TD.Interaction
-    private readonly name : string
+    private readonly thing : ExposedThing;
+    private readonly description : TD.Interaction;
+    private readonly name : string;
 
     constructor(thing : ExposedThing, property : TD.Interaction) {
+        super();
         this.thing = thing;
         this.description = property;
         this.name = property.name;
@@ -39,23 +40,15 @@ export default class PropertyResourceListener implements ResourceListener {
 
     public onRead() : Promise<Buffer> {
         return this.thing
-        .getProperty(this.name)
-        .then((value) =>{
-            let bytes = ContentSerdes.valueToBytes(value) // TODO where to get media type
-            return Promise.resolve(bytes)
-        })
+            .getProperty(this.name)
+            .then((value) => {
+                let bytes = ContentSerdes.valueToBytes(value); // TODO where to get media type
+                return Promise.resolve(bytes);
+            });
     }
 
     public onWrite(input : Buffer) : Promise<void> {
-        let value = ContentSerdes.bytesToValue(input) // TODO where to get media type
-        return this.thing.setProperty(this.name,value)
-    }
-
-    public onInvoke(input : Buffer) : Promise<Buffer> {
-        return Promise.reject(new Error("Method 'invoke' not allowed"))
-    }
-
-    public onUnlink() : Promise<void> {
-        return Promise.reject(new Error("Method 'unlink' not allowed"))
+        let value = ContentSerdes.bytesToValue(input); // TODO where to get media type
+        return this.thing.setProperty(this.name, value);
     }
 }

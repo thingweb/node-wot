@@ -17,40 +17,31 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import BasicResourceListener from "./basic-resource-listener";
 import ExposedThing from "../exposed-thing";
 import * as TD from "../td/thing-description";
-import ContentSerdes from '../types/content-serdes'
+import ContentSerdes from "../types/content-serdes";
 
 /**
  * Interaction resource that provides an Action
  */
-export default class ActionResourceListener implements ResourceListener {
-    private readonly thing : ExposedThing
-    private readonly description : TD.Interaction
-    private readonly name : string
+export default class ActionResourceListener extends BasicResourceListener implements ResourceListener {
+
+    private readonly thing : ExposedThing;
+    private readonly description : TD.Interaction;
+    private readonly name : string;
 
     constructor(thing: ExposedThing, action: TD.Interaction) {
-        this.thing = thing
-        this.description = action
-        this.name = action.name
-    }
-
-    public onRead(): Promise<Buffer> {
-        return Promise.reject(new Error("Method 'read' not allowed"))
-    }
-
-    public onWrite(value: Buffer): Promise<void> {
-        return Promise.reject(new Error("Method 'write' not allowed"))
+        super();
+        this.thing = thing;
+        this.description = action;
+        this.name = action.name;
     }
 
     public onInvoke(value: Buffer): Promise<Buffer> {
-        let param = ContentSerdes.bytesToValue(value) // TODO get mediatype
+        let param = ContentSerdes.bytesToValue(value); // TODO get mediatype
         return this.thing.invokeAction(this.name,param).then((value) => {
-            return ContentSerdes.valueToBytes(value)
-        })
-    }
-
-    public onUnlink(): Promise<void> {
-        return Promise.reject(new Error("Method 'unlink' not allowed"))
+            return ContentSerdes.valueToBytes(value);
+        });
     }
 }

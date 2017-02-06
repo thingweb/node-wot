@@ -17,24 +17,23 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import BasicResourceListener from "./basic-resource-listener";
-import ExposedThing from "../exposed-thing";
-import * as TD from "../td/thing-description";
-import ContentSerdes from "../types/content-serdes"
+export default class BasicResourceListener {
 
-/**
- * Resource that provides a Thing Description
- */
-export default class TDResourceListener extends BasicResourceListener implements ResourceListener {
-
-    private readonly thing : ExposedThing;
-
-    constructor(thing : ExposedThing) {
-        super();
-        this.thing = thing;
-    }
+    constructor() { }
 
     public onRead() : Promise<Buffer> {
-        return Promise.resolve(ContentSerdes.valueToBytes(this.thing.getDescription()));
+        return Promise.reject(new Error("Method Not Allowed"));
+    }
+
+    public onWrite(value : Buffer) : Promise<void> {
+        return Promise.reject(new Error("Method Not Allowed"));
+    }
+
+    public onInvoke(value : Buffer) : Promise<Buffer> {
+        return Promise.reject(new Error("Method Not Allowed"));
+    }
+
+    public onUnlink() : Promise<void> {
+        return Promise.reject(new Error("Method Not Allowed"));
     }
 }

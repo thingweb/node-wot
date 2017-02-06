@@ -21,11 +21,14 @@
  * Resource that provides an asset
  */
 
+import BasicResourceListener from "./basic-resource-listener";
 import logger from "../logger";
 
-export default class AssetResourceListener implements ResourceListener {
+export default class AssetResourceListener extends BasicResourceListener implements ResourceListener {
+
     private asset : string;
     constructor(asset : string) {
+        super();
         this.asset = asset;
     }
 
@@ -47,10 +50,5 @@ export default class AssetResourceListener implements ResourceListener {
         return new Promise<Buffer>(
             (resolve,reject) => resolve(new Buffer('TODO'))
         );
-    }
-
-    public onUnlink() : Promise<void> {
-        logger.debug(`Unlinking asset`);
-        return new Promise<void>((resolve,reject) => reject(new Error("Unlinking assets not allowed")))
     }
 }
