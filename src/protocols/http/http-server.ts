@@ -107,7 +107,18 @@ export default class HttpServer implements ProtocolServer {
     private handleRequest(req : http.IncomingMessage, res : http.ServerResponse) {
         logger.info(`HttpServer on port ${this.getPort()} received ${req.method} ${req.url} from ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
         res.on("finish", () => { logger.info(`HttpServer replied with ${res.statusCode} to ${req.socket.remoteAddress} port ${req.socket.remotePort}`); } );
-        
+
+        // Set CORS headers
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Request-Method', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+        res.setHeader('Access-Control-Allow-Headers', '*');
+        if (req.method === 'OPTIONS') {
+            res.writeHead(200);
+            res.end();
+            return;
+        }
+
         let requestUri = url.parse(req.url);
         let requestHandler = this.resources[requestUri.pathname];
 
