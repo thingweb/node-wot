@@ -173,7 +173,5 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
     }
 
-    console.log(serializeTD(genTD))
-
     return genTD;
 }
