@@ -52,10 +52,10 @@ export default class PropertyResourceListener implements ResourceListener {
     }
 
     public onInvoke(input : Buffer) : Promise<Buffer> {
-        return Promise.reject("not applicable")
+        return Promise.reject(new Error("Method 'invoke' not allowed"))
     }
 
     public onUnlink() : Promise<void> {
-        return Promise.reject("not applicable")
+        return Promise.reject(new Error("Method 'unlink' not allowed"))
     }
 }

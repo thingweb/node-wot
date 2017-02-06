@@ -36,11 +36,11 @@ export default class ActionResourceListener implements ResourceListener {
     }
 
     public onRead(): Promise<Buffer> {
-        return Promise.reject("illegal method")
+        return Promise.reject(new Error("Method 'read' not allowed"))
     }
 
     public onWrite(value: Buffer): Promise<void> {
-        return Promise.reject("illegal method")
+        return Promise.reject(new Error("Method 'write' not allowed"))
     }
 
     public onInvoke(value: Buffer): Promise<Buffer> {
@@ -51,6 +51,6 @@ export default class ActionResourceListener implements ResourceListener {
     }
 
     public onUnlink(): Promise<void> {
-        return Promise.reject("illegal method")
+        return Promise.reject(new Error("Method 'unlink' not allowed"))
     }
 }
