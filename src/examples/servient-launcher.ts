@@ -27,6 +27,9 @@ import HttpClientFactory from "../protocols/http/http-client-factory"
 import HttpServer from "../protocols/http/http-server"
 import logger from '../logger'
 
+const basedir = '.'
+
+let config = {};
 /**
  * Servient control for scripts
  * The lifecycle of a script should be. start up Servient
@@ -34,68 +37,76 @@ import logger from '../logger'
  * Use WoT object to Script
  */
 class PlugfestServient extends Servient {
-    public readConf(): void {
-        fs.readFile(path.join(__dirname,"wot-servient.config.json"), 'utf-8', (err, data) => {
-            if (err) {
-                logger.error("could not read config",err);
-            }
-            if(data) {
-                let config = JSON.parse(data);
-                logger.info("using config", config) 
-            }
+    public readConf(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            fs.readFile(path.join(basedir, "wot-servient.config.json"), 'utf-8', (err, data) => {
+                if (err) {
+                    logger.error("could not read config", err);
+                    reject(err)
+                }
+                if (data) {
+                    config = JSON.parse(data);
+                    logger.info("using config", config)
+                    resolve(config)
+                }
+            });
         });
     }
 }
+
 logger.level = 'silly'
 
-logger.info("i am running from", __dirname)
+logger.info("I am running from", basedir)
 
 let srv = new PlugfestServient();
 logger.info("created servient")
+srv.readConf().then((config) => {
+    console.dir(config)
+    let httpServer = (typeof config.http.port === 'number') ? new HttpServer(config.http.port) : new HttpServer();
+    srv.addServer(httpServer)
+    srv.addClientFactory(new HttpClientFactory())
 
-srv.addServer(new HttpServer())
-srv.addClientFactory(new HttpClientFactory())
-logger.info("added servers and clientfactories")
+    logger.info("added servers and clientfactories")
 
-let WoT = srv.start();
-logger.info("started servient")
-srv.readConf()
+    let WoT = srv.start();
+    logger.info("started servient")
 
-WoT.createThing("servient").then(thing => {
-    thing
-    .addAction("log",{ "type" : "string"})
-    .onInvokeAction("log",(msg) => {
-        logger.info(msg);
-        return "logged " + msg;
+    WoT.createThing("servient").then(thing => {
+        thing
+            .addAction("log", { "type": "string" })
+            .onInvokeAction("log", (msg) => {
+                logger.info(msg);
+                return "logged " + msg;
+            })
+
+        thing.addAction('runScript', { "type": "string" })
+            .onInvokeAction('runScript', (script) => {
+                logger.debug('runnig script', script)
+                return srv.runScript(script)
+            })
     })
-    
-    thing.addAction('runScript', { "type" : "string"})
-    .onInvokeAction('runScript',(script) => {
-        logger.debug('runnig script',script)
-        return srv.runScript(script)
+
+    logger.info("looking for scripts")
+    fs.readdir(path.join(basedir, 'autorun'), (err, files) => {
+        if (err) {
+            logger.warn("autorun of scripts encountered error", err)
+            return
+        }
+
+        logger.info("found scripts", files.length)
+        files.forEach((file) => {
+            let fname = path.join(basedir, 'autorun', file)
+            logger.info("running file ", fname)
+            fs.readFile(fname, 'utf8', (err, data) => {
+                if (err) logger.error("cannot read script", err)
+                logger.info("read code from file", file, data)
+                srv.runPriviledgedScript(data)
+            })
+        })
     })
 })
 
-logger.info("looking for scripts")
-fs.readdir(path.join(__dirname,'autorun'),(err,files) => {
-    if(err) {
-        logger.warn("autorun of scripts encountered error",err)
-        return
-    }
-    
-    logger.info("found scripts", files.length)
-    files.forEach((file) => {
-        let fname = path.join(__dirname,'autorun',file)
-        logger.info("running file ",fname)
-        fs.readFile(fname,'utf8',(err,data) => 
-        {
-            if(err) logger.error("cannot read script",err)
-            logger.info("read code from file",file,data)
-            srv.runPriviledgedScript(data)
-        })    
-    })
 
-})
 
 
 
