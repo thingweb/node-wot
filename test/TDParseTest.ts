@@ -214,7 +214,6 @@ class TDParserTest {
     @test "TD generation test"() {
 
           let servient: Servient = new Servient();
-
           let WoT = servient.start();
           return WoT.createThing("TDGeneratorTest").then((thing) => {
 
@@ -229,7 +228,7 @@ class TDParserTest {
             let add =  AddressHelper.getAddresses()[0];
             let ser: Array<ProtocolServer>  = servient.getServers();
 
-
+            expect(ser).to.be.an('Array').with.length.above(0)
             expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
             expect(td.interactions[0].links[0]).to.have.property("href").that.equals("http://"+add+":"+ser[0].getPort()+"/TDGeneratorTest/properties/prop1");
             expect(td.interactions[0]).to.have.property("semanticTypes").that.include("Property");

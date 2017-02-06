@@ -90,7 +90,7 @@ export default class Servient {
     }
 
     public getServers() : Array<ProtocolServer> {
-        return this.servers.splice(0)
+        return this.servers.slice(0)
     }
 
     public addClientFactory(clientFactory: ProtocolClientFactory): void {
