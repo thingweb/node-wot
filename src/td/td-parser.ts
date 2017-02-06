@@ -90,6 +90,7 @@ export function serializeTD(td : ThingDescription) : string {
     }
     for (let interaction of raw.interactions) {
         if (interaction.inputData===null) delete interaction.inputData;
+        if (interaction.writable===null) delete interaction.writable;
     }
     json = JSON.stringify(raw);
     // End of workaround
@@ -131,6 +132,7 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
       }
       else if(interaction.pattern === TD.InteractionPattern.Action) {
             interaction.semanticTypes.push("Action")
+
       }
       if(interaction.pattern === TD.InteractionPattern.Event) {
           interaction.semanticTypes.push("Event")
@@ -170,6 +172,8 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
 
     }
+
+    console.log(serializeTD(genTD))
 
     return genTD;
 }
