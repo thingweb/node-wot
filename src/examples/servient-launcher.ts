@@ -63,13 +63,13 @@ srv.readConf()
 
 WoT.createThing("servient").then(thing => {
     thing
-    .addAction("log",{ "valueType" : "string"})
+    .addAction("log",{ "type" : "string"})
     .onInvokeAction("log",(msg) => {
         logger.info(msg);
         return "logged " + msg;
     })
     
-    thing.addAction('runScript')
+    thing.addAction('runScript', { "type" : "string"})
     .onInvokeAction('runScript',(script) => {
         logger.debug('runnig script',script)
         return srv.runScript(script)
