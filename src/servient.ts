@@ -89,8 +89,8 @@ export default class Servient {
         return true;
     }
 
-    public getServerProtocols() : Array<string> {
-        return this.servers.map(server => server.getScheme())
+    public getServers() : Array<ProtocolServer> {
+        return this.servers.splice(0)
     }
 
     public addClientFactory(clientFactory: ProtocolClientFactory): void {
