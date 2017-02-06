@@ -125,9 +125,11 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
     logger.debug(`generateTD() found ${genTD.interactions.length} Interaction${genTD.interactions.length==1?"":"s"}`);
     for (let interaction of   genTD.interactions) {
-
+      /* empty semantic type array*/
+      interaction.semanticTypes = []
       /* assign interaction pattern to the rdf @type*/
       if(interaction.pattern === TD.InteractionPattern.Property) {
+
             interaction.semanticTypes.push("Property")
       }
       else if(interaction.pattern === TD.InteractionPattern.Action) {
