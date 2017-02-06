@@ -144,19 +144,31 @@ export default class CoapServer implements ProtocolServer {
             if (req.method==="GET") {
                 requestHandler.onRead()
                     .then( buffer => { res.code = "2.05"; res.end(buffer); })
-                    .catch( err => { res.code = "5.00"; res.end(err.message); });
+                    .catch( err => {
+                        logger.verbose(`CoapServer on port ${this.getPort()} got internal error on read '${requestUri.pathname}': ${err.message}`);
+                        res.code = "5.00"; res.end(err.message);
+                    });
             } else if (req.method==="PUT") {
                 requestHandler.onWrite(req.payload)
                     .then( () => { res.code = "2.04"; res.end("Changed"); } )
-                    .catch( err => { res.code = "5.00"; res.end(err.message); } );
+                    .catch( err => {
+                        logger.verbose(`CoapServer on port ${this.getPort()} got internal error on write '${requestUri.pathname}': ${err.message}`);
+                        res.code = "5.00"; res.end(err.message);
+                    });
             } else if (req.method==="POST") {
                 requestHandler.onInvoke(req.payload)
                     .then( buffer => { res.code = "2.05"; res.end(buffer); })
-                    .catch( err => { res.code = "5.00"; res.end(err.message); });
+                    .catch( err => {
+                        logger.verbose(`CoapServer on port ${this.getPort()} got internal error on invoke '${requestUri.pathname}': ${err.message}`);
+                        res.code = "5.00"; res.end(err.message);
+                    });
             } else if (req.method==="DELETE") {
                 requestHandler.onUnlink()
                     .then( () => { res.code = "2.02"; res.end("Deleted"); })
-                    .catch( err => { res.code = "5.00"; res.end(err.message); });
+                    .catch( err => {
+                        logger.verbose(`CoapServer on port ${this.getPort()} got internal error on unlink '${requestUri.pathname}': ${err.message}`);
+                        res.code = "5.00"; res.end(err.message);
+                    });
             } else {
                 res.code = "4.05";
                 res.end("Method Not Allowed");

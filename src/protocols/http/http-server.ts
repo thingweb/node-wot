@@ -118,7 +118,10 @@ export default class HttpServer implements ProtocolServer {
             if (req.method==="GET") {
                 requestHandler.onRead()
                     .then( buffer => { res.writeHead(200); res.end(buffer); })
-                    .catch( err => { res.writeHead(500); res.end(err.message); });
+                    .catch( err => {
+                        logger.verbose(`HttpServer on port ${this.getPort()} got internal error on read '${requestUri.pathname}': ${err.message}`);
+                        res.writeHead(500); res.end(err.message);
+                    });
             } else if (req.method==="PUT") {
                 let body : Array<any> = [];
                 req.on("data", (data) => { body.push(data) } );
@@ -126,7 +129,10 @@ export default class HttpServer implements ProtocolServer {
                     logger.verbose(`HttpServer on port ${this.getPort()} completed body '${body}'`);
                     requestHandler.onWrite(Buffer.concat(body))
                         .then( () => { res.writeHead(204); res.end(""); } )
-                        .catch( err => { res.writeHead(500); res.end(err.message); } );
+                        .catch( err => {
+                            logger.verbose(`HttpServer on port ${this.getPort()} got internal error on write '${requestUri.pathname}': ${err.message}`);
+                            res.writeHead(500); res.end(err.message);
+                        });
                 });
             } else if (req.method==="POST") {
                 let body : Array<any> = [];
@@ -135,12 +141,18 @@ export default class HttpServer implements ProtocolServer {
                     logger.verbose(`HttpServer on port ${this.getPort()} completed body '${body}'`);
                     requestHandler.onInvoke(Buffer.concat(body))
                         .then( buffer => { res.writeHead(200); res.end(buffer); })
-                        .catch( (err) => { res.writeHead(500); res.end(err.message); });
+                        .catch( (err) => {
+                            logger.verbose(`HttpServer on port ${this.getPort()} got internal error on invoke '${requestUri.pathname}': ${err.message}`);
+                            res.writeHead(500); res.end(err.message);
+                        });
                 });
             } else if (req.method==="DELETE") {
                 requestHandler.onUnlink()
                     .then( () => { res.writeHead(204); res.end(""); })
-                    .catch( err => { res.writeHead(500); res.end(err.message); });
+                    .catch( err => {
+                        logger.verbose(`HttpServer on port ${this.getPort()} got internal error on unlink '${requestUri.pathname}': ${err.message}`);
+                        res.writeHead(500); res.end(err.message);
+                    });
             } else {
                 res.writeHead(405);
                 res.end("Method Not Allowed");
