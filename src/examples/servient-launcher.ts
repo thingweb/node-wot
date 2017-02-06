@@ -68,6 +68,12 @@ WoT.createThing("servient").then(thing => {
         logger.info(msg);
         return "logged " + msg;
     })
+    
+    thing.addAction('runScript')
+    .onInvokeAction('runScript',(script) => {
+        logger.debug('runnig script',script)
+        return srv.runScript(script)
+    })
 })
 
 logger.info("looking for scripts")
