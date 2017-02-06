@@ -125,6 +125,18 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
     logger.debug(`generateTD() found ${genTD.interactions.length} Interaction${genTD.interactions.length==1?"":"s"}`);
     for (let interaction of   genTD.interactions) {
 
+      /* assign interaction pattern to the rdf @type*/
+      if(interaction.pattern === TD.InteractionPattern.Property) {
+            interaction.semanticTypes.push("Property")
+      }
+      else if(interaction.pattern === TD.InteractionPattern.Action) {
+            interaction.semanticTypes.push("Action")
+      }
+      if(interaction.pattern === TD.InteractionPattern.Event) {
+          interaction.semanticTypes.push("Event")
+      }
+
+
       let l = 0
       /* for each address, supported protocol, and media type an intreaction resouce is generated */
       for (let add of   AddressHelper.getAddresses()) {

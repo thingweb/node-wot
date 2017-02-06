@@ -211,7 +211,7 @@ class TDParserTest {
         expect(jsonActual).to.deep.equal(jsonExpected);
     }
 
-    @test "TD generation tets"() {
+    @test "TD generation test"() {
 
           let servient: Servient = new Servient();
 
@@ -229,9 +229,10 @@ class TDParserTest {
             let add =  AddressHelper.getAddresses()[0];
             expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
             expect(td.interactions[0].links[0]).to.have.property("href").that.equals("http://"+add+"/TDGeneratorTest/properties/prop1");
+            expect(td.interactions[0]).to.have.property("semanticTypes").that.include("Property");
             expect(td.interactions[1].links[0]).to.have.property("mediaType").that.equals("application/json");
             expect(td.interactions[1].links[0]).to.have.property("href").that.equals("http://"+add+"/TDGeneratorTest/actions/act1");
-
+            expect(td.interactions[1]).to.have.property("semanticTypes").that.include("Action");
           })
 
 
