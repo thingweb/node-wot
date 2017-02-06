@@ -213,8 +213,8 @@ export default class ExposedThing implements WoT.DynamicThing {
         let newAction = new TD.Interaction();
         newAction.pattern = TD.InteractionPattern.Action;
         newAction.name = actionName;
-        newAction.inputData = { 'valueType' : inputType};
-        newAction.outputData = { 'valueType' : outputType};
+        newAction.inputData = inputType ? { 'valueType' : inputType} : null;
+        newAction.outputData = outputType ? { 'valueType' : outputType} : null;
 
         this.interactions.push(newAction);
 
