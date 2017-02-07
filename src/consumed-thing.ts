@@ -96,10 +96,10 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
                     logger.info(`ConsumedThing '${this.name}' getting ${link.href}`);
-                    client.readResource(link.href).then( (buffer) => {
-                        let mediaType = link.mediaType
-                        logger.info(`decoding media type ${mediaType} in readProperty`)
-                        let value = ContentSerdes.bytesToValue(buffer,mediaType.toString());
+                    client.readResource(link.href).then( (content) => {
+                        if (!content.mediaType) content.mediaType = link.mediaType;
+                        logger.info(`decoding media type ${content.mediaType} in readProperty`);
+                        let value = ContentSerdes.bytesToValue(content);
                         resolve(value);
                     });
                 }
@@ -147,12 +147,12 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     logger.info(`ConsumedThing '${this.name}' invoking ${link.href} with '${parameter}'`);
                     // TODO #5 client expects Buffer; ConsumedThing would have the necessary TD valueType rule...
 
-                    let mediaType = link.mediaType; //TODO: I need a function to turn the enum to string
-                    let payload = ContentSerdes.valueToBytes(parameter) 
+                    let mediaType = link.mediaType;
+                    let input = ContentSerdes.valueToBytes(parameter, link.mediaType.toString());
 
-                    client.invokeResource(link.href, payload).then( (payload) => {
+                    client.invokeResource(link.href, input).then( (output) => {
                         // TODO #5 client returns Buffer on invoke; ConsumedThing would have the necessary TD valueType rule...
-                        let value = ContentSerdes.bytesToValue(payload,link.mediaType)
+                        let value = ContentSerdes.bytesToValue(output);
                         resolve(value);
                     });
                 }

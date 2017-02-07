@@ -56,8 +56,8 @@ export default class CoapClient implements ProtocolClient {
         return options;
     }
 
-    public readResource(uri : string) : Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
+    public readResource(uri : string) : Promise<Content> {
+        return new Promise<Content>((resolve, reject) => {
             let options : CoapRequestConfig = this.uriToOptions(uri);
 
             // TODO get explicit binding from TD
@@ -67,18 +67,18 @@ export default class CoapClient implements ProtocolClient {
             let req = this.agent.request(options);
             req.on("response", (res : any) => {
                 logger.info(`CoapClient received ${res.code} from ${uri}`);
+                logger.debug(`CoapClient received Content-Format: ${res.headers["Content-Format"]}`);
                 logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
-                resolve(res.payload);
+                let mediaType = res.headers["Content-Format"];
+                resolve({ mediaType: mediaType, body: res.payload });
             });
             req.on("error", (err : Error) => reject(err));
             req.end();
         });
     }
 
-    public writeResource(uri : string, payload : Buffer) : Promise<any> {
+    public writeResource(uri : string, content : Content) : Promise<any> {
         return new Promise<void>((resolve, reject) => {
-            
-            if (!payload) payload = new Buffer("");
 
             let options : CoapRequestConfig = this.uriToOptions(uri);
 
@@ -93,15 +93,14 @@ export default class CoapClient implements ProtocolClient {
                 resolve();
             });
             req.on("error", (err : Error) => reject(err));
-            req.write(payload);
+            req.setOption("Content-Format", content.mediaType);
+            req.write(content.body);
             req.end();
         });
     }
 
-    public invokeResource(uri : string, payload : Buffer) : Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-
-            if (!payload) payload = new Buffer("");
+    public invokeResource(uri : string, content? : Content) : Promise<Content> {
+        return new Promise<Content>((resolve, reject) => {
 
             let options : CoapRequestConfig = this.uriToOptions(uri);
 
@@ -112,11 +111,16 @@ export default class CoapClient implements ProtocolClient {
             let req = this.agent.request(options);
             req.on("response", (res : any) => {
                 logger.info(`CoapClient received ${res.code} from ${uri}`);
+                logger.debug(`CoapClient received Content-Format: ${res.headers["Content-Format"]}`);
                 logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
-                resolve(res.payload);
+                let mediaType = res.headers["Content-Format"];
+                resolve({ mediaType: mediaType, body: res.payload });
             });
             req.on("error", (err : Error) => reject(err));
-            req.write(payload);
+            if (content) {
+                req.setOption("Content-Format", content.mediaType);
+                req.write(content.body);
+            }
             req.end();
         });
     }

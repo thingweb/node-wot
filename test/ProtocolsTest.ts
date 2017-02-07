@@ -14,7 +14,7 @@ import AssetResourceListener from "../src/resource-listeners/asset-resource-list
 import * as http from "http";
 import * as rp from "request-promise";
 
-const coap = require('coap');
+const coap = require("coap");
 
 @suite("HTTP implementation")
 class HttpTest {

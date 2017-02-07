@@ -23,6 +23,7 @@
 
 import logger from "../../logger";
 import * as url from "url";
+import ContentSerdes from "../../types/content-serdes";
 
 const coap = require("coap");
 const deasync = require("deasync"); // to convert async calls to blocking calls
@@ -132,10 +133,16 @@ export default class CoapServer implements ProtocolServer {
 
     private handleRequest(req : any, res : any) {
         logger.info(`CoapServer on port ${this.getPort()} received ${req.method} ${req.url} from ${req.rsinfo.address} port ${req.rsinfo.port}`);
-        res.on("finish", () => { logger.info(`CoapServer replied with ${res.code} to ${req.rsinfo.address} port ${req.rsinfo.port}`); } );
+        res.on("finish", () => {
+            logger.info(`CoapServer replied with ${res.code} to ${req.rsinfo.address} port ${req.rsinfo.port}`);
+            // TODO find way to access information
+            //logger.debug(`CoapServer sent Content-Format: '${res.options}'`);
+        });
 
         let requestUri = url.parse(req.url);
         let requestHandler = this.resources[requestUri.pathname];
+        // TODO must be rejected with 4.15 Unsupported Content-Format, guessing not allowed
+        let mediaType = req.options["Content-Format"] ? req.options["Content-Format"] : ContentSerdes.DEFAULT;
 
         if (requestHandler===undefined) {
             res.code = "4.04";
@@ -143,28 +150,52 @@ export default class CoapServer implements ProtocolServer {
         } else {
             if (req.method==="GET") {
                 requestHandler.onRead()
-                    .then( buffer => { res.code = "2.05"; res.end(buffer); })
+                    .then( content => {
+                        res.code = "2.05";
+                        // TODO better mediaType check; more strict and throw Error?
+                        if (!content.mediaType || content.mediaType=="") {
+                            logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
+                        } else {
+                            res.setOption("Content-Format", content.mediaType);
+                        }
+                        res.end(content.body);
+                    })
                     .catch( err => {
                         logger.verbose(`CoapServer on port ${this.getPort()} got internal error on read '${requestUri.pathname}': ${err.message}`);
                         res.code = "5.00"; res.end(err.message);
                     });
             } else if (req.method==="PUT") {
-                requestHandler.onWrite(req.payload)
-                    .then( () => { res.code = "2.04"; res.end("Changed"); } )
+                requestHandler.onWrite({ mediaType: mediaType, body: req.payload })
+                    .then( () => {
+                        res.code = "2.04";
+                        res.end("Changed");
+                    })
                     .catch( err => {
                         logger.verbose(`CoapServer on port ${this.getPort()} got internal error on write '${requestUri.pathname}': ${err.message}`);
                         res.code = "5.00"; res.end(err.message);
                     });
             } else if (req.method==="POST") {
-                requestHandler.onInvoke(req.payload)
-                    .then( buffer => { res.code = "2.05"; res.end(buffer); })
+                requestHandler.onInvoke({ mediaType: mediaType, body: req.payload })
+                    .then( content => {
+                        res.code = "2.05";
+                        // TODO better mediaType check; more strict and throw Error?
+                        if (!content.mediaType || content.mediaType=="") {
+                            logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
+                        } else {
+                            res.setOption("Content-Format", content.mediaType);
+                        }
+                        res.end(content.body);
+                    })
                     .catch( err => {
                         logger.verbose(`CoapServer on port ${this.getPort()} got internal error on invoke '${requestUri.pathname}': ${err.message}`);
                         res.code = "5.00"; res.end(err.message);
                     });
             } else if (req.method==="DELETE") {
                 requestHandler.onUnlink()
-                    .then( () => { res.code = "2.02"; res.end("Deleted"); })
+                    .then( () => {
+                        res.code = "2.02";
+                        res.end("Deleted");
+                    })
                     .catch( err => {
                         logger.verbose(`CoapServer on port ${this.getPort()} got internal error on unlink '${requestUri.pathname}': ${err.message}`);
                         res.code = "5.00"; res.end(err.message);

@@ -26,29 +26,33 @@ import logger from "../logger";
 
 export default class AssetResourceListener extends BasicResourceListener implements ResourceListener {
 
-    private asset : string;
-    constructor(asset : string) {
+    private asset : Buffer;
+    private mediaType : string;
+
+    constructor(asset : string, mediaType : string = "text/plain") {
         super();
-        this.asset = asset;
+        this.mediaType = mediaType;
+        this.asset = new Buffer(asset);
     }
 
-    public onRead() : Promise<Buffer> {
+    public onRead() : Promise<Content> {
         logger.debug(`Reading asset`);
-        return new Promise<Buffer>(
-            (resolve,reject) => resolve(new Buffer(this.asset))
+        return new Promise<Content>(
+            (resolve,reject) => resolve({ mediaType: this.mediaType, body: new Buffer(this.asset) })
         );
     }
 
-    public onWrite(value : Buffer) : Promise<void> {
-        logger.debug(`Writing '${value.toString()}' to asset`);
-        this.asset = value.toString();
+    public onWrite(content : Content) : Promise<void> {
+        logger.debug(`Writing '${content.body.toString()}' to asset`);
+        this.mediaType = content.mediaType;
+        this.asset = content.body;
         return new Promise<void>((resolve,reject) => resolve())
     }
 
-    public onInvoke(value : Buffer) : Promise<Buffer> {
-        logger.debug(`Invoking '${value.toString()}' on asset`);
-        return new Promise<Buffer>(
-            (resolve,reject) => resolve(new Buffer('TODO'))
+    public onInvoke(content : Content) : Promise<Content> {
+        logger.debug(`Invoking '${content.body.toString()}' on asset`);
+        return new Promise<Content>(
+            (resolve,reject) => resolve({ mediaType: this.mediaType, body: new Buffer("TODO") })
         );
     }
 }

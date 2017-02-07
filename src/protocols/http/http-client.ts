@@ -51,8 +51,8 @@ export default class HttpClient implements ProtocolClient {
         return options;
     }
 
-    public readResource(uri : string) : Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
+    public readResource(uri : string) : Promise<Content> {
+        return new Promise<Content>((resolve, reject) => {
             let options : http.RequestOptions = this.uriToOptions(uri);
 
             // TODO get explicit binding from TD
@@ -61,11 +61,13 @@ export default class HttpClient implements ProtocolClient {
             logger.info(`HttpClient sending GET to ${uri}`);
             let req = http.request(options, (res) => {
                 logger.info(`HttpClient received ${res.statusCode} from ${uri}`);
+                logger.debug(`HttpClient received Content-Type: ${res.headers["Content-Type"]}`);
                 logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+                let mediaType : string = res.headers["Content-Type"];
                 let body : Array<any> = [];
                 res.on("data", (data) => { body.push(data) } );
                 res.on("end", () => {
-                    resolve(Buffer.concat(body));
+                    resolve({ mediaType: mediaType, body: Buffer.concat(body) });
                 });
             });
             req.on("error", err => reject(err));
@@ -73,16 +75,14 @@ export default class HttpClient implements ProtocolClient {
         });
     }
 
-    public writeResource(uri : string, payload : Buffer) : Promise<any> {
+    public writeResource(uri : string, content : Content) : Promise<any> {
         return new Promise<void>((resolve, reject) => {
-            
-            if (!payload) payload = new Buffer("");
 
             let options : http.RequestOptions = this.uriToOptions(uri);
 
             // TODO get explicit binding from TD
             options.method = "PUT";
-            options.headers = { "Content-Length": payload.byteLength };
+            options.headers = { "Content-Type": content.mediaType, "Content-Length": content.body.byteLength };
 
             logger.info(`HttpClient sending PUT to ${uri}`);
             let req = http.request(options, (res) => {
@@ -97,34 +97,34 @@ export default class HttpClient implements ProtocolClient {
                 });
             });
             req.on("error", err => reject(err));
-            req.write(payload);
+            req.write(content.body);
             req.end();
         });
     }
 
-    public invokeResource(uri : string, payload : Buffer) : Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-
-            if (!payload) payload = new Buffer("");
+    public invokeResource(uri : string, content? : Content) : Promise<Content> {
+        return new Promise<Content>((resolve, reject) => {
 
             let options : http.RequestOptions = this.uriToOptions(uri);
 
             // TODO get explicit binding from TD
             options.method = "POST";
-            options.headers = { "Content-Length": payload.byteLength };
+            if (content) options.headers = { "Content-Type": content.mediaType, "Content-Length": content.body.byteLength };
 
             logger.info(`HttpClient sending GET to ${uri}`);
             let req = http.request(options, (res) => {
                 logger.info(`HttpClient received ${res.statusCode} from ${uri}`);
+                logger.debug(`HttpClient received Content-Type: ${res.headers["Content-Type"]}`);
                 logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+                let mediaType : string = res.headers["Content-Type"];
                 let body : Array<any> = [];
                 res.on("data", (data) => { body.push(data) } );
                 res.on("end", () => {
-                    resolve(Buffer.concat(body));
+                    resolve({ mediaType: mediaType, body: Buffer.concat(body) });
                 });
             });
             req.on("error", err => reject(err));
-            req.write(payload);
+            if (content) req.write(content.body);
             req.end();
         });
     }

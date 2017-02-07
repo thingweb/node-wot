@@ -20,6 +20,10 @@
 import HttpClientFactory from "../../protocols/http/http-client-factory";
 import CoapClientFactory from "../../protocols/coap/coap-client-factory";
 
+// for level only - use console for output
+import logger from "../../logger";
+logger.level = "debug";
+
 let myHttpFactory = new HttpClientFactory();
 let myCoapFactory = new CoapClientFactory();
 
@@ -31,13 +35,13 @@ function runHttp(uri : string, client : ProtocolClient, next : Function) {
 
     client.start();
     client.readResource(uri).then( res => {
-        console.log(res.toString());
-        client.writeResource(uri, new Buffer("http-client")).then( () => {
+        console.log(res.body.toString());
+        client.writeResource(uri, {mediaType: "text/plain", body: new Buffer("http-client")}).then( () => {
             console.log("Write returned");
             client.readResource(uri).then( res => {
-                console.log(res.toString());
+                console.log(res.body.toString());
                 client.invokeResource(uri, null).then( res => {
-                    console.log(res.toString());
+                    console.log(res.body.toString());
                     client.unlinkResource(uri).then( () => {
                         console.log("Unlink returned");
                         client.stop();
@@ -54,13 +58,13 @@ function runCoap(uri : string, client : ProtocolClient) {
 
     client.start();
     client.readResource(uri).then( res => {
-        console.log(res.toString());
-        client.writeResource(uri, new Buffer("coap-client")).then( () => {
+        console.log(res.body.toString());
+        client.writeResource(uri, {mediaType: "text/plain", body: new Buffer("coap-client")}).then( () => {
             console.log("Write returned");
             client.readResource(uri).then( res => {
-                console.log(res.toString());
+                console.log(res.body.toString());
                 client.invokeResource(uri, null).then( res => {
-                    console.log(res.toString());
+                    console.log(res.body.toString());
                     client.unlinkResource(uri).then( () => {
                         console.log("Unlink returned");
                         client.stop();

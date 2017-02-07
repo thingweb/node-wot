@@ -25,6 +25,7 @@ import logger from "../../logger";
 
 import * as http from "http";
 import * as url from "url";
+import ContentSerdes from "../../types/content-serdes";
 
 const deasync = require("deasync");
 
@@ -106,7 +107,11 @@ export default class HttpServer implements ProtocolServer {
 
     private handleRequest(req : http.IncomingMessage, res : http.ServerResponse) {
         logger.info(`HttpServer on port ${this.getPort()} received ${req.method} ${req.url} from ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
-        res.on("finish", () => { logger.info(`HttpServer replied with ${res.statusCode} to ${req.socket.remoteAddress} port ${req.socket.remotePort}`); } );
+
+        res.on("finish", () => {
+            logger.info(`HttpServer replied with ${res.statusCode} to ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
+            logger.debug(`HttpServer sent Content-Type: '${res.getHeader("Content-Type")}'`);
+        });
 
         // Set CORS headers
         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -121,6 +126,8 @@ export default class HttpServer implements ProtocolServer {
 
         let requestUri = url.parse(req.url);
         let requestHandler = this.resources[requestUri.pathname];
+        // TODO must be rejected with 415 Unsupported Media Type, guessing not allowed
+        let mediaType = req.headers["Content-Type"] ? req.headers["Content-Type"] : ContentSerdes.DEFAULT;
 
         if (requestHandler===undefined) {
             res.writeHead(404);
@@ -128,21 +135,35 @@ export default class HttpServer implements ProtocolServer {
         } else {
             if (req.method==="GET") {
                 requestHandler.onRead()
-                    .then( buffer => { res.writeHead(200); res.end(buffer); })
+                    .then( content => {
+                        // TODO better mediaType check; more strict and throw Error?
+                        if (!content.mediaType || content.mediaType=="") {
+                            logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
+                        } else {
+                            res.setHeader("Content-Type", content.mediaType);
+                        }
+                        res.writeHead(200);
+                        res.end(content.body);
+                    })
                     .catch( err => {
                         logger.verbose(`HttpServer on port ${this.getPort()} got internal error on read '${requestUri.pathname}': ${err.message}`);
-                        res.writeHead(500); res.end(err.message);
+                        res.writeHead(500);
+                        res.end(err.message);
                     });
             } else if (req.method==="PUT") {
                 let body : Array<any> = [];
                 req.on("data", (data) => { body.push(data) } );
                 req.on("end", () => {
                     logger.verbose(`HttpServer on port ${this.getPort()} completed body '${body}'`);
-                    requestHandler.onWrite(Buffer.concat(body))
-                        .then( () => { res.writeHead(204); res.end(""); } )
+                    requestHandler.onWrite({ mediaType: mediaType, body: Buffer.concat(body)})
+                        .then( () => {
+                            res.writeHead(204);
+                            res.end("");
+                        })
                         .catch( err => {
                             logger.verbose(`HttpServer on port ${this.getPort()} got internal error on write '${requestUri.pathname}': ${err.message}`);
-                            res.writeHead(500); res.end(err.message);
+                            res.writeHead(500);
+                            res.end(err.message);
                         });
                 });
             } else if (req.method==="POST") {
@@ -150,19 +171,33 @@ export default class HttpServer implements ProtocolServer {
                 req.on("data", (data) => {body.push(data)} );
                 req.on("end", () => {
                     logger.verbose(`HttpServer on port ${this.getPort()} completed body '${body}'`);
-                    requestHandler.onInvoke(Buffer.concat(body))
-                        .then( buffer => { res.writeHead(200); res.end(buffer); })
+                    requestHandler.onInvoke({ mediaType: mediaType, body: Buffer.concat(body)})
+                        .then( content => {
+                            // TODO better mediaType check; more strict and throw Error?
+                            if (!content.mediaType || content.mediaType=="") {
+                                logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
+                            } else {
+                                res.setHeader("Content-Type", content.mediaType);
+                            }
+                            res.writeHead(200);
+                            res.end(content.body);
+                        })
                         .catch( (err) => {
                             logger.verbose(`HttpServer on port ${this.getPort()} got internal error on invoke '${requestUri.pathname}': ${err.message}`);
-                            res.writeHead(500); res.end(err.message);
+                            res.writeHead(500);
+                            res.end(err.message);
                         });
                 });
             } else if (req.method==="DELETE") {
                 requestHandler.onUnlink()
-                    .then( () => { res.writeHead(204); res.end(""); })
+                    .then( () => {
+                        res.writeHead(204);
+                        res.end("");
+                    })
                     .catch( err => {
                         logger.verbose(`HttpServer on port ${this.getPort()} got internal error on unlink '${requestUri.pathname}': ${err.message}`);
-                        res.writeHead(500); res.end(err.message);
+                        res.writeHead(500);
+                        res.end(err.message);
                     });
             } else {
                 res.writeHead(405);

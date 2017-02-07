@@ -26,25 +26,25 @@ import { expect, should } from "chai";
 // should must be called to augment all variables
 should();
 
-import ContentSerdes from '../src/types/content-serdes'
-import {ContentCodec} from '../src/types/content-serdes'
+import ContentSerdes from "../src/types/content-serdes";
+import {ContentCodec} from "../src/types/content-serdes";
 
 let checkJsonToJs = (value : any) : void => {
         let jsonBuffer = new Buffer(JSON.stringify(value));
-        expect(ContentSerdes.bytesToValue(jsonBuffer)).to.deep.equal(value);
+        expect(ContentSerdes.bytesToValue({ mediaType: "application/json", body: jsonBuffer })).to.deep.equal(value);
 }
 
 let checkJsToJson = (value: any) : void => {
-        let jsonBuffer = ContentSerdes.valueToBytes(value)
-        let reparsed = JSON.parse(jsonBuffer.toString());
+        let jsonContent = ContentSerdes.valueToBytes(value)
+        let reparsed = JSON.parse(jsonContent.body.toString());
         expect(reparsed).to.deep.equal(value);
 }
 
-/** Hodor will always return the String 'Hodor' */
+/** Hodor will always return the String "Hodor" */
 class HodorCodec implements ContentCodec {
-    getMediaType() : string {return "text/hodor"}
-    bytesToValue(bytes : Buffer) : any { return "Hodor" }
-    valueToBytes(value : any) : Buffer { return new Buffer("Hodor") }
+    getMediaType() : string { return "text/hodor"; }
+    bytesToValue(bytes : Buffer) : any { return "Hodor"; }
+    valueToBytes(value : any) : Buffer { return new Buffer("Hodor"); }
 }
 
 @suite("testing JSON codec")
@@ -79,12 +79,12 @@ class SerdesCodecTests {
     static after() {
     }
 
-    @test "new Codec should serialize"() {
-        ContentSerdes.valueToBytes("The meaning of Life","text/hodor").toString().should.equal("Hodor")
+    @test "new codec should serialize"() {
+        ContentSerdes.valueToBytes("The meaning of Life", "text/hodor").body.toString().should.equal("Hodor")
     }
 
     @test "new codec should deserialize"() {
         let buffer = new Buffer("Some actual meaningful stuff")
-        ContentSerdes.bytesToValue(buffer,"text/hodor").should.deep.equal("Hodor")
+        ContentSerdes.bytesToValue({ mediaType: "text/hodor", body: buffer }).should.deep.equal("Hodor")
     }
 }

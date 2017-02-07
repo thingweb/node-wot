@@ -26,6 +26,16 @@ export interface ContentCodec {
     valueToBytes(value : any) : Buffer
 }
 
+export class Content {
+    public mediaType : string;
+    public body : Buffer;
+
+    constructor(mediaType : string, body : Buffer) {
+        this.mediaType = mediaType;
+        this.body = body;
+    }
+}
+
 /** default implementation offerin Json de-/serialisation */
 class JsonCodec implements ContentCodec {
     getMediaType() : string {
@@ -60,8 +70,11 @@ class JsonCodec implements ContentCodec {
  * it can accept multiple serializers and decoders
  */
 export class ContentSerdes {
+
+    public readonly DEFAULT : string = "application/json";
+
     private codecs : Map<string,ContentCodec>= new Map();
-    private static instance : ContentSerdes
+    private static instance : ContentSerdes;
 
     private constructor() {}
 
@@ -74,27 +87,33 @@ export class ContentSerdes {
     }
 
     public addCodec(codec : ContentCodec) {
-        this.codecs.set(codec.getMediaType(),codec)
+        this.codecs.set(codec.getMediaType(), codec);
     }
 
     public getSupportedMediaTypes() : Array<string> {
         return Array.from(this.codecs.keys())
     }
 
-    public bytesToValue(bytes : Buffer, mediaType = "application/json") : any {
+    public bytesToValue(content : Content) : any {
+
+        // default to application/json
+        if (content.mediaType===undefined) content.mediaType = this.DEFAULT;
+
+        logger.verbose(`ContentSerdes deserializing from ${content.mediaType}`);
         //choose codec based on mediaType
-        if(!this.codecs.has(mediaType)) {
-            throw new Error(`Unsupported serialisation format: ${mediaType}`)
+        if(!this.codecs.has(content.mediaType)) {
+            throw new Error(`Unsupported serialisation format: ${content.mediaType}`)
         }
-        let codec = this.codecs.get(mediaType)
+        let codec = this.codecs.get(content.mediaType)
 
         //use codec to deserialize
-        let res = codec.bytesToValue(bytes);
+        let res = codec.bytesToValue(content.body);
 
         return res;
     }
 
-    public valueToBytes(value : any, mediaType= "application/json") : Buffer {
+    public valueToBytes(value : any, mediaType= this.DEFAULT) : Content {
+        logger.verbose(`ContentSerdes serializing to ${mediaType}`);
         //choose codec based on mediaType
         if(!this.codecs.has(mediaType)) {
             throw new Error(`Unsupported serialisation format: ${mediaType}`)
@@ -102,9 +121,9 @@ export class ContentSerdes {
         let codec = this.codecs.get(mediaType)
 
         //use codec to serialize
-        let res = codec.valueToBytes(value)
+        let bytes = codec.valueToBytes(value);
 
-        return res;
+        return { mediaType: mediaType, body: bytes };
     }
 }
 
