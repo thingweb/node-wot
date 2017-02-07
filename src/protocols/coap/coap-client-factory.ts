@@ -20,6 +20,8 @@
 /**
  * HTTP client Factory
  */
+/// <reference path="../protocol-client.ts" />
+
 
 import logger from "../../logger";
 import CoapClient from "./coap-client";

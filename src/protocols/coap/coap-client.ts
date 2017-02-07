@@ -20,6 +20,7 @@
 /**
  * CoAP client based on coap by mcollina
  */
+/// <reference path="../protocol-client.ts" />
 
 import logger from "../../logger";
 
