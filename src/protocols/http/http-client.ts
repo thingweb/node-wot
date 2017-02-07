@@ -20,6 +20,7 @@
 /**
  * HTTP client based on http
  */
+/// <reference path="../protocol-client.ts" />
 
 import logger from "../../logger";
 
@@ -75,7 +76,7 @@ export default class HttpClient implements ProtocolClient {
 
     public writeResource(uri : string, payload : Buffer) : Promise<any> {
         return new Promise<void>((resolve, reject) => {
-            
+
             if (!payload) payload = new Buffer("");
 
             let options : http.RequestOptions = this.uriToOptions(uri);
@@ -156,7 +157,7 @@ export default class HttpClient implements ProtocolClient {
     public start() : boolean {
         return true;
     }
-    
+
     public stop() : boolean {
         this.agent.destroy();
         return true;
