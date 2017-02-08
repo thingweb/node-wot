@@ -56,7 +56,7 @@ class JsonCodec implements ContentCodec {
             }
         }
         // FIXME need to remove wrapping from Current Practices and use RFC 7159
-        if (parsed.value) {
+        if (parsed && parsed.value) {
             logger.warn(`JsonCodec removing { value: ... } wrapper`);
             parsed = parsed.value;
         }
