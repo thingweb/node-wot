@@ -17,16 +17,19 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+// TODO move to exported interfaces / classes
+//import { Content } from "../types/content-serdes";
+
 declare interface ProtocolClient {
 
     /** this client is requested to perform a "read" on the resource with the given URI */
-    readResource(uri : string) : Promise<Buffer>;
+    readResource(uri : string) : Promise<Content>;
 
     /** this cliet is requested to perform a "write" on the resource with the given URI  */
-    writeResource(uri : string, payload : Buffer) : Promise<void>;
+    writeResource(uri : string, content : Content) : Promise<void>;
 
     /** this client is requested to perform an "invoke" on the resource with the given URI */
-    invokeResource(uri : String, payload : Buffer) : Promise<Buffer>;
+    invokeResource(uri : String, content : Content) : Promise<Content>;
 
     /** this client is requested to perform an "unlink" on the resource with the given URI */
     unlinkResource(uri : string) : Promise<void>;

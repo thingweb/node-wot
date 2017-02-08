@@ -30,7 +30,8 @@ import { expect, should } from "chai";
 // should must be called to augment all variables
 should();
 
-import Servient from '../src/servient'
+import Servient from "../src/servient";
+
 
 class TrapClient implements ProtocolClient {
 
@@ -40,16 +41,16 @@ class TrapClient implements ProtocolClient {
         this.trap = callback
     }
 
-    public readResource(uri : string) : Promise<Buffer> {
+    public readResource(uri : string) : Promise<Content> {
         return Promise.resolve(this.trap(uri));
     }
 
-    public writeResource(uri : string, payload: Buffer) : Promise<void> {
-        return Promise.resolve(this.trap(uri, payload));
+    public writeResource(uri : string, content: Content) : Promise<void> {
+        return Promise.resolve(this.trap(uri, content));
     }
 
-    public invokeResource(uri : String, payload: Buffer) : Promise<Buffer> {
-        return Promise.resolve(this.trap(uri, payload));
+    public invokeResource(uri : String, content: Content) : Promise<Content> {
+        return Promise.resolve(this.trap(uri, content));
     }
 
     public unlinkResource(uri : string) : Promise<void> {
@@ -141,7 +142,11 @@ class WoTClientTest {
 
     @test "read a value"(done) {
         // let the client return 42
-        WoTClientTest.clientFactory.setTrap((uri) => new Buffer("42"));
+        WoTClientTest.clientFactory.setTrap(
+            (uri) => {
+                return { mediaType: undefined, body: new Buffer("42") };
+            }
+        );
 
         WoTClientTest.WoT.consumeDescription(myThingDesc)
             .then((thing) => {
@@ -160,8 +165,8 @@ class WoTClientTest {
     @test "write a value"(done) {
         //verify the value transmitted
         WoTClientTest.clientFactory.setTrap(
-            (uri,buffer) => {
-                expect(buffer.toString()).to.equal("23");
+            (uri, content) => {
+                expect(content.body.toString()).to.equal("23");
             }
         )
 
@@ -178,9 +183,9 @@ class WoTClientTest {
     @test "call an action"(done) {
         //an action
         WoTClientTest.clientFactory.setTrap(
-            (uri,buffer) => {
-                expect(buffer.toString()).to.equal("23");
-                return new Buffer("42");
+            (uri, content) => {
+                expect(content.body.toString()).to.equal("23");
+                return { mediaType: undefined, body: new Buffer("42") };
             }
         )
 

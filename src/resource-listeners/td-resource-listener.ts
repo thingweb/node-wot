@@ -34,7 +34,7 @@ export default class TDResourceListener extends BasicResourceListener implements
         this.thing = thing;
     }
 
-    public onRead() : Promise<Buffer> {
+    public onRead() : Promise<Content> {
         return Promise.resolve(ContentSerdes.valueToBytes(this.thing.getDescription()));
     }
 }

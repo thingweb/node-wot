@@ -28,13 +28,13 @@ import * as TDParser from "./td/td-parser";
 import * as WoT from 'wot-typescript-definitions';
 
 export default class WoTImpl implements WoT.WoTFactory {
-    private srv : Servient;
+    private srv: Servient;
 
-    constructor(srv : Servient) {
+    constructor(srv: Servient) {
         this.srv = srv;
     }
 
-    discover(discoveryType : string, filter : Object) : Promise<WoT.ConsumedThing> {
+    discover(discoveryType: string, filter: Object): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
 
         });
@@ -44,17 +44,19 @@ export default class WoTImpl implements WoT.WoTFactory {
      * consume a thing description by URI and return a client representation object
      * @param uri URI of a thing description
      */
-    consumeDescriptionUri(uri : string) : Promise<WoT.ConsumedThing> {
+    consumeDescriptionUri(uri: string): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
             let client = this.srv.getClientFor(Helpers.extractScheme(uri));
             logger.info(`WoTImpl consuming TD at ${uri} with ${client}`);
-            client.readResource(uri).then((body) => {
-                let thingdesc = TDParser.parseTDString(body.toString());
+            client.readResource(uri).then((content) => {
+                if (content.mediaType !== 'application/json')
+                    logger.warn(`parsing TD from ${content.mediaType}`)
+                let thingdesc = TDParser.parseTDString(content.body.toString());
                 let pt = new ConsumedThing(this.srv, thingdesc);
                 client.stop();
                 resolve(pt);
             })
-            .catch( (err) => { console.error(err); } );
+                .catch((err) => { console.error(err); });
         });
     }
 
@@ -63,7 +65,7 @@ export default class WoTImpl implements WoT.WoTFactory {
      *
      * @param thingDescription a thing description
      */
-    consumeDescription(thingDescription : Object) : Promise<WoT.ConsumedThing> {
+    consumeDescription(thingDescription: Object): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
             logger.info(`WoTImpl consuming TD from object`);
             let td = TDParser.parseTDObject(thingDescription);
@@ -77,11 +79,11 @@ export default class WoTImpl implements WoT.WoTFactory {
      *
      * @param name name/identifier of the thing to be created
      */
-    createThing(name : string) : Promise<WoT.DynamicThing> {
+    createThing(name: string): Promise<WoT.DynamicThing> {
         return new Promise<WoT.DynamicThing>((resolve, reject) => {
             logger.info(`WoTImpl creating new ExposedThing '${name}'`);
             let mything = new ExposedThing(this.srv, name);
-            if(this.srv.addThing(mything)) {
+            if (this.srv.addThing(mything)) {
                 resolve(mything);
             } else {
                 reject(new Error("WoTImpl could not create Thing: " + mything))
@@ -94,28 +96,30 @@ export default class WoTImpl implements WoT.WoTFactory {
      *
      * @param uri URI of a thing description to be used as "template"
      */
-    createFromDescriptionUri(uri : string) : Promise<WoT.ExposedThing> {
+    createFromDescriptionUri(uri: string): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
             let client = this.srv.getClientFor(uri);
             logger.info(`WoTImpl creating new ExposedThing from TD at ${uri} with ${client}`);
-            client.readResource(uri).then((td) => {
-                let thingdesc = TDParser.parseTDObject(td);
+            client.readResource(uri).then((content) => {
+                if (content.mediaType !== 'application/json')
+                    logger.warn(`parsing TD from ${content.mediaType}`)
+                let thingdesc = TDParser.parseTDString(content.body.toString());
                 let mything = new ExposedThing(this.srv, thingdesc.name);
-                if(this.srv.addThing(mything)) {
+                if (this.srv.addThing(mything)) {
                     resolve(mything);
                 } else {
                     reject(new Error("WoTImpl could not create Thing from TD: " + mything))
                 }
-            });
+            }).catch((err) => logger.error("failed fetching TD", err));
         });
     }
 
-    createFromDescription(thingDescription : Object) : Promise<WoT.ExposedThing> {
+    createFromDescription(thingDescription: Object): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
             let thingdesc = TDParser.parseTDObject(thingDescription);
             logger.info(`WoTImpl creating new ExposedThing from object`);
             let mything = new ExposedThing(this.srv, thingdesc.name);
-            if(this.srv.addThing(mything)) {
+            if (this.srv.addThing(mything)) {
                 resolve(mything);
             } else {
                 reject(new Error("WoTImpl could not create Thing from object: " + mything))

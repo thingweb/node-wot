@@ -38,7 +38,7 @@ export default class ActionResourceListener extends BasicResourceListener implem
         this.name = action.name;
     }
 
-    public onInvoke(value: Buffer): Promise<Buffer> {
+    public onInvoke(value: Content): Promise<Content> {
         let param = ContentSerdes.bytesToValue(value); // TODO get mediatype
         return this.thing.invokeAction(this.name,param).then((value) => {
             return ContentSerdes.valueToBytes(value);

@@ -20,7 +20,7 @@
 import BasicResourceListener from "./basic-resource-listener";
 import ExposedThing from "../exposed-thing";
 import * as TD from "../td/thing-description";
-import ContentSerdes from "../types/content-serdes";
+import { default as ContentSerdes } from "../types/content-serdes";
 
 /**
  * Interaction resource that provides a Property
@@ -38,7 +38,7 @@ export default class PropertyResourceListener extends BasicResourceListener impl
         this.name = property.name;
     }
 
-    public onRead() : Promise<Buffer> {
+    public onRead() : Promise<Content> {
         return this.thing
             .getProperty(this.name)
             .then((value) => {
@@ -47,7 +47,7 @@ export default class PropertyResourceListener extends BasicResourceListener impl
             });
     }
 
-    public onWrite(input : Buffer) : Promise<void> {
+    public onWrite(input : Content) : Promise<void> {
         let value = ContentSerdes.bytesToValue(input); // TODO where to get media type
         return this.thing.setProperty(this.name, value);
     }

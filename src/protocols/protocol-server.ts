@@ -17,6 +17,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+// TODO move to exported interfaces / classes
+//import { Content } from "../types/content-serdes";
+
 /**
  * defines the crontract between the servient and each registered server 
  * methods are using booleans to nindicate success, could be migrated to Promises
@@ -30,6 +33,11 @@ declare interface ProtocolServer {
     getScheme() : string;
 }
 
+declare interface Content {
+    mediaType : string,
+    body : Buffer
+}
+
 /**
  * defines the behaviour for a Resource 
  * expected implementations are e.g. actionlistener, propertylistener etc.
@@ -39,8 +47,8 @@ declare interface ProtocolServer {
  * mkovatsc: we need some adapter that uses TD information to convert between our Scripting API valueType objects and the Buffer/mediaType. Where should this go?
  */
 declare interface ResourceListener {
-    onRead() : Promise<Buffer>;
-    onWrite(value : Buffer) : Promise<void>;
-    onInvoke(value : Buffer) : Promise<Buffer>;
+    onRead() : Promise<Content>;
+    onWrite(value : Content) : Promise<void>;
+    onInvoke(value : Content) : Promise<Content>;
     onUnlink() : Promise<void>;
 }

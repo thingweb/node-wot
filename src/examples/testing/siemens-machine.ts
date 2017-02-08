@@ -22,6 +22,8 @@ let tlvl =0;
 
 //setInterval(() => logger.info("i got ", pump, valve, level),1000)
 
+logger.level = 'silly'
+
 WoT.consumeDescriptionUri("coap://w3cwot.sytes.net:5688/tdv2")
 .then(thing => pump = thing)
 .then(() => WoT.consumeDescriptionUri("coap://w3cwot.sytes.net:5689/tdv2"))
@@ -68,12 +70,15 @@ WoT.consumeDescriptionUri("coap://w3cwot.sytes.net:5688/tdv2")
         });
 
         setInterval(() => {
-            valve.getProperty('status').then(status => thing.setProperty('valveOpen',status))
-            pump.getProperty('status').then(status => thing.setProperty('pumpRunning',status))
-            lvlMeter.getProperty('level').then(level => {tlvl = level; thing.setProperty('level',level)})
+            Promise.all([
+                valve.getProperty('status').then(status => thing.setProperty('valveOpen',status)),
+                pump.getProperty('status').then(status => thing.setProperty('pumpRunning',status)),
+                lvlMeter.getProperty('level').then(level => {tlvl = level; thing.setProperty('level',level)})
+            ])
+            .catch((err) => logger.error("error occured",err))
         },500)
 
         
     })
 })
-.catch((err) => logger.error("could not find pump"))
+.catch((err) => logger.error("error occured",err))

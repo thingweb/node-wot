@@ -25,8 +25,8 @@ import AssetResourceListener from "../../resource-listeners/asset-resource-liste
 import logger from "../../logger";
 logger.level = "debug";
 
-var res1 = new AssetResourceListener("Hello World");
-var res2 = new AssetResourceListener("Goodbye World")
+var res1 = new AssetResourceListener("\"Hello World\"", "application/json");
+var res2 = new AssetResourceListener("true", "application/json");
 
 var hServer = new HttpServer(8081);
 hServer.addResource("/test", res1);

@@ -24,7 +24,7 @@ import WoTImpl from "./wot-impl";
 import ThingDescription from "./td/thing-description";
 import * as TD from "./td/thing-description";
 import * as Helpers from "./helpers";
-import {default as ContentSerdes,ContentCodec} from "./types/content-serdes"
+import { default as ContentSerdes, ContentCodec } from "./types/content-serdes"
 import * as vm from 'vm'
 
 export default class Servient {

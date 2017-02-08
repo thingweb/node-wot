@@ -17,19 +17,19 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export default class BasicResourceListener {
+export default class BasicResourceListener implements ResourceListener {
 
     constructor() { }
 
-    public onRead() : Promise<Buffer> {
+    public onRead() : Promise<Content> {
         return Promise.reject(new Error("Method Not Allowed"));
     }
 
-    public onWrite(value : Buffer) : Promise<void> {
+    public onWrite(content : Content) : Promise<void> {
         return Promise.reject(new Error("Method Not Allowed"));
     }
 
-    public onInvoke(value : Buffer) : Promise<Buffer> {
+    public onInvoke(content : Content) : Promise<Content> {
         return Promise.reject(new Error("Method Not Allowed"));
     }
 
