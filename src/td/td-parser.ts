@@ -106,7 +106,7 @@ export function serializeTD(td : ThingDescription) : string {
 * @param thing
 * @param servient
 */
-export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDescription {
+export function generateTD(thing : ExposedThing, servient : Servient, requestHost? : string ) : ThingDescription {
 
     logger.silly(`generateTD() \n\`\`\`\n${thing}\n\`\`\``);
 
@@ -143,15 +143,14 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
       let l = 0
       /* for each address, supported protocol, and media type an intreaction resouce is generated */
-      for (let add of   AddressHelper.getAddresses()) {
+      for (let add of   AddressHelper.getAddresses(requestHost)) {
         for(let ser of servient.getServers()) {
           for(let med of servient.getSupportedMediaTypes()) {
 
             /* if server is online !==-1 assign the href information */
             if(ser.getPort()!==-1) {
                 let href:string = ser.getScheme()+"://" +add+":"+ser.getPort()+"/" + thing.name
-
-          
+         
                 /* depending of the resource pattern, uri is constructed */
                 if(interaction.pattern === TD.InteractionPattern.Property) {
                       interaction.links[l] = new TD.InteractionLink()

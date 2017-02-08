@@ -166,11 +166,11 @@ export default class ExposedThing implements WoT.DynamicThing {
     /**
      * Retrive the ExposedThing description for this object
      */
-    getDescription(): Object {
+    getDescription(forHost? : string): Object {
         //this is downright madness - TODO clean it up soon
         return JSON.parse(
             TDParser.serializeTD(
-                TDParser.generateTD(this, this.srv)
+                TDParser.generateTD(this, this.srv, forHost)
             )
         )
     }
