@@ -45,7 +45,7 @@ declare interface Color {
 
 var unicorn : WoT.DynamicThing;
 var gradient : Array<Color>;
-var gradientTimer : any;
+var gradientTimer : any = null;
 var gradIndex : number = 0;
 var gradNow : Color;
 var gradNext : Color;
@@ -90,11 +90,20 @@ function main() {
                 setBrightness(nu);
             })
             .onUpdateProperty("color", (nu, old) => {
-                if (gradientTimer) gradientTimer.cancel();
+                if (gradientTimer) {
+                    console.log(">> color canceling timer");
+                    gradientTimer.cancel();
+                }
                 setAll(nu.r, nu.g, nu.b);
             })
             .onInvokeAction("gradient", (input : Array<Color>) => {
-                if (input.length<2) return "minItems: 2";
+                if (input.length<2) return "{ \"minItems\": 2 }";
+
+                if (gradientTimer) {
+                    console.log(">> gradient canceling timer");
+                    gradientTimer.cancel();
+                }
+
                 gradient = input;
                 gradIndex = 0;
                 gradNow = gradient[0];
@@ -104,19 +113,22 @@ function main() {
                     g: (gradNext.g - gradNow.g)/20,
                     b: (gradNext.b - gradNow.b)/20
                 };
-                gradientTimer = setInterval(grdientStep, 50);
-                return "ok";
+                gradientTimer = setInterval(gradientStep, 50);
+                return "true";
             })
             .onInvokeAction("cancel", (input) => {
-                if (gradientTimer) gradientTimer.cancel();
+                if (gradientTimer) {
+                    console.log(">> cancel canceling timer");
+                    gradientTimer.cancel();
+                }
             });
         // initialize
-        unicorn.setProperty("brightness", 0);
+        unicorn.setProperty("brightness", 50);
         unicorn.setProperty("color", {r:0,g:0,b:0});
     });
 }
 
-function grdientStep() {
+function gradientStep() {
     gradNow = {
             r: (gradNow.r + gradVector.r),
             g: (gradNow.g + gradVector.g),
@@ -127,7 +139,7 @@ function grdientStep() {
         gradNow = gradient[gradIndex];
         gradIndex = ++gradIndex % gradient.length;
         gradNext = gradient[gradIndex];
-        console.log("Gradient: new index " + gradIndex);
+        console.log("> step new index " + gradIndex);
         gradVector = {
                 r: (gradNext.r - gradNow.r)/20,
                 g: (gradNext.g - gradNow.g)/20,
