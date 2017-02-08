@@ -122,8 +122,8 @@ function main() {
             })
             .onInvokeAction("cancel", (input) => {
                 if (gradientTimer) {
-                    console.log(">> cancel canceling timer");
-                    gradientTimer.cancel();
+                    console.log(">> canceling timer");
+                    clearInterval(gradientTimer);
                     gradientTimer = null;
                 }
             });
@@ -133,13 +133,17 @@ function main() {
     });
 }
 
+function roundColor(color : Color) : Color {
+    return { r: Math.round(color.r), g: Math.round(color.g), b: Math.round(color.b) };
+}
+
 function gradientStep() {
     gradNow = {
             r: (gradNow.r + gradVector.r),
             g: (gradNow.g + gradVector.g),
             b: (gradNow.b + gradVector.b)
         };
-    unicorn.setProperty("color", gradNow);
+    unicorn.setProperty("color", roundColor(gradNow));
     if (gradNow.r===gradNext.r && gradNow.g===gradNext.g && gradNow.b===gradNext.b) {
         gradNow = gradient[gradIndex];
         gradIndex = ++gradIndex % gradient.length;
