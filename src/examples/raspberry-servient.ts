@@ -45,7 +45,7 @@ declare interface Color {
 
 var unicorn : WoT.DynamicThing;
 var gradient : Array<Color>;
-var gradientTimer : any = null;
+var gradientTimer : any;
 var gradIndex : number = 0;
 var gradNow : Color;
 var gradNext : Color;
@@ -83,6 +83,12 @@ function main() {
                                         }
                                      },
                                      minItems: 2 })
+            .addAction("forceColor", { type: "object",
+                                       properties: {
+                                           r: { type: "integer", minimum: 0, maximum: 255 },
+                                           g: { type: "integer", minimum: 0, maximum: 255 },
+                                           b: { type: "integer", minimum: 0, maximum: 255 }
+                                       }})
             .addAction("cancel");
         // implementations
         unicorn
@@ -90,19 +96,12 @@ function main() {
                 setBrightness(nu);
             })
             .onUpdateProperty("color", (nu, old) => {
-                if (gradientTimer) {
-                    console.log(">> color canceling timer");
-                    gradientTimer.cancel();
-                }
                 setAll(nu.r, nu.g, nu.b);
             })
             .onInvokeAction("gradient", (input : Array<Color>) => {
                 if (input.length<2) return "{ \"minItems\": 2 }";
 
-                if (gradientTimer) {
-                    console.log(">> gradient canceling timer");
-                    gradientTimer.cancel();
-                }
+                unicorn.invokeAction("cancel");
 
                 gradient = input;
                 gradIndex = 0;
@@ -114,12 +113,18 @@ function main() {
                     b: (gradNext.b - gradNow.b)/20
                 };
                 gradientTimer = setInterval(gradientStep, 50);
-                return "true";
+                return true;
+            })
+            .onInvokeAction("forceColor", (input : Color) => {
+                unicorn.invokeAction("cancel");
+                unicorn.setProperty("color", input);
+                return true;
             })
             .onInvokeAction("cancel", (input) => {
                 if (gradientTimer) {
-                    console.log(">> cancel canceling timer");
-                    gradientTimer.cancel();
+                    console.log(">> canceling timer");
+                    clearInterval(gradientTimer);
+                    gradientTimer = null;
                 }
             });
         // initialize
@@ -128,13 +133,17 @@ function main() {
     });
 }
 
+function roundColor(color : Color) : Color {
+    return { r: Math.round(color.r), g: Math.round(color.g), b: Math.round(color.b) };
+}
+
 function gradientStep() {
     gradNow = {
             r: (gradNow.r + gradVector.r),
             g: (gradNow.g + gradVector.g),
             b: (gradNow.b + gradVector.b)
         };
-    unicorn.setProperty("color", gradNow);
+    unicorn.setProperty("color", roundColor(gradNow));
     if (gradNow.r===gradNext.r && gradNow.g===gradNext.g && gradNow.b===gradNext.b) {
         gradNow = gradient[gradIndex];
         gradIndex = ++gradIndex % gradient.length;

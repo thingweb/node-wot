@@ -50,7 +50,7 @@ export default class CoapServer implements ProtocolServer {
     }
 
     public getScheme() : string {
-        return "coap"
+        return "coap";
     }
 
     public addResource(path: string, res: ResourceListener) : boolean {
@@ -74,6 +74,7 @@ export default class CoapServer implements ProtocolServer {
 
         if (this.socketFree()) {
             this.server.listen(this.port, this.address, () => { this.running = true; });
+            setTimeout(() => { /* put something in the loop, since .listen() sometimes finishes immediately and deasync blocks */ }, 0);
             while (!this.running && !this.failed) {
                 deasync.runLoopOnce();
             }
