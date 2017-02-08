@@ -53,7 +53,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
 
         let schemes = links.map(link => Helpers.extractScheme(link.href))
         let cacheIdx = schemes.findIndex(scheme => this.clients.has(scheme))
-        
+
         if (cacheIdx !== -1) {
             logger.debug(`ConsumedThing '${this.name}' chose cached client for '${schemes[cacheIdx]}'`);
             let client = this.clients.get(schemes[cacheIdx]);
@@ -123,7 +123,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
                     logger.info(`ConsumedThing '${this.name}' setting ${link.href} to '${newValue}'`);
-                    let payload = ContentSerdes.valueToBytes(newValue,link.mediaType) 
+                    let payload = ContentSerdes.valueToBytes(newValue,link.mediaType)
                     resolve(client.writeResource(link.href, payload));
                 }
             }
@@ -168,6 +168,6 @@ export default class ConsumedThing implements WoT.ConsumedThing {
      * Retrive the thing description for this object
      */
     getDescription(): Object {
-        return TDParser.serializeTD(this.td);
+        return this.td;
     }
 }
