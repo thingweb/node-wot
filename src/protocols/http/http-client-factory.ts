@@ -32,7 +32,7 @@ export default class HttpClientFactory implements ProtocolClientFactory {
         logger.debug(`HttpClientFactory creating client for '${this.getSchemes()}'`);
         return new HttpClient();
     }
-    
+
     public init() : boolean {
         logger.info(`HttpClientFactory for '${this.getSchemes()}' initializing`);
         return true;
@@ -42,7 +42,7 @@ export default class HttpClientFactory implements ProtocolClientFactory {
         logger.info(`HttpClientFactory for '${this.getSchemes()}' destroyed`);
         return true;
     }
-   
+
     public getSchemes() : Array<string> {
         return HttpClientFactory.schemes;
     }
