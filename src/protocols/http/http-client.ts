@@ -25,14 +25,15 @@
 import logger from "../../logger";
 
 import * as http from "http";
+import * as https from "https";
 import * as url from "url";
 
 export default class HttpClient implements ProtocolClient {
 
     private readonly agent : http.Agent;
 
-    constructor() {
-        this.agent = new http.Agent({ keepAlive: true });
+    constructor(secure = false) {
+        this.agent = secure ? new https.Agent({ keepAlive: true }) : new http.Agent({ keepAlive: true });
     }
 
     public toString() : string {
