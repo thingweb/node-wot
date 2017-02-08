@@ -44,7 +44,7 @@ class JsonCodec implements ContentCodec {
 
     bytesToValue(bytes : Buffer) : any {
         logger.debug(`JsonCodec parsing '${bytes.toString()}'`);
-        let parsed : string;
+        let parsed : any;
         try {
             parsed = JSON.parse(bytes.toString());
         } catch(err) {
@@ -55,13 +55,18 @@ class JsonCodec implements ContentCodec {
                 throw err;
             }
         }
+        // FIXME need to remove wrapping from Current Practices and use RFC 7159
+        if (parsed.value) {
+            logger.warn(`JsonCodec removing { value: ... } wrapper`);
+            parsed = parsed.value;
+        }
         return parsed;
     }
 
     valueToBytes(value : any) : Buffer {
         logger.debug(`JsonCodec serializing '${value}'`);
-        let content = JSON.stringify(value);
-        return new Buffer(content);
+        let body = JSON.stringify(value);
+        return new Buffer(body);
     }
 }
 
