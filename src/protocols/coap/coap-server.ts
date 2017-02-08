@@ -73,9 +73,7 @@ export default class CoapServer implements ProtocolServer {
         logger.info("CoapServer starting on " + (this.address!==undefined ? this.address+" " : "") + "port " + this.port);
 
         if (this.socketFree()) {
-            this.server.listen(this.port, this.address);
-            
-            this.server._sock.on('listening', () => { this.running = true; });
+            this.server.listen(this.port, this.address, () => { this.running = true; });
             while (!this.running && !this.failed) {
                 deasync.runLoopOnce();
             }
