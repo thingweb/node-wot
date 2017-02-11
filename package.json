@@ -25,7 +25,8 @@
     "typescript": "^2.1.4",
     "wot-typescript-definitions": "^0.2.3",
     "request": "^2.3.4",
-    "request-promise": "^4.1.1"
+    "request-promise": "^4.1.1",
+    "lerna": "2.0.0-beta.37"
   },
   "dependencies": {
     "async": "^2.1.4",
