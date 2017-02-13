@@ -1,0 +1,25 @@
+{
+  "name": "node-wot-helpers",
+  "version": "0.1.0",
+  "files": [
+    "dist/"
+  ],
+  "description": "Winston-based logger for node-wot",
+  "main": "dist/helper.js",
+  "typings": "dist/helper.ts.d",
+  "scripts": {
+    "test": "mocha --compilers ts:ts-node/register"
+  },
+  "author": "the thingweb community",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "mocha-typescript": "^1.0.19",
+    "ts-node": "^2.1.0",
+    "typescript": "^2.1.6"
+  },
+  "dependencies": {
+    "node-wot-logger": "^0.1.0"
+  }
+}

@@ -9,24 +9,25 @@
     "start": "node dist/examples/servient-launcher.js",
     "prestart": "npm run build",
     "prepublish": "npm run build",
-    "dev-test-watch": "mocha-typescript-watch -p test/tsconfig.test.json"
+    "dev-test-watch": "mocha-typescript-watch -p test/tsconfig.test.json",
+    "bootstrap": "lerna bootstrap"
   },
   "author": "Johannes Hund (johannes.hund@gmail.com)",
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^3.4.34",
     "@types/node": "^6.0.45",
-    "@types/winston": "^2.2.0",
     "@types/request-promise": "^4.1.1",
+    "@types/winston": "^2.2.0",
     "chai": "^3.5.0",
+    "lerna": "^2.0.0-beta.37",
     "mocha": "^3.2.0",
     "mocha-typescript": "^1.0.15",
-    "typedjson": "git+https://github.com/JohnWeisz/TypedJSON.git",
-    "typescript": "^2.1.4",
-    "wot-typescript-definitions": "^0.2.3",
     "request": "^2.3.4",
     "request-promise": "^4.1.1",
-    "lerna": "2.0.0-beta.37"
+    "typedjson": "git+https://github.com/JohnWeisz/TypedJSON.git",
+    "typescript": "^2.1.4",
+    "wot-typescript-definitions": "^0.2.3"
   },
   "dependencies": {
     "async": "^2.1.4",
