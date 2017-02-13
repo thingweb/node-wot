@@ -1,0 +1,21 @@
+{
+  "name": "node-wot-logger",
+  "version": "0.1.0",
+  "files": [
+    "dist/"
+  ],
+  "description": "Winston-based logger for node-wot",
+  "main": "dist/logger.js",
+  "typings": "dist/logger.d.ts",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "the thingweb community",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^2.1.6"
+  },
+  "dependencies": {
+    "winston": "^2.3.1"
+  }
+}
