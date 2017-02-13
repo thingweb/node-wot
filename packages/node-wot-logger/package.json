@@ -8,7 +8,7 @@
   "main": "dist/logger.js",
   "typings": "dist/logger.d.ts",
   "scripts": {
-    "test": "mocha"
+    "build" : "tsc"
   },
   "author": "the thingweb community",
   "license": "MIT",

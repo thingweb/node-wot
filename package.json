@@ -4,8 +4,8 @@
   "description": "Web of Things implementation based on node.js and typescript",
   "main": "dist/main.js",
   "scripts": {
-    "build": "tsc -p .",
-    "test": "tsc -p test/tsconfig.test.json && mocha",
+    "build": "lerna run build",
+    "test": "lerna run test",
     "start": "node dist/examples/servient-launcher.js",
     "prestart": "npm run build",
     "prepublish": "npm run build",
