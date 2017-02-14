@@ -27,7 +27,7 @@ const os = require("os");
 
 export default class AddressHelper {
 
-    public static getAddresses() : Array<string> {
+    public static getAddresses(requestHost? : string) : Array<string> {
         let addresses : Array<any> = [];
 
         let interfaces = os.networkInterfaces();
@@ -43,6 +43,10 @@ export default class AddressHelper {
         }
 
         addresses.push("127.0.0.1");
+
+        if(requestHost && addresses.indexOf(requestHost)===-1) {
+            addresses.push(requestHost)
+        }
 
         logger.verbose(`AddressHelper identified ${addresses}`);
 
