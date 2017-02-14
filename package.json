@@ -5,7 +5,9 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "lerna run build",
+    "prebuild" : "npm run bootstrap",
     "test": "lerna run test",
+    "pretest" : "npm run bootstrap",
     "start": "node dist/examples/servient-launcher.js",
     "prestart": "npm run build",
     "prepublish": "npm run build",
@@ -25,7 +27,6 @@
     "mocha-typescript": "^1.0.15",
     "request": "^2.3.4",
     "request-promise": "^4.1.1",
-    "typedjson": "git+https://github.com/JohnWeisz/TypedJSON.git",
     "typescript": "^2.1.4",
     "wot-typescript-definitions": "^0.2.3"
   },
