@@ -23,7 +23,6 @@
  * 
  * h0ru5: there is currently some problem with VSC failing to recognize experimentalDecorators option, it is present in both tsconfigs
  */
-/// <reference path="../src/protocols/protocol-server.ts"  />
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
@@ -32,7 +31,7 @@ should();
 
 import Servient from "../src/servient";
 import * as listeners from "../src/resource-listeners/all-resource-listeners";
-
+import {ProtocolServer,Content,ResourceListener} from "node-wot-protocols"
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
     private listeners: Map<string, ResourceListener> = new Map();

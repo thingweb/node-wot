@@ -23,7 +23,6 @@
  * 
  * h0ru5: there is currently some problem with VSC failing to recognize experimentalDecorators option, it is present in both tsconfigs
  */
-/// <reference path="../src/protocols/protocol-client.ts"  />
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
@@ -31,7 +30,7 @@ import { expect, should } from "chai";
 should();
 
 import Servient from "../src/servient";
-
+import {ProtocolClient,ProtocolClientFactory,Content} from "node-wot-protocols"
 
 class TrapClient implements ProtocolClient {
 
@@ -140,11 +139,11 @@ class WoTClientTest {
         this.servient.shutdown()
     }
 
-    @test "read a value"(done) {
+    @test "read a value"(done : Function) {
         // let the client return 42
         WoTClientTest.clientFactory.setTrap(
-            (uri) => {
-                return { mediaType: undefined, body: new Buffer("42") };
+            () => {
+                return { mediaType : "application/json", body: new Buffer("42") };
             }
         );
 
@@ -162,10 +161,10 @@ class WoTClientTest {
             .catch(err => { throw err })
     }
 
-    @test "write a value"(done) {
+    @test "write a value"(done : Function) {
         //verify the value transmitted
         WoTClientTest.clientFactory.setTrap(
-            (uri, content) => {
+            (uri : string, content : Content) => {
                 expect(content.body.toString()).to.equal("23");
             }
         )
@@ -180,12 +179,12 @@ class WoTClientTest {
             .catch(err => { throw err })
     }
 
-    @test "call an action"(done) {
+    @test "call an action"(done : Function) {
         //an action
         WoTClientTest.clientFactory.setTrap(
-            (uri, content) => {
+            (uri : string, content : Content) => {
                 expect(content.body.toString()).to.equal("23");
-                return { mediaType: undefined, body: new Buffer("42") };
+                return { mediaType: "application/json", body: new Buffer("42") };
             }
         )
 
