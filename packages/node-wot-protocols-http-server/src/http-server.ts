@@ -21,11 +21,12 @@
  * HTTP Server based on http
  */
 
-import logger from "../../logger";
+import logger from "node-wot-logger";
 
 import * as http from "http";
 import * as url from "url";
-import ContentSerdes from "../../types/content-serdes";
+import ContentSerdes from "node-wot-content-serdes";
+import {ProtocolServer,ResourceListener} from "node-wot-protocols"
 
 const deasync = require("deasync");
 

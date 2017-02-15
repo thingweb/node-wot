@@ -21,9 +21,10 @@
  * CoAP Server based on coap by mcollina
  */
 
-import logger from "../../logger";
+import logger from "node-wot-logger";
 import * as url from "url";
-import ContentSerdes from "../../types/content-serdes";
+import ContentSerdes from "node-wot-content-serdes";
+import {ProtocolServer,ResourceListener,Content} from "node-wot-protocols"
 
 const coap = require("coap");
 const deasync = require("deasync"); // to convert async calls to blocking calls
