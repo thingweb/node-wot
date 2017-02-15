@@ -18,7 +18,7 @@
  */
 
 import logger from "node-wot-logger";
-import * as proto from "node-wot-protocols"
+import {ProtocolClient} from "node-wot-protocols"
 import Servient from "./servient";
 import {ThingDescription} from "node-wot-td-parser"
 import * as TD from "node-wot-td-parser";

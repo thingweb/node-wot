@@ -21,6 +21,7 @@ import logger from "node-wot-logger";
 
 import ExposedThing from "./exposed-thing";
 import WoTImpl from "./wot-impl";
+import {ProtocolClientFactory, ProtocolServer, ResourceListener, ProtocolClient} from "node-wot-protocols"
 import {ThingDescription} from "node-wot-td-parser";
 import * as TD from "node-wot-td-parser";
 import * as Helpers from "node-wot-helpers";

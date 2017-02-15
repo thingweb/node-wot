@@ -17,42 +17,38 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * Resource that provides an asset
- */
-
+import {Content,ResourceListener} from "node-wot-protocols"
 import BasicResourceListener from "./basic-resource-listener";
-import logger from "../logger";
+import ExposedThing from "../exposed-thing";
+import * as TD from "node-wot-td-parser";
+import ContentSerdes from "node-wot-content-serdes";
+/**
+ * Interaction resource that provides a Property
+ */
+export default class PropertyResourceListener extends BasicResourceListener implements ResourceListener {
 
-export default class AssetResourceListener extends BasicResourceListener implements ResourceListener {
+    private readonly thing : ExposedThing;
+    private readonly description : TD.Interaction;
+    private readonly name : string;
 
-    private asset : Buffer;
-    private mediaType : string;
-
-    constructor(asset : string, mediaType : string = "text/plain") {
+    constructor(thing : ExposedThing, property : TD.Interaction) {
         super();
-        this.mediaType = mediaType;
-        this.asset = new Buffer(asset);
+        this.thing = thing;
+        this.description = property;
+        this.name = property.name;
     }
 
     public onRead() : Promise<Content> {
-        logger.debug(`Reading asset`);
-        return new Promise<Content>(
-            (resolve,reject) => resolve({ mediaType: this.mediaType, body: new Buffer(this.asset) })
-        );
+        return this.thing
+            .getProperty(this.name)
+            .then((value) => {
+                let bytes = ContentSerdes.valueToBytes(value); // TODO where to get media type
+                return Promise.resolve(bytes);
+            });
     }
 
-    public onWrite(content : Content) : Promise<void> {
-        logger.debug(`Writing '${content.body.toString()}' to asset`);
-        this.mediaType = content.mediaType;
-        this.asset = content.body;
-        return new Promise<void>((resolve,reject) => resolve())
-    }
-
-    public onInvoke(content : Content) : Promise<Content> {
-        logger.debug(`Invoking '${content.body.toString()}' on asset`);
-        return new Promise<Content>(
-            (resolve,reject) => resolve({ mediaType: this.mediaType, body: new Buffer("TODO") })
-        );
+    public onWrite(input : Content) : Promise<void> {
+        let value = ContentSerdes.bytesToValue(input); // TODO where to get media type
+        return this.thing.setProperty(this.name, value);
     }
 }

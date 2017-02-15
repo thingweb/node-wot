@@ -19,36 +19,23 @@
 
 import BasicResourceListener from "./basic-resource-listener";
 import ExposedThing from "../exposed-thing";
-import * as TD from "../td/thing-description";
-import { default as ContentSerdes } from "../types/content-serdes";
 
+import {ResourceListener, Content} from "node-wot-protocols"
+import * as TD from "node-wot-td-parser";
+import ContentSerdes from "node-wot-content-serdes";
 /**
- * Interaction resource that provides a Property
+ * Resource that provides a Thing Description
  */
-export default class PropertyResourceListener extends BasicResourceListener implements ResourceListener {
+export default class TDResourceListener extends BasicResourceListener implements ResourceListener {
 
     private readonly thing : ExposedThing;
-    private readonly description : TD.Interaction;
-    private readonly name : string;
 
-    constructor(thing : ExposedThing, property : TD.Interaction) {
+    constructor(thing : ExposedThing) {
         super();
         this.thing = thing;
-        this.description = property;
-        this.name = property.name;
     }
 
     public onRead() : Promise<Content> {
-        return this.thing
-            .getProperty(this.name)
-            .then((value) => {
-                let bytes = ContentSerdes.valueToBytes(value); // TODO where to get media type
-                return Promise.resolve(bytes);
-            });
-    }
-
-    public onWrite(input : Content) : Promise<void> {
-        let value = ContentSerdes.bytesToValue(input); // TODO where to get media type
-        return this.thing.setProperty(this.name, value);
+        return Promise.resolve(ContentSerdes.valueToBytes(this.thing.getDescription()));
     }
 }

@@ -17,12 +17,12 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as proto from "node-wot-protocols"
+import {ResourceListener} from "node-wot-protocols"
 import {ThingDescription} from "node-wot-td-parser";
 import * as TD from "node-wot-td-parser";
-import * as Rest from "node-wot-resource-listeners";
+import * as Rest from "./resource-listeners/all-resource-listeners"
 import Servient from "./servient";
-import TDGenerator from "./td-generator"
+import * as TDGenerator from "./td-generator"
 
 export default class ExposedThing implements WoT.DynamicThing {
     // these arrays and their contents are mutable

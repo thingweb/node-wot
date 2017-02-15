@@ -17,10 +17,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import {ResourceListener,Content} from "node-wot-protocols"
 import BasicResourceListener from "./basic-resource-listener";
 import ExposedThing from "../exposed-thing";
-import * as TD from "../td/thing-description";
-import ContentSerdes from "../types/content-serdes";
+import * as TD from "node-wot-td-parser";
+import ContentSerdes from "node-wot-content-serdes";
 
 /**
  * Interaction resource that provides an Action
