@@ -127,6 +127,6 @@ function fixLinksV2toHrefsEncodingsV1(td1 : any, inter : any) {
   }
 }
 
-export function transformTDV2ObjToV1Obj(td2 : Object) : Object {
+export function transformTDV2ObjToV1Obj(td2 : Object) : any {
   return transformTDV2StringToV1String(JSON.stringify(td2));
 }

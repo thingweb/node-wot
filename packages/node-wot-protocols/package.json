@@ -1,0 +1,20 @@
+{
+  "name": "node-wot-protocols",
+  "version": "0.1.0",
+  "files": [
+    "dist/"
+  ],
+  "description": "interfaces for protocol implementations in node-wot",
+  "main": "dist/protocol-interfaces.d.ts",
+  "typings": "dist/protocol-interfaces.d.ts",
+  "scripts": {
+    "test": "mocha --compilers ts:ts-node/register",
+    "build" : "tsc"
+  },
+  "author": "the thingweb community",
+  "license": "MIT",
+  "devDependencies": {
+  },
+  "dependencies": {
+  }
+}

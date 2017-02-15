@@ -31,11 +31,39 @@
 
 import logger from "node-wot-logger";
 import * as url from "url";
+import * as os from "os"
 
 export function extractScheme(uri: string) {
     let parsed = url.parse(uri);
     // remove trailing ':'
-    let scheme = parsed.protocol.slice(0,-1);
+    let scheme = parsed.protocol.slice(0, -1);
     logger.debug(`Helpers found scheme '${scheme}'`);
     return scheme;
+}
+
+export function getAddresses(): Array<string> {
+    let addresses: Array<any> = [];
+
+    let interfaces = os.networkInterfaces();
+
+    for (let iface in interfaces) {
+        interfaces[iface].forEach((entry: any) => {
+            logger.silly(`AddressHelper found ${entry.address}`);
+            if (entry.internal === false) {
+                if (entry.family === "IPv4") addresses.push(entry.address);
+                else if (entry.scopeid == 0) addresses.push(entry.address);
+            }
+        });
+    }
+
+    addresses.push("127.0.0.1");
+
+    logger.verbose(`AddressHelper identified ${addresses}`);
+
+    return addresses;
+}
+
+export function toUriLiteral(address: string): string {
+    if (address.indexOf(":") != -1) address = `[${address}]`;
+    return address;
 }

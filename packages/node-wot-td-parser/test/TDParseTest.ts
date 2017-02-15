@@ -20,11 +20,7 @@
 /**
  * Basic test suite for TD parsing
  */
-import Servient from 'node-wot-servient'
-import ExposedThing from 'node-wot-core'
-import HttpServer from "node-wot-protocols-http-server"
 
-import {ContentCodec} from 'node-wot-content-serdes'
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
 // should must be called to augment all variables
@@ -32,7 +28,7 @@ should();
 
 import ThingDescription from "../src/thing-description";
 import * as TDParser from "../src/td-parser";
-import AddressHelper from "../src/protocols/address-helper";
+import * as AddressHelper from "node-wot-helpers";
 
 /** sample TD json-ld string from the CP page*/
 let tdSample1 = `{
@@ -210,39 +206,5 @@ class TDParserTest {
         expect(jsonActual).to.deep.equal(jsonExpected);
     }
 
-    @test "TD generation test"() {
-
-          let servient: Servient = new Servient();
-          let WoT = servient.start();
-          return WoT.createThing("TDGeneratorTest").then((thing) => {
-
-            servient.addServer(new HttpServer())
-            thing.addProperty("prop1", "number");
-            thing.addAction("act1", "", "string");
-
-            let td:ThingDescription = TDParser.generateTD(thing as ExposedThing, servient);
-
-            expect(td).to.have.property("name").that.equals("TDGeneratorTest");
-
-            let add =  AddressHelper.getAddresses()[0];
-            let ser: Array<ProtocolServer>  = servient.getServers();
-
-            expect(ser).to.be.an('Array').with.length.above(0)
-            expect(td.interactions[0]).to.have.property("name").that.include("prop1");
-            expect(td.interactions[1]).to.have.property("name").that.include("act1");
-            expect(td.interactions[0]).to.have.property("semanticTypes").that.include("Property");
-            expect(td.interactions[1]).to.have.property("semanticTypes").that.include("Action");
-
-            if(ser[0].getPort()!==-1) {
-              expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
-              expect(td.interactions[0].links[0]).to.have.property("href").that.equals("http://"+add+":"+ser[0].getPort()+"/TDGeneratorTest/properties/prop1");
-              expect(td.interactions[1].links[0]).to.have.property("mediaType").that.equals("application/json");
-              expect(td.interactions[1].links[0]).to.have.property("href").that.equals("http://"+add+":"+ser[0].getPort()+"/TDGeneratorTest/actions/act1");
-
-            }
-          })
-
-
-
-    }
+   
 }

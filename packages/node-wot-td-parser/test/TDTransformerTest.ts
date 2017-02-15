@@ -26,7 +26,7 @@
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect } from "chai";
 
-import * as TDTransformer from "../src/td/td-transformer";
+import * as TDTransformer from "../src/td-transformer";
 
 @suite("tests to verify the TD transformer")
 class TDTransformerTest {

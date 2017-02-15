@@ -34,7 +34,7 @@ import * as TD from "./thing-description";
 * @param td ThingDescription instance that keeps the interactions
 * @param name of the interaction which is searched for
 */
- function findInteractionByName(td : ThingDescription,  name: string) {
+ export function findInteractionByName(td : ThingDescription,  name: string) {
      let res = td.interactions.filter((ia) => ia.name === name)
      return (res.length > 0) ? res[0] : null;
  }
@@ -44,7 +44,7 @@ import * as TD from "./thing-description";
  * @param td ThingDescription instance that keeps the interactions
  * @param name of the interaction which is searched for
  */
- function findInteractionByNameType(td : ThingDescription,  name: string, pattern: TD.InteractionPattern) {
+ export function findInteractionByNameType(td : ThingDescription,  name: string, pattern: TD.InteractionPattern) {
      let res = td.interactions.filter((ia) => ia.pattern === pattern && ia.name === name)
      return (res.length > 0) ? res[0] : null;
  }
@@ -54,7 +54,7 @@ import * as TD from "./thing-description";
  * @param td ThingDescription instance that keeps the interactions
  * @param vocabularies list of vocabularies which has to be annotated the resource interacion
  */
- function findInteractionBySemantics(td : ThingDescription,  vocabularies: Array<string>) {
+ export function findInteractionBySemantics(td : ThingDescription,  vocabularies: Array<string>) {
     // let res = td.interactions.filter((ia) => ia.rdfType.filter((v)=> v.match(vocabularies)))
 
     //TODO

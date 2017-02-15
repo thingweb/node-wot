@@ -1,12 +1,12 @@
 {
-  "name": "node-wot-content-serdes",
+  "name": "node-wot-servient",
   "version": "0.1.0",
   "files": [
     "dist/"
   ],
-  "description": "Content serializer & deserializer for node-wot",
-  "main": "dist/content-serdes.js",
-  "typings": "dist/content-serdes.d.ts",
+  "description": "a framework for creating servients (server+client) according the W3C WoT specifications",
+  "main": "dist/servient.js",
+  "typings": "dist/servient.d.ts",
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register",
     "build" : "tsc"
@@ -21,6 +21,10 @@
     "typescript": "^2.1.6"
   },
   "dependencies": {
-    "node-wot-logger": "^0.1.0"
+    "node-wot-logger": "^0.1.0",
+    "node-wot-helpers": "^0.1.0",
+    "node-wot-content-serdes": "^0.1.0",
+    "node-wot-td-parser" : "^0.1.0",
+    "node-wot-protocols" : "^0.1.0"
   }
 }

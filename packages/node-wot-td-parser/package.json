@@ -5,11 +5,11 @@
     "dist/"
   ],
   "description": "Thing description parser and serializer for node-wot",
-  "main": "dist/td-parser.js",
-  "typings": "dist/td-parser.ts.d",
+  "main": "dist/td-tools.js",
+  "typings": "dist/td-tools.d.ts",
   "scripts": {
-    "test": "echo test suspended",
-    "build" : "echo build suspended"
+    "test": "mocha --compilers ts:ts-node/register",
+    "build" : "tsc"
   },
   "author": "the thingweb community",
   "license": "MIT",
@@ -21,8 +21,8 @@
     "typescript": "^2.1.6"
   },
   "dependencies": {
-    "node-wot-content-serdes": "^0.1.0",
     "node-wot-logger": "^0.1.0",
+    "node-wot-helpers": "^0.1.0",
     "typedjson": "git://github.com/JohnWeisz/TypedJSON.git"
   }
 }

@@ -21,9 +21,7 @@ import logger from "node-wot-logger";
 
 import ThingDescription from "./thing-description";
 import * as TD from "./thing-description";
-import Servient from "node-wot-servient";
-import ExposedThing from "node-wot-core";
-import AddressHelper from "../protocols/address-helper";
+import * as AddressHelper from "node-wot-helpers";
 
 import { JsonMember, JsonObject, TypedJSON } from "typedjson";
 
@@ -101,85 +99,4 @@ export function serializeTD(td : ThingDescription) : string {
     return json;
 }
 
-/** Based on the current definition of things'S/servient's  a TD represent is
-* generated
-* @param thing
-* @param servient
-*/
-export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDescription {
 
-    logger.silly(`generateTD() \n\`\`\`\n${thing}\n\`\`\``);
-
-
-
-    /* new td model instance */
-    let genTD:ThingDescription = new ThingDescription()
-
-
-
-    logger.debug(`generateTD() assign name ${thing.name}`);
-    genTD.name = thing.name
-
-    /* assign all interactions from ExposedThing */
-    genTD.interactions = thing.getInteractions()
-
-    logger.debug(`generateTD() found ${genTD.interactions.length} Interaction${genTD.interactions.length==1?"":"s"}`);
-    for (let interaction of   genTD.interactions) {
-      /* empty semantic type array*/
-      interaction.semanticTypes = []
-      /* assign interaction pattern to the rdf @type*/
-      if(interaction.pattern === TD.InteractionPattern.Property) {
-
-            interaction.semanticTypes.push("Property")
-      }
-      else if(interaction.pattern === TD.InteractionPattern.Action) {
-            interaction.semanticTypes.push("Action")
-
-      }
-      if(interaction.pattern === TD.InteractionPattern.Event) {
-          interaction.semanticTypes.push("Event")
-      }
-
-
-      let l = 0
-      /* for each address, supported protocol, and media type an intreaction resouce is generated */
-      for (let add of   AddressHelper.getAddresses()) {
-        for(let ser of servient.getServers()) {
-          for(let med of servient.getSupportedMediaTypes()) {
-
-            /* if server is online !==-1 assign the href information */
-            if(ser.getPort()!==-1) {
-                let href:string = ser.getScheme()+"://" +add+":"+ser.getPort()+"/" + thing.name
-
-          
-                /* depending of the resource pattern, uri is constructed */
-                if(interaction.pattern === TD.InteractionPattern.Property) {
-                      interaction.links[l] = new TD.InteractionLink()
-                      interaction.links[l].href = href+"/properties/" + interaction.name
-                      interaction.links[l].mediaType = med
-                }
-                else if(interaction.pattern === TD.InteractionPattern.Action) {
-                      interaction.links[l] = new TD.InteractionLink()
-                      interaction.links[l].href = href+"/actions/" + interaction.name
-                      interaction.links[l].mediaType = med
-                }
-                if(interaction.pattern === TD.InteractionPattern.Event) {
-                      interaction.links[l] = new TD.InteractionLink()
-                      interaction.links[l].href = href+"/events/" + interaction.name
-                      interaction.links[l].mediaType = med
-                }
-                logger.debug(`generateTD() assign href  ${interaction.links[l].href } for interaction ${interaction.name}`);
-                l++
-              }
-          }
-
-        }
-
-      }
-      l=0 /* reset for next interactions */
-
-
-    }
-
-    return genTD;
-}
