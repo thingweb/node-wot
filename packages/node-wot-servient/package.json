@@ -25,7 +25,7 @@
     "node-wot-logger": "^0.1.0",
     "node-wot-helpers": "^0.1.0",
     "node-wot-content-serdes": "^0.1.0",
-    "node-wot-td-parser" : "^0.1.0",
+    "node-wot-td-tools" : "^0.1.0",
     "node-wot-protocols" : "^0.1.0"
   }
 }

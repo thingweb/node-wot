@@ -20,9 +20,8 @@
 /**
  * HTTP client based on http
  */
-/// <reference path="../protocol-client.ts" />
-
-import logger from "../../logger";
+import logger from "node-wot-logger";
+import {ProtocolClient,Content} from "node-wot-protocols"
 
 import * as http from "http";
 import * as https from "https";

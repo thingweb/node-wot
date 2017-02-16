@@ -20,7 +20,7 @@
 import {Content,ResourceListener} from "node-wot-protocols"
 import BasicResourceListener from "./basic-resource-listener";
 import ExposedThing from "../exposed-thing";
-import * as TD from "node-wot-td-parser";
+import * as TD from "node-wot-td-tools";
 import ContentSerdes from "node-wot-content-serdes";
 /**
  * Interaction resource that provides a Property

@@ -32,7 +32,7 @@ import { expect, should } from "chai";
 // should must be called to augment all variables
 should();
 
-import * as TDTools from "node-wot-td-parser";
+import * as TDTools from "node-wot-td-tools";
 import * as TDGenerator from "../src/td-generator";
 import * as Helpers from "node-wot-helpers";
 

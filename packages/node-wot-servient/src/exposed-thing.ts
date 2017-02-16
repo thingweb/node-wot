@@ -18,8 +18,8 @@
  */
 
 import {ResourceListener} from "node-wot-protocols"
-import {ThingDescription} from "node-wot-td-parser";
-import * as TD from "node-wot-td-parser";
+import {ThingDescription} from "node-wot-td-tools";
+import * as TD from "node-wot-td-tools";
 import * as Rest from "./resource-listeners/all-resource-listeners"
 import Servient from "./servient";
 import * as TDGenerator from "./td-generator"

@@ -23,7 +23,7 @@ import Servient from "./servient";
 import ExposedThing from "./exposed-thing";
 import ConsumedThing from "./consumed-thing";
 import * as Helpers from "node-wot-helpers";
-import * as TDParser from "node-wot-td-parser";
+import * as TDParser from "node-wot-td-tools";
 
 import * as WoT from 'wot-typescript-definitions';
 

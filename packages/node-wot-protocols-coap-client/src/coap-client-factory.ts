@@ -20,10 +20,9 @@
 /**
  * HTTP client Factory
  */
-/// <reference path="../protocol-client.ts" />
 
-
-import logger from "../../logger";
+import logger from "node-wot-logger";
+import {ProtocolClientFactory,ProtocolClient} from "node-wot-protocols"
 import CoapClient from "./coap-client";
 
 export default class CoapClientFactory implements ProtocolClientFactory {

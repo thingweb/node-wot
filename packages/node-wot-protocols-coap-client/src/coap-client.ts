@@ -20,9 +20,8 @@
 /**
  * CoAP client based on coap by mcollina
  */
-/// <reference path="../protocol-client.ts" />
-
-import logger from "../../logger";
+import {ProtocolClient,Content} from "node-wot-protocols"
+import logger from "node-wot-logger";
 
 var coap = require('coap');
 import * as url from "url";

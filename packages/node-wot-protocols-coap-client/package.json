@@ -1,14 +1,13 @@
 {
-  "name": "node-wot-td-parser",
+  "name": "node-wot-protocols-coap-client",
   "version": "0.1.0",
   "files": [
     "dist/"
   ],
-  "description": "Thing description parser and serializer for node-wot",
-  "main": "dist/td-tools.js",
-  "typings": "dist/td-tools.d.ts",
+  "description": "an coap client plugin for node-wot",
+  "main": "dist/coap-client.js",
+  "typings": "dist/coap-client.d.ts",
   "scripts": {
-    "test": "mocha --compilers ts:ts-node/register",
     "build" : "tsc"
   },
   "author": "the thingweb community",
@@ -22,7 +21,6 @@
   },
   "dependencies": {
     "node-wot-logger": "^0.1.0",
-    "node-wot-helpers": "^0.1.0",
-    "typedjson": "git://github.com/JohnWeisz/TypedJSON.git"
+    "node-wot-protocols" : "^0.1.0"
   }
 }

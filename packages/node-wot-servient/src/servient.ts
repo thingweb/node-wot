@@ -22,8 +22,8 @@ import logger from "node-wot-logger";
 import ExposedThing from "./exposed-thing";
 import WoTImpl from "./wot-impl";
 import {ProtocolClientFactory, ProtocolServer, ResourceListener, ProtocolClient} from "node-wot-protocols"
-import {ThingDescription} from "node-wot-td-parser";
-import * as TD from "node-wot-td-parser";
+import {ThingDescription} from "node-wot-td-tools";
+import * as TD from "node-wot-td-tools";
 import * as Helpers from "node-wot-helpers";
 import { default as ContentSerdes, ContentCodec } from "node-wot-content-serdes"
 import * as vm from 'vm'

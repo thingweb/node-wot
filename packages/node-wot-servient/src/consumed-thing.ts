@@ -20,8 +20,8 @@
 import logger from "node-wot-logger";
 import {ProtocolClient} from "node-wot-protocols"
 import Servient from "./servient";
-import {ThingDescription} from "node-wot-td-parser"
-import * as TD from "node-wot-td-parser";
+import {ThingDescription} from "node-wot-td-tools"
+import * as TD from "node-wot-td-tools";
 import * as Helpers from "node-wot-helpers";
 import ContentSerdes from "node-wot-content-serdes"
 
