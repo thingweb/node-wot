@@ -8,7 +8,6 @@
   "main": "dist/wot-servient.js",
   "typings": "dist/wot-servient.d.ts",
   "scripts": {
-    "test": "mocha --compilers ts:ts-node/register",
     "build" : "tsc",
     "start" : "ts-node src/wot-servient.ts"
   },

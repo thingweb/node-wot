@@ -5,7 +5,7 @@
     "dist/"
   ],
   "description": "interfaces for protocol implementations in node-wot",
-  "main": "dist/protocol-interfaces.d.ts",
+  "main": "dist/protocol-interfaces.js",
   "typings": "dist/protocol-interfaces.d.ts",
   "scripts": {
     "build" : "tsc"
