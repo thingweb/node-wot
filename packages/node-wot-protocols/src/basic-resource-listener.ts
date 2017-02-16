@@ -16,40 +16,25 @@
  * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import {ResourceListener,Content} from "./protocol-interfaces"
 
-/**
- * Basic test suite for helper functions
- * uncomment the @skip to see failing tests
- * 
- * h0ru5: there is currently some problem with VSC failing to recognize experimentalDecorators option, it is present in both tsconfigs
- */
+export default class BasicResourceListener implements ResourceListener {
 
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import { expect } from "chai";
+    constructor() { }
 
-import * as Helpers from "../src/helpers";
-
-
-@suite("tests to verify the helpers")
-class HelperTest {
-    
-    @test "should extract the http scheme"() {
-        let scheme = Helpers.extractScheme("http://blablupp.de")
-        expect(scheme).to.eq("http")
-    }
-    
-    @test "should extract https scheme"() {
-        let scheme = Helpers.extractScheme("https://blablupp.de")
-        expect(scheme).to.eq("https")
-    }
-    
-    @test "should extract scheme when a port is given"() {
-        let scheme = Helpers.extractScheme("http://blablupp.de:8080")
-        expect(scheme).to.eq("http")
+    public onRead() : Promise<Content> {
+        return Promise.reject(new Error("Method Not Allowed"));
     }
 
-    @test "should extract combined scheme"() {
-        let scheme = Helpers.extractScheme("coap+ws://blablupp.de")
-        expect(scheme).to.eq("coap+ws")
+    public onWrite(content : Content) : Promise<void> {
+        return Promise.reject(new Error("Method Not Allowed"));
+    }
+
+    public onInvoke(content : Content) : Promise<Content> {
+        return Promise.reject(new Error("Method Not Allowed"));
+    }
+
+    public onUnlink() : Promise<void> {
+        return Promise.reject(new Error("Method Not Allowed"));
     }
 }

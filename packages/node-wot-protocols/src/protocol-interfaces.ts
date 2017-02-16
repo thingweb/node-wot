@@ -75,3 +75,6 @@ export interface ResourceListener {
     onInvoke(value : Content) : Promise<Content>;
     onUnlink() : Promise<void>;
 }
+
+export {default as BasicResourceListener} from "./basic-resource-listener"
+export {default as AssetResourceListener} from "./asset-resource-listener"

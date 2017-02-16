@@ -13,6 +13,7 @@
   "author": "the thingweb community",
   "license": "MIT",
   "devDependencies": {
+    "node-wot-logger" : "^0.1.0"
   },
   "dependencies": {
   }

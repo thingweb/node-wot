@@ -8,7 +8,8 @@
   "main": "dist/coap-server.js",
   "typings": "dist/coap-server.d.ts",
   "scripts": {
-    "build" : "tsc"
+    "build" : "tsc",
+    "test2": "mocha --compilers ts:ts-node/register"
   },
   "author": "the thingweb community",
   "license": "MIT",
