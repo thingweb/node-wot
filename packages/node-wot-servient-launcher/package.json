@@ -17,6 +17,9 @@
     "ts-node": "^2.1.0",
     "typescript": "^2.1.6"
   },
+  "bin": {
+    "wot-servient" : "dist/wos-servient.js"
+  },
   "dependencies": {
     "node-wot-protocols-http-server": "^0.1.0",
     "node-wot-protocols-http-client": "^0.1.0",
