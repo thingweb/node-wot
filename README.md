@@ -11,25 +11,25 @@ MIT License
 ## How to get ready for coding
 
 ```
+# install typescript (globally) - might need root priviledges!
+npm install -g typescript
+
 # Clone the repository
 $ git clone https://github.com/thingweb/node-wot
 
 # Go into the repository
 $ cd node-wot
 
-# install typescript (globally)
-npm install -g typescript
+# bootstrap the packages (installs dependencies and links the inter-dependencies)
+# Note: This step is automatically done on building or testing
+npm run bootstrap
 
-# install node-wot and dependent modules (installs TS locally)
-npm install
-
-# start tsc to transcompile TS code to JS in dist directory
-# Note: This step is automatically done on starting
-tsc
-# alternatively
+# use tsc to transcompile TS code to JS in dist directory for each package
 npm run build
 
+# run test suites of all packets
+npm run test 
+
 # start node-wot
-npm test # runs test suites
 npm start # very basic example
 ```
