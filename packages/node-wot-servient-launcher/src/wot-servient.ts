@@ -22,7 +22,8 @@
 
 import fs = require("fs");
 import * as path from 'path'
-import Servient from "node-wot-servient";
+
+import DefaultServient from "./default-servient"
 import HttpClientFactory from "node-wot-protocols-http-client"
 import HttpServer from "node-wot-protocols-http-server"
 import logger from "node-wot-logger"
@@ -30,69 +31,38 @@ import _ from 'wot-typescript-definitions';
 
 const basedir = '.'
 
-let config = {
-    http: { port: 80 }
-};
-/**
- * Servient control for scripts
- * The lifecycle of a script should be. start up Servient
- * Obtain WoT object from servient
- * Use WoT object to Script
- */
-class PlugfestServient extends Servient {
-    public readConf(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            fs.readFile(path.join(basedir, "wot-servient.config.json"), 'utf-8', (err, data) => {
-                if (err) {
-                    logger.warn("could not read config", err);
-                    reject(err)
-                }
-                if (data) {
-                    config = JSON.parse(data);
-                    logger.info("using config", config)
-                    resolve(config)
-                }
-            });
+let readConf = function (): Promise<any> {
+    return new Promise((resolve, reject) => {
+        fs.readFile(path.join(basedir, "wot-servient.config.json"), 'utf-8', (err, data) => {
+            if (err) {
+                logger.warn("could not read config", err);
+                reject(err)
+            }
+            if (data) {
+                config = JSON.parse(data);
+                logger.info("using config", config)
+                resolve(config)
+            }
         });
-    }
+    });
 }
+
 
 logger.level = 'silly'
 
 logger.info("I am running from", basedir)
 
-let srv = new PlugfestServient();
-logger.info("created servient")
-srv.readConf()
+
+let config = {
+    http: { port: 80 }
+};
+
+readConf()
     .then((conf) => { config = conf })
-    .catch(err => {})
+    .catch(err => { })
 
 console.dir(config)
-
-
-let httpServer = (typeof config.http.port === 'number') ? new HttpServer(config.http.port) : new HttpServer();
-srv.addServer(httpServer)
-srv.addClientFactory(new HttpClientFactory())
-
-logger.info("added servers and clientfactories")
-
-let WoT = srv.start();
-logger.info("started servient")
-
-WoT.createThing("servient").then(thing => {
-    thing
-        .addAction("log", { "type": "string" })
-        .onInvokeAction("log", (msg) => {
-            logger.info(msg);
-            return "logged " + msg;
-        })
-
-    thing.addAction('runScript', { "type": "string" })
-        .onInvokeAction('runScript', (script) => {
-            logger.debug('runnig script', script)
-            return srv.runScript(script)
-        })
-})
+let srv = new DefaultServient(config);
 
 logger.info("looking for scripts")
 fs.readdir(path.join(basedir, 'autorun'), (err, files) => {
