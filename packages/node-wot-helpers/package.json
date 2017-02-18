@@ -9,11 +9,12 @@
   "typings": "dist/helpers.d.ts",
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register",
-    "build" : "tsc"
+    "build": "tsc"
   },
   "author": "the thingweb community",
   "license": "MIT",
   "devDependencies": {
+    "@types/chai": "^3.4.35",
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
     "mocha-typescript": "^1.0.19",
