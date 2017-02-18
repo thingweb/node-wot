@@ -4,7 +4,7 @@
   "files": [
     "dist/"
   ],
-  "description": "Winston-based logger for node-wot",
+  "description": "Helper functions used throughout the stack",
   "main": "dist/helpers.js",
   "typings": "dist/helpers.d.ts",
   "scripts": {
@@ -15,6 +15,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^3.4.35",
+    "@types/node": "^7.0.5",
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
     "mocha-typescript": "^1.0.19",
