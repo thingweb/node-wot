@@ -9,7 +9,7 @@
   "typings": "dist/coap-server.d.ts",
   "scripts": {
     "build": "tsc",
-    "test2": "mocha --compilers ts:ts-node/register"
+    "test": "mocha --compilers ts:ts-node/register"
   },
   "author": "the thingweb community",
   "license": "MIT",
@@ -23,8 +23,10 @@
     "typescript": "^2.1.6"
   },
   "dependencies": {
-    "node-wot-logger": "^0.1.0",
+    "coap": "^0.20.0",
+    "deasync": "^0.1.9",
     "node-wot-content-serdes": "^0.1.0",
+    "node-wot-logger": "^0.1.0",
     "node-wot-protocols": "^0.1.0"
   }
 }

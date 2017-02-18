@@ -10,9 +10,6 @@ should();
 import CoapServer from "../src/coap-server";
 import {AssetResourceListener} from "node-wot-protocols"
 
-import * as http from "http";
-import * as rp from "request-promise";
-
 const coap = require("coap");
 
 @suite("CoAP implementation")
