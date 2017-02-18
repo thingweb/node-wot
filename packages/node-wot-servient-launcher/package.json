@@ -8,17 +8,18 @@
   "main": "dist/wot-servient.js",
   "typings": "dist/wot-servient.d.ts",
   "scripts": {
-    "build" : "tsc",
-    "start" : "ts-node src/wot-servient.ts"
+    "build": "tsc",
+    "start": "ts-node src/wot-servient.ts"
   },
   "author": "the thingweb community",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^7.0.5",
     "ts-node": "^2.1.0",
     "typescript": "^2.1.6"
   },
   "bin": {
-    "wot-servient" : "dist/wos-servient.js"
+    "wot-servient": "dist/wos-servient.js"
   },
   "dependencies": {
     "node-wot-protocols-http-server": "^0.1.0",

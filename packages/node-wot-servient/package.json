@@ -14,12 +14,13 @@
   "author": "the thingweb community",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^7.0.5",
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
     "mocha-typescript": "^1.0.19",
+    "node-wot-protocols-http-server": "^0.1.0",
     "ts-node": "^2.1.0",
-    "typescript": "^2.1.6",
-    "node-wot-protocols-http-server": "^0.1.0"
+    "typescript": "^2.1.6"
   },
   "dependencies": {
     "node-wot-content-serdes": "^0.1.0",

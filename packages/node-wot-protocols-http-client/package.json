@@ -8,11 +8,12 @@
   "main": "dist/http-client-factory.js",
   "typings": "dist/http-client-factory.d.ts",
   "scripts": {
-    "build" : "tsc"
+    "build": "tsc"
   },
   "author": "the thingweb community",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^7.0.5",
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
     "mocha-typescript": "^1.0.19",
@@ -21,6 +22,6 @@
   },
   "dependencies": {
     "node-wot-logger": "^0.1.0",
-    "node-wot-protocols" : "^0.1.0"
+    "node-wot-protocols": "^0.1.0"
   }
 }

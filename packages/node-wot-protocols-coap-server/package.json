@@ -8,12 +8,13 @@
   "main": "dist/coap-server.js",
   "typings": "dist/coap-server.d.ts",
   "scripts": {
-    "build" : "tsc",
+    "build": "tsc",
     "test2": "mocha --compilers ts:ts-node/register"
   },
   "author": "the thingweb community",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^7.0.5",
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
     "mocha-typescript": "^1.0.19",
@@ -23,6 +24,6 @@
   "dependencies": {
     "node-wot-logger": "^0.1.0",
     "node-wot-content-serdes": "^0.1.0",
-    "node-wot-protocols" : "^0.1.0"
+    "node-wot-protocols": "^0.1.0"
   }
 }

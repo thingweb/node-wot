@@ -8,14 +8,16 @@
   "main": "dist/logger.js",
   "typings": "dist/logger.d.ts",
   "scripts": {
-    "build" : "tsc"
+    "build": "tsc"
   },
   "author": "the thingweb community",
   "license": "MIT",
   "devDependencies": {
+    "@types/winston": "^2.2.0",
     "typescript": "^2.1.6"
   },
   "dependencies": {
+    "nodejs": "0.0.0",
     "winston": "^2.3.1"
   }
 }
