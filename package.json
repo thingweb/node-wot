@@ -8,10 +8,7 @@
     "prebuild": "npm run bootstrap",
     "test": "lerna run test",
     "pretest": "npm run bootstrap",
-    "start": "node dist/examples/servient-launcher.js",
     "prestart": "npm run build",
-    "prepublish": "npm run build",
-    "dev-test-watch": "mocha-typescript-watch -p test/tsconfig.test.json",
     "bootstrap": "lerna bootstrap"
   },
   "author": "Johannes Hund (johannes.hund@gmail.com)",
