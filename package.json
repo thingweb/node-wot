@@ -7,8 +7,7 @@
     "build": "lerna run build",
     "prebuild": "npm run bootstrap",
     "test": "lerna run test",
-    "pretest": "npm run bootstrap",
-    "prestart": "npm run build",
+    "pretest": "npm run build",
     "bootstrap": "lerna bootstrap"
   },
   "author": "Johannes Hund (johannes.hund@gmail.com)",
