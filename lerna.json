@@ -3,6 +3,5 @@
   "packages": [
     "packages/*"
   ],
-  "version": "independent",
-  "concurrency" : 1
+  "version": "independent"
 }
