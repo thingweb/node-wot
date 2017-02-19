@@ -13,10 +13,10 @@
   "author": "Johannes Hund (johannes.hund@gmail.com)",
   "license": "MIT",
   "devDependencies": {
-    "lerna": "^2.0.0-beta.37"
+    "lerna": "^2.0.0-beta.37",
+    "typescript": "^2.1.6"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "git://github.com/thingweb/node-wot.git"
