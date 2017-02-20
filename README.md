@@ -11,14 +11,14 @@ MIT License
 ## How to get ready for coding
 
 ```
-# install typescript (globally) - might need root priviledges!
-npm install -g typescript
-
 # Clone the repository
 $ git clone https://github.com/thingweb/node-wot
 
 # Go into the repository
 $ cd node-wot
+
+# install root dependencies (locally installs tools like typescript and lerna)
+npm install 
 
 # bootstrap the packages (installs dependencies and links the inter-dependencies)
 # Note: This step is automatically done on building or testing
@@ -30,6 +30,4 @@ npm run build
 # run test suites of all packets
 npm run test 
 
-# start node-wot
-npm start # very basic example
 ```
