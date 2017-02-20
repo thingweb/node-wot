@@ -35,7 +35,7 @@ export default class DefaultServient extends Servient {
             port: 80
         },
         log : {
-            level : 'silly'
+            level : 'info'
         }
 
     }
@@ -76,6 +76,12 @@ export default class DefaultServient extends Servient {
                     logger.debug('runnig script', script)
                     return this.runScript(script)
                 })
+            
+            thing.addAction('shutdown')
+            .onInvokeAction('shutdown',() => {
+                logger.info("shutting down as requested")
+                this.shutdown()
+            })
         })
         return WoT;
     }

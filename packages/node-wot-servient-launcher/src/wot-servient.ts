@@ -58,6 +58,7 @@ readConf()
     .catch(err => {
         return srv = new DefaultServient()
     }).then(srv => {
+        srv.start()
         logger.info("looking for scripts")
         return runAllScripts(srv)
     })
