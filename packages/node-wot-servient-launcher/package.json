@@ -19,7 +19,7 @@
     "typescript": "^2.1.6"
   },
   "bin": {
-    "wot-servient": "dist/wos-servient.js"
+    "wot-servient": "dist/wot-servient.js"
   },
   "dependencies": {
     "node-wot-logger": "^0.1.0",

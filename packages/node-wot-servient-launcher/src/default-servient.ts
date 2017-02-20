@@ -33,15 +33,24 @@ export default class DefaultServient extends Servient {
     private static readonly defaultServientConf = {
         http: {
             port: 80
+        },
+        log : {
+            level : 'silly'
         }
+
     }
 
-    private readonly config : any = DefaultServient.defaultServientConf;
+    public readonly config : any = DefaultServient.defaultServientConf;
 
-    public constructor(config: any) {
+    public constructor(config?: any) {
         super()
         Object.assign(this.config,config)
-        let httpServer = (typeof config.http.port === 'number') ? new HttpServer(config.http.port) : new HttpServer();
+        logger.info("configured servient",this.config)
+
+        const lvl = this.config.log.level
+        logger.info("set logging to level", lvl)
+
+        let httpServer = (typeof this.config.http.port === 'number') ? new HttpServer(this.config.http.port) : new HttpServer();
         this.addServer(httpServer)
         this.addClientFactory(new HttpClientFactory())
     }
