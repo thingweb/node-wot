@@ -28,7 +28,6 @@ The default config is this:
         log : {
             level : 'info'
         }
-
     }
 ```
 

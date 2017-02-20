@@ -18,36 +18,36 @@
  */
 
 
-"use strict"
+'use strict'
 
-import fs = require("fs");
+import fs = require('fs');
 import * as path from 'path'
 
-import DefaultServient from "./default-servient"
-import HttpClientFactory from "node-wot-protocols-http-client"
-import HttpServer from "node-wot-protocols-http-server"
-import logger from "node-wot-logger"
+import DefaultServient from './default-servient'
+import HttpClientFactory from 'node-wot-protocols-http-client'
+import HttpServer from 'node-wot-protocols-http-server'
+import logger from 'node-wot-logger'
 import _ from 'wot-typescript-definitions';
 
 const basedir = '.'
 
 let readConf = function (): Promise<any> {
     return new Promise((resolve, reject) => {
-        fs.readFile(path.join(basedir, ".wot.conf.json"), 'utf-8', (err, data) => {
+        fs.readFile(path.join(basedir, '.wot.conf.json'), 'utf-8', (err, data) => {
             if (err) {
-                logger.warn("could not read config", err);
+                logger.warn('could not read config', err);
                 reject(err)
             }
             if (data) {
                 const config = JSON.parse(data);
-                logger.info("using config", config)
+                logger.info('using config', config)
                 resolve(config)
             }
         });
     });
 }
 
-logger.info("I am running from", basedir)
+logger.info('I am running from', basedir)
 
 let srv: DefaultServient = null;
 
@@ -59,7 +59,7 @@ readConf()
         return srv = new DefaultServient()
     }).then(srv => {
         srv.start()
-        logger.info("looking for scripts")
+        logger.info('looking for scripts')
         return runAllScripts(srv)
     })
     .catch(err => console.error(err))
@@ -67,28 +67,24 @@ readConf()
 const runAllScripts = function (srv: DefaultServient): void {
     fs.readdir(basedir, (err, files) => {
         if (err) {
-            logger.warn("autorun of scripts encountered error", err)
+            logger.warn('autorun of scripts encountered error', err)
             return
         }
 
-        logger.info("found scripts", files.length)
+        logger.info('found scripts', files.length)
         files.forEach((file) => {
             if (file.substr(0, 1) !== '.') {
                 let fname = path.join(basedir, file)
-                logger.info("running file ", fname)
+                logger.info('running file ', fname)
                 fs.readFile(fname, 'utf8', (err, data) => {
-                    if (err) logger.error("cannot read script", err)
-                    logger.info("read code from file", file, data)
+                    if (err) {
+                        logger.error('cannot read script', err)
+                    }
+                    logger.info('read code from file', file, data)
                     srv.runPriviledgedScript(data)
                 })
 
             }
         })
     })
-
 }
-
-
-
-
-

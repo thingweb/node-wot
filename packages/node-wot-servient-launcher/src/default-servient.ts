@@ -18,15 +18,13 @@
  */
 
 
-"use strict"
+'use strict'
 
-import Servient from "node-wot-servient";
-import HttpClientFactory from "node-wot-protocols-http-client"
-import HttpServer from "node-wot-protocols-http-server"
-import logger from "node-wot-logger"
-import _ from 'wot-typescript-definitions';
-
-
+import Servient from 'node-wot-servient'
+import HttpClientFactory from 'node-wot-protocols-http-client'
+import HttpServer from 'node-wot-protocols-http-server'
+import logger from 'node-wot-logger'
+import _ from 'wot-typescript-definitions' // to get the definitions
 
 export default class DefaultServient extends Servient {
 
@@ -40,38 +38,37 @@ export default class DefaultServient extends Servient {
 
     }
 
-    public readonly config : any = DefaultServient.defaultServientConf;
+    public readonly config: any = DefaultServient.defaultServientConf;
 
     public constructor(config?: any) {
         super()
         Object.assign(this.config,config)
-        logger.info("configured servient",this.config)
+        logger.info('configured servient',this.config)
 
         const lvl = this.config.log.level
-        logger.info("set logging to level", lvl)
+        logger.info('set logging to level', lvl)
 
         let httpServer = (typeof this.config.http.port === 'number') ? new HttpServer(this.config.http.port) : new HttpServer();
         this.addServer(httpServer)
         this.addClientFactory(new HttpClientFactory())
     }
 
-
     /**
      * start
      */
     public start() {
         let WoT = super.start();
-        logger.info("started servient")
+        logger.info('started servient')
 
-        WoT.createThing("servient").then(thing => {
+        WoT.createThing('servient').then(thing => {
             thing
-                .addAction("log", { "type": "string" })
-                .onInvokeAction("log", (msg) => {
+                .addAction('log', { 'type': 'string' })
+                .onInvokeAction('log', (msg) => {
                     logger.info(msg);
-                    return "logged " + msg;
+                    return 'logged ' + msg;
                 })
 
-            thing.addAction('runScript', { "type": "string" })
+            thing.addAction('runScript', { 'type': 'string' })
                 .onInvokeAction('runScript', (script) => {
                     logger.debug('runnig script', script)
                     return this.runScript(script)
@@ -79,7 +76,7 @@ export default class DefaultServient extends Servient {
             
             thing.addAction('shutdown')
             .onInvokeAction('shutdown',() => {
-                logger.info("shutting down as requested")
+                logger.info('shutting down as requested')
                 this.shutdown()
             })
         })

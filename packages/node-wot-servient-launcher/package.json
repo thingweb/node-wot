@@ -16,7 +16,8 @@
   "devDependencies": {
     "@types/node": "^7.0.5",
     "ts-node": "^2.1.0",
-    "typescript": "^2.1.6"
+    "typescript": "^2.1.6",
+    "typescript-standard": "^0.3.14"
   },
   "bin": {
     "wot-servient": "dist/wot-servient.js"
