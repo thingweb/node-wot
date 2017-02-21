@@ -17,19 +17,17 @@ $ git clone https://github.com/thingweb/node-wot
 # Go into the repository
 $ cd node-wot
 
-# install typescript (globally)
-npm install -g typescript
+# install root dependencies (locally installs tools like typescript and lerna)
+npm install 
 
-# install node-wot and dependent modules (installs TS locally)
-npm install
+# bootstrap the packages (installs dependencies and links the inter-dependencies)
+# Note: This step is automatically done on building or testing
+npm run bootstrap
 
-# start tsc to transcompile TS code to JS in dist directory
-# Note: This step is automatically done on starting
-tsc
-# alternatively
+# use tsc to transcompile TS code to JS in dist directory for each package
 npm run build
 
-# start node-wot
-npm test # runs test suites
-npm start # very basic example
+# run test suites of all packets
+npm run test 
+
 ```

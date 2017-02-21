@@ -1,0 +1,33 @@
+{
+  "name": "node-wot-integration-tests",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Integration tests for node-wot",
+  "scripts": {
+    "test": "mocha --compilers ts:ts-node/register"
+  },
+  "author": "the thingweb community",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^3.4.35",
+    "@types/request-promise": "^4.1.33",
+    "chai": "^3.5.0",
+    "coap": "^0.20.0",
+    "mocha": "^3.2.0",
+    "mocha-typescript": "^1.0.19",
+    "node-wot-logger": "^0.1.0",
+    "node-wot-protocols": "^0.1.0",
+    "node-wot-protocols-coap-client": "^0.1.0",
+    "node-wot-protocols-coap-server": "^0.1.0",
+    "node-wot-protocols-http-client": "^0.1.0",
+    "node-wot-protocols-http-server": "^0.1.0",
+    "node-wot-servient": "^0.1.0",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1",
+    "ts-node": "^2.1.0",
+    "typescript": "^2.1.6"
+  },
+  "dependencies": {
+    "coap": "^0.20.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "node-wot-protocols-coap-client",
+  "version": "0.1.0",
+  "files": [
+    "dist/"
+  ],
+  "description": "an coap client plugin for node-wot",
+  "main": "dist/coap-client.js",
+  "typings": "dist/coap-client.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "the thingweb community",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^3.4.35",
+    "@types/node": "^7.0.5",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "mocha-typescript": "^1.0.19",
+    "ts-node": "^2.1.0",
+    "typescript": "^2.1.6"
+  },
+  "dependencies": {
+    "node-wot-logger": "^0.1.0",
+    "node-wot-protocols": "^0.1.0"
+  }
+}
