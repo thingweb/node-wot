@@ -5,8 +5,8 @@
     "dist/"
   ],
   "description": "an coap client plugin for node-wot",
-  "main": "dist/coap-client.js",
-  "typings": "dist/coap-client.d.ts",
+  "main": "dist/coap-client-factory.js",
+  "typings": "dist/coap-client-factory.d.ts",
   "scripts": {
     "build": "tsc"
   },
@@ -22,6 +22,7 @@
     "typescript": "^2.1.6"
   },
   "dependencies": {
+    "coap": "^0.20.0",
     "node-wot-logger": "^0.1.0",
     "node-wot-protocols": "^0.1.0"
   }
