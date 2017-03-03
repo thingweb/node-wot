@@ -20,23 +20,24 @@
 
 "use strict"
 
-import Servient from "../servient";
-import HttpServer from "../protocols/http/http-server";
-import CoapServer from "../protocols/coap/coap-server";
-import logger from "../logger";
-
+// global W3C WoT Scripting API definitions
+import _ from "wot-typescript-definitions";
+// node-wot implementation of W3C WoT Servient 
+import Servient from "node-wot-servient";
+// exposed protocols
+import HttpServer from "node-wot-protocols-http-server";
+import CoapServer from "node-wot-protocols-coap-server";
+// tools
+import logger from "node-wot-logger";
 const net = require('net');
 
-// This server listens on a Unix socket at /var/run/mysocket
+// the UnicornHat API daemon listens on a Unix socket at /var/run/mysocket
 const client = net.createConnection('/var/run/unicornd.socket');
-client.on('connect', () => {
-    main();
-
-});
+client.on('connect', () => { main(); });
 client.on('error', (err : Error) => { console.log('unicornd error: ' + err.message);});
 client.on('data', (data : Buffer) => { console.log('unicornd data: ' + data.toString());});
-client.on('drain', () => { console.log('Bytes written: ' + client.bytesWritten);});
 
+// local definition
 declare interface Color {
     r : number,
     g : number,
@@ -51,17 +52,18 @@ var gradNow : Color;
 var gradNext : Color;
 var gradVector : Color;
 
+// main logic after connecting to UnicornHat daemon
 function main() {
 
-    let srv = new Servient();
+    let servient = new Servient();
     logger.info("created servient");
 
-    srv.addServer(new HttpServer());
-    srv.addServer(new CoapServer());
-
+    servient.addServer(new HttpServer());
+    servient.addServer(new CoapServer());
     logger.info("added servers");
 
-    let WoT = srv.start();
+    // get WoT object for privileged script
+    let WoT = servient.start();
     logger.info("started servient")
 
     WoT.createThing("unicorn").then(thing => {
@@ -133,6 +135,7 @@ function main() {
     });
 }
 
+// helper
 function roundColor(color : Color) : Color {
     return { r: Math.round(color.r), g: Math.round(color.g), b: Math.round(color.b) };
 }
