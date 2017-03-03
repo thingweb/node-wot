@@ -1,0 +1,31 @@
+{
+  "name": "node-wot-protocols-file-client",
+  "version": "0.1.0",
+  "files": [
+    "dist/"
+  ],
+  "description": "an OPC UA client plugin for node-wot",
+  "main": "dist/file-client.js",
+  "typings": "dist/file-client.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "the thingweb community",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^3.4.35",
+    "@types/node": "^7.0.5",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "mocha-typescript": "^1.0.19",
+    "node-wot-protocols-coap-client": "^0.1.0",
+    "node-wot-servient": "^0.1.0",
+    "ts-node": "^2.1.0",
+    "typescript": "^2.1.6",
+    "wot-typescript-definitions": "^0.2.3"
+  },
+  "dependencies": {
+    "node-wot-logger": "^0.1.0",
+    "node-wot-protocols": "^0.1.0"
+  }
+}
