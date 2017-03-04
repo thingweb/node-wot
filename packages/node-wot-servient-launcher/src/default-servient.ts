@@ -18,39 +18,45 @@
  */
 
 
-'use strict'
+"use strict"
 
-import Servient from 'node-wot-servient'
-import HttpClientFactory from 'node-wot-protocols-http-client'
-import HttpServer from 'node-wot-protocols-http-server'
-import logger from 'node-wot-logger'
-import _ from 'wot-typescript-definitions' // to get the definitions
+// global W3C WoT Scripting API definitions
+import _ from "wot-typescript-definitions";
+// node-wot implementation of W3C WoT Servient 
+import Servient from "node-wot-servient";
+// protocols used
+import HttpServer from "node-wot-protocols-http-server";
+import HttpClientFactory from "node-wot-protocols-http-client";
+// tools
+import logger from "node-wot-logger";
 
 export default class DefaultServient extends Servient {
 
     private static readonly defaultServientConf = {
+        servient: {
+            scriptDir: ".",
+            scriptAction: true
+        },
         http: {
-            port: 80
+            port: 8080
         },
         log : {
-            level : 'info'
+            level : "info"
         }
-
     }
 
-    public readonly config: any = DefaultServient.defaultServientConf;
+    public readonly config : any = DefaultServient.defaultServientConf;
 
-    public constructor(config?: any) {
-        super()
-        Object.assign(this.config,config)
-        logger.info('configured servient',this.config)
+    public constructor(config? : any) {
+        super();
 
-        const lvl = this.config.log.level
-        logger.info('set logging to level', lvl)
+        Object.assign(this.config, config);
+        logger.level = this.config.log.level;
+        logger.info("configured servient", this.config);
 
-        let httpServer = (typeof this.config.http.port === 'number') ? new HttpServer(this.config.http.port) : new HttpServer();
-        this.addServer(httpServer)
-        this.addClientFactory(new HttpClientFactory())
+        let httpServer = (typeof this.config.http.port === "number") ? new HttpServer(this.config.http.port) : new HttpServer();
+        this.addServer(httpServer);
+        this.addClientFactory(new HttpClientFactory());
     }
 
     /**
@@ -58,28 +64,33 @@ export default class DefaultServient extends Servient {
      */
     public start() {
         let WoT = super.start();
-        logger.info('started servient')
+        logger.info("started servient");
 
-        WoT.createThing('servient').then(thing => {
+        WoT.createThing("servient").then(thing => {
+
             thing
-                .addAction('log', { 'type': 'string' })
-                .onInvokeAction('log', (msg) => {
+                .addAction("log", { type: "string" })
+                .onInvokeAction("log", (msg) => {
                     logger.info(msg);
-                    return 'logged ' + msg;
-                })
-
-            thing.addAction('runScript', { 'type': 'string' })
-                .onInvokeAction('runScript', (script) => {
-                    logger.debug('runnig script', script)
-                    return this.runScript(script)
-                })
+                    return `logged '${msg}`;
+                });
             
-            thing.addAction('shutdown')
-            .onInvokeAction('shutdown',() => {
-                logger.info('shutting down as requested')
-                this.shutdown()
-            })
-        })
+            thing
+                .addAction("shutdown")
+                .onInvokeAction("shutdown", () => {
+                    logger.info("shutting down by remote");
+                    this.shutdown();
+                });
+
+            if (this.config.servient.scriptAction)
+            thing
+                .addAction("runScript", { type: "string" })
+                .onInvokeAction("runScript", (script) => {
+                    logger.debug("runnig script", script);
+                    return this.runScript(script);
+                });
+
+        });
         return WoT;
     }
-} 
+}
