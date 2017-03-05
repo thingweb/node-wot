@@ -30,4 +30,10 @@ npm run build
 # run test suites of all packets
 npm run test 
 
+# (OPTIONAL!) 
+# make all packages availiable on your local machine (as symlinks)
+# you can then use each paket in its local version via "npm link" instead of "npm install"
+# see also https://docs.npmjs.com/cli/link
+sudo npm run link
+
 ```
