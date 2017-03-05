@@ -9,7 +9,8 @@
     "test": "lerna run test",
     "pretest": "npm run build",
     "bootstrap": "lerna bootstrap",
-    "link": "lerna-run npm link"
+    "link": "lerna-run npm link",
+    "prelink": "npm run build"
   },
   "author": "Johannes Hund (johannes.hund@gmail.com)",
   "license": "MIT",
