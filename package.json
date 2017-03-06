@@ -15,7 +15,7 @@
   "author": "Johannes Hund (johannes.hund@gmail.com)",
   "license": "MIT",
   "devDependencies": {
-    "lerna": "^2.0.0-beta.37",
+    "lerna": "^2.0.0-beta.38",
     "lerna-run": "0.0.2",
     "typescript": "^2.1.6"
   },
