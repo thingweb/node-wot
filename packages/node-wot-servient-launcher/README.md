@@ -1,7 +1,7 @@
 # Servient Launcher for WoT
 
-This package is a launcher that can be used to let  a servient run alls cripts in the current directory. 
-It accepts configuraion via a json file called ``.wot.conf.json``.
+This package is a launcher that can be used to let a servient run all scripts in the current directory. 
+It accepts configuration via a json file called ``.wot.conf.json``.
 
 ## installing
 
@@ -12,11 +12,11 @@ It accepts configuraion via a json file called ``.wot.conf.json``.
 ## running
 
 ```
-//in a directoty with scripts
+//in a directory with scripts
 $ wot-servient 
 ```
 
-## configuraion
+## configuration
 
 The default config is this:
 
