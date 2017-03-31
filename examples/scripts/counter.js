@@ -21,17 +21,21 @@
          .addAction("increment")
          .onInvokeAction("increment", function() {
             console.log("incrementing counter");
-            var value = thing.getProperty("count") + 1;
-            thing.setProperty("count", value);
-            return value;
+            return thing.getProperty("count").then(function(count){
+                var value = count + 1;
+                thing.setProperty("count", value);
+                return value;
+            })
          });
 
         thing
         .addAction("decrement")
         .onInvokeAction("decrement", function() {
              console.log("decrementing counter");
-             var value = thing.getProperty("count") - 1;
-             thing.setProperty("count", value);
-             return value;
+             return thing.getProperty("count").then(function(count){
+                var value = count - 1;
+                thing.setProperty("count", value);
+                return value;
+            })
         });
     });
