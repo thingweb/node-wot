@@ -5,8 +5,8 @@
     "dist/"
   ],
   "description": "a framework for creating servients (server+client) according the W3C WoT specifications",
-  "main": "dist/servient.js",
-  "typings": "dist/servient.d.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register",
     "build": "tsc"
