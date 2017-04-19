@@ -24,6 +24,6 @@
   "dependencies": {
     "node-wot-helpers": "^0.1.0",
     "node-wot-logger": "^0.1.0",
-    "typedjson": "^0.1.5"
+    "https://github.com/JohnWeisz/TypedJSON.git": "^0.1.7"
   }
 }
