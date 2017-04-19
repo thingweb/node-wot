@@ -22,7 +22,8 @@
     "typescript": "^2.1.6"
   },
   "dependencies": {
+    "node-wot-helpers": "^0.1.0",
     "node-wot-logger": "^0.1.0",
-    "node-wot-helpers": "^0.1.0"
+    "typedjson": "^0.1.5"
   }
 }
