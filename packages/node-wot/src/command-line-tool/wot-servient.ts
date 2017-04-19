@@ -23,12 +23,14 @@
 
 // global W3C WoT Scripting API definitions
 import _ from "wot-typescript-definitions";
+
 // node-wot implementation of W3C WoT Servient 
-import Servient from "node-wot-servient";
 import DefaultServient from "./default-servient";
+
 // protocols used
 import HttpServer from "node-wot-protocols-http-server";
 import HttpClientFactory from "node-wot-protocols-http-client";
+
 // tools
 import logger from "node-wot-logger";
 import fs = require("fs");

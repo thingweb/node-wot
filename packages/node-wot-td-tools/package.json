@@ -19,7 +19,6 @@
     "mocha": "^3.2.0",
     "mocha-typescript": "^1.0.19",
     "ts-node": "^2.1.0",
-    "typedjson": "github:johnweisz/TypedJSON",
     "typescript": "^2.1.6"
   },
   "dependencies": {

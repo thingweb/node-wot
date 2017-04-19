@@ -38,3 +38,4 @@ export {ContentSerdes} from 'node-wot-content-serdes'
 export {default as ConsumedThing} from './consumed-thing'
 export {default as ExposedThing} from './exposed-thing'
 
+export {ThingDescription} from "node-wot-td-tools"

@@ -1,6 +1,6 @@
 {
-  "name": "node-wot-servient",
-  "version": "0.1.0",
+  "name": "node-wot",
+  "version": "0.2.0",
   "files": [
     "dist/"
   ],
@@ -19,9 +19,11 @@
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
     "mocha-typescript": "^1.0.19",
-    "node-wot-protocols-http-server": "^0.1.0",
     "ts-node": "^2.1.0",
     "typescript": "^2.1.6"
+  },
+  "bin": {
+    "wot-servient": "dist/command-line-tool/wot-servient.js"
   },
   "dependencies": {
     "node-wot-content-serdes": "^0.1.0",
@@ -29,6 +31,8 @@
     "node-wot-logger": "^0.1.0",
     "node-wot-protocols": "^0.1.0",
     "node-wot-td-tools": "^0.1.0",
-    "wot-typescript-definitions": "^0.2.3"
+    "wot-typescript-definitions": "^0.2.3",
+    "node-wot-protocols-http-client": "^0.1.0",
+    "node-wot-protocols-http-server": "^0.1.0"
   }
 }

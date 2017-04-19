@@ -37,6 +37,16 @@ const loggerOpts: winston.LoggerOptions = {
 export const logger: winston.LoggerInstance = new winston.Logger(loggerOpts);
 export default logger;
 
+console.log = logger.verbose
+console.warn = logger.warn
+console.info = logger.info
+console.trace = logger.silly
+console.error = logger.error
+
+//shows objects
+console.dir = logger.debug
+
+
 /* usage */
 // import logger from "./logger";
 // logger.error('Critical');

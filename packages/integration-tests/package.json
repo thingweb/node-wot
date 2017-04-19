@@ -21,7 +21,7 @@
     "node-wot-protocols-coap-server": "^0.1.0",
     "node-wot-protocols-http-client": "^0.1.0",
     "node-wot-protocols-http-server": "^0.1.0",
-    "node-wot-servient": "^0.1.0",
+    "node-wot": "^0.2.0",
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
     "ts-node": "^2.1.0",
