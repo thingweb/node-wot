@@ -30,7 +30,7 @@ export class FileClientFactory implements ProtocolClientFactory {
     public static readonly schemes : Array<string> = ["file"];
 
     public getClient() : ProtocolClient {
-        return new OpcUAClient();
+        return new FileClient();
     }
     
     public init() : boolean {
@@ -46,9 +46,9 @@ export class FileClientFactory implements ProtocolClientFactory {
     }
 }
 
-class OpcUAClient implements ProtocolClient {
+class FileClient implements ProtocolClient {
     constructor() {
-        console.log("File: new client created");
+        //console.log("File: new client created");
     }
 
     public readResource(uri : string) : Promise<Content> {
