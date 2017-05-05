@@ -4,7 +4,7 @@
   "files": [
     "dist/"
   ],
-  "description": "an OPC UA client plugin for node-wot",
+  "description": "File interface for node-wot",
   "main": "dist/file-client.js",
   "typings": "dist/file-client.d.ts",
   "scripts": {
