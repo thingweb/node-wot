@@ -13,156 +13,159 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 /**
  * CoAP client based on coap by mcollina
  */
-import {ProtocolClient,Content} from "node-wot-protocols"
-import logger from "node-wot-logger";
+import { ProtocolClient, Content } from 'node-wot-protocols'
+import logger from 'node-wot-logger';
 
-var coap = require('coap');
-import * as url from "url";
+let coap = require('coap');
+import * as url from 'url';
 
 export default class CoapClient implements ProtocolClient {
 
-    // FIXME coap Agent closes socket when no messages in flight -> new socket with every request
-    private readonly agent : any = new coap.Agent();
+  // FIXME coap Agent closes socket when no messages in flight -> new socket with every request
+  private readonly agent: any = new coap.Agent();
 
-    constructor() {
-    }
+  constructor() {
+    // Intentionally blank.
+  }
 
-    public toString() : string {
-        return "[CoapClient]";
-    }
+  public toString(): string {
+    return '[CoapClient]';
+  }
 
-    private uriToOptions(uri : string) : CoapRequestConfig {
-        let requestUri = url.parse(uri);
-        let options : CoapRequestConfig = {
-            agent: this.agent,
-            hostname: requestUri.hostname,
-            port: parseInt(requestUri.port),
-            pathname: requestUri.pathname,
-            query: requestUri.query,
-            observe: false,
-            multicast: false,
-            confirmable: true
-        };
+  public readResource(uri: string): Promise<Content> {
+    return new Promise<Content>((resolve, reject) => {
+      let options: CoapRequestConfig = this.uriToOptions(uri);
 
-        // TODO auth
+      // TODO get explicit binding from TD
+      options.method = 'GET';
 
-        return options;
-    }
+      logger.info(`CoapClient sending GET to ${uri}`);
+      let req = this.agent.request(options);
+      req.on('response', (res: any) => {
+        logger.info(`CoapClient received ${res.code} from ${uri}`);
+        logger.debug(`CoapClient received Content-Format: ${res.headers['Content-Format']}`);
+        logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
+        let mediaType = res.headers['Content-Format'];
+        resolve({ mediaType: mediaType, body: res.payload });
+      });
+      req.on('error', (err: Error) => reject(err));
+      req.end();
+    });
+  }
 
-    public readResource(uri : string) : Promise<Content> {
-        return new Promise<Content>((resolve, reject) => {
-            let options : CoapRequestConfig = this.uriToOptions(uri);
+  public writeResource(uri: string, content: Content): Promise<any> {
+    return new Promise<void>((resolve, reject) => {
 
-            // TODO get explicit binding from TD
-            options.method = "GET";
+      let options: CoapRequestConfig = this.uriToOptions(uri);
 
-            logger.info(`CoapClient sending GET to ${uri}`);
-            let req = this.agent.request(options);
-            req.on("response", (res : any) => {
-                logger.info(`CoapClient received ${res.code} from ${uri}`);
-                logger.debug(`CoapClient received Content-Format: ${res.headers["Content-Format"]}`);
-                logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
-                let mediaType = res.headers["Content-Format"];
-                resolve({ mediaType: mediaType, body: res.payload });
-            });
-            req.on("error", (err : Error) => reject(err));
-            req.end();
-        });
-    }
+      // TODO get explicit binding from TD
+      options.method = 'PUT';
 
-    public writeResource(uri : string, content : Content) : Promise<any> {
-        return new Promise<void>((resolve, reject) => {
+      logger.info(`CoapClient sending PUT to ${uri}`);
+      let req = this.agent.request(options);
+      req.on('response', (res: any) => {
+        logger.info(`CoapClient received ${res.code} from ${uri}`);
+        logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
+        resolve();
+      });
+      req.on('error', (err: Error) => reject(err));
+      req.setOption('Content-Format', content.mediaType);
+      req.write(content.body);
+      req.end();
+    });
+  }
 
-            let options : CoapRequestConfig = this.uriToOptions(uri);
+  public invokeResource(uri: string, content?: Content): Promise<Content> {
+    return new Promise<Content>((resolve, reject) => {
 
-            // TODO get explicit binding from TD
-            options.method = "PUT";
+      let options: CoapRequestConfig = this.uriToOptions(uri);
 
-            logger.info(`CoapClient sending PUT to ${uri}`);
-            let req = this.agent.request(options);
-            req.on("response", (res : any) => {
-                logger.info(`CoapClient received ${res.code} from ${uri}`);
-                logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
-                resolve();
-            });
-            req.on("error", (err : Error) => reject(err));
-            req.setOption("Content-Format", content.mediaType);
-            req.write(content.body);
-            req.end();
-        });
-    }
+      // TODO get explicit binding from TD
+      options.method = 'POST';
 
-    public invokeResource(uri : string, content? : Content) : Promise<Content> {
-        return new Promise<Content>((resolve, reject) => {
+      logger.info(`CoapClient sending GET to ${uri}`);
+      let req = this.agent.request(options);
+      req.on('response', (res: any) => {
+        logger.info(`CoapClient received ${res.code} from ${uri}`);
+        logger.debug(`CoapClient received Content-Format: ${res.headers['Content-Format']}`);
+        logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
+        let mediaType = res.headers['Content-Format'];
+        resolve({ mediaType: mediaType, body: res.payload });
+      });
+      req.on('error', (err: Error) => reject(err));
+      if (content) {
+        req.setOption('Content-Format', content.mediaType);
+        req.write(content.body);
+      }
+      req.end();
+    });
+  }
 
-            let options : CoapRequestConfig = this.uriToOptions(uri);
+  public unlinkResource(uri: string): Promise<any> {
+    return new Promise<void>((resolve, reject) => {
+      let options: CoapRequestConfig = this.uriToOptions(uri);
 
-            // TODO get explicit binding from TD
-            options.method = "POST";
+      // TODO get explicit binding from TD
+      options.method = 'DELETE';
 
-            logger.info(`CoapClient sending GET to ${uri}`);
-            let req = this.agent.request(options);
-            req.on("response", (res : any) => {
-                logger.info(`CoapClient received ${res.code} from ${uri}`);
-                logger.debug(`CoapClient received Content-Format: ${res.headers["Content-Format"]}`);
-                logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
-                let mediaType = res.headers["Content-Format"];
-                resolve({ mediaType: mediaType, body: res.payload });
-            });
-            req.on("error", (err : Error) => reject(err));
-            if (content) {
-                req.setOption("Content-Format", content.mediaType);
-                req.write(content.body);
-            }
-            req.end();
-        });
-    }
+      logger.info(`CoapClient sending DELETE to ${uri}`);
+      let req = this.agent.request(options);
+      req.on('response', (res: any) => {
+        logger.info(`CoapClient received ${res.code} from ${uri}`);
+        logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
+        resolve();
+      });
+      req.on('error', (err: Error) => reject(err));
+      req.end();
+    });
+  }
 
-    public unlinkResource(uri : string) : Promise<any> {
-        return new Promise<void>((resolve, reject) => {
-            let options : CoapRequestConfig = this.uriToOptions(uri);
+  public start(): boolean {
+    return true;
+  }
 
-            // TODO get explicit binding from TD
-            options.method = "DELETE";
+  public stop(): boolean {
+    // FIXME coap does not provide proper API to close Agent
+    return true;
+  }
 
-            logger.info(`CoapClient sending DELETE to ${uri}`);
-            let req = this.agent.request(options);
-            req.on("response", (res : any) => {
-                logger.info(`CoapClient received ${res.code} from ${uri}`);
-                logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
-                resolve();
-            });
-            req.on("error", (err : Error) => reject(err));
-            req.end();
-        });
-    }
+  private uriToOptions(uri: string): CoapRequestConfig {
+    let requestUri = url.parse(uri);
+    let options: CoapRequestConfig = {
+      agent: this.agent,
+      hostname: requestUri.hostname,
+      port: parseInt(requestUri.port, 10),
+      pathname: requestUri.pathname,
+      query: requestUri.query,
+      observe: false,
+      multicast: false,
+      confirmable: true
+    };
 
-    public start() : boolean {
-        return true;
-    }
-    
-    public stop() : boolean {
-        // FIXME coap does not provide proper API to close Agent
-        return true;
-    }
+    // TODO auth
+
+    return options;
+  }
+
 
 }
 
 declare interface CoapRequestConfig {
-    agent? : Object,
-    hostname? : string,
-    port? : number,
-    pathname?: string,
-    query?: string,
-    observe?: boolean,
-    multicast?: boolean,
-    confirmable?: boolean,
-    method? : string
+  agent?: Object,
+  hostname?: string,
+  port?: number,
+  pathname?: string,
+  query?: string,
+  observe?: boolean,
+  multicast?: boolean,
+  confirmable?: boolean,
+  method?: string
 }

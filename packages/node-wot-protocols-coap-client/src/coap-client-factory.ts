@@ -13,38 +13,39 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 /**
  * HTTP client Factory
  */
 
-import logger from "node-wot-logger";
-import {ProtocolClientFactory,ProtocolClient} from "node-wot-protocols"
-import CoapClient from "./coap-client";
+import logger from 'node-wot-logger';
+import { ProtocolClientFactory, ProtocolClient } from 'node-wot-protocols'
+import CoapClient from './coap-client';
 
 export default class CoapClientFactory implements ProtocolClientFactory {
 
-    public static readonly schemes : Array<string> = ["coap"];
+  public static readonly schemes: Array<string> = ['coap'];
 
-    public getClient() : ProtocolClient {
-        logger.verbose(`CoapClientFactory creating client for '${this.getSchemes()}'`);
-        return new CoapClient();
-    }
-    
-    public init() : boolean {
-        logger.info(`CoapClientFactory for '${this.getSchemes()}' initializing`);
-        return true;
-    }
+  public getClient(): ProtocolClient {
+    logger.verbose(`CoapClientFactory creating client for '${this.getSchemes()}'`);
+    return new CoapClient();
+  }
 
-    public destroy() : boolean {
-        logger.info(`CoapClientFactory for '${this.getSchemes()}' destroyed`);
-        return true;
-    }
-   
-    public getSchemes() : Array<string> {
-        return CoapClientFactory.schemes;
-    }
+  public init(): boolean {
+    logger.info(`CoapClientFactory for '${this.getSchemes()}' initializing`);
+    return true;
+  }
+
+  public destroy(): boolean {
+    logger.info(`CoapClientFactory for '${this.getSchemes()}' destroyed`);
+    return true;
+  }
+
+  public getSchemes(): Array<string> {
+    return CoapClientFactory.schemes;
+  }
 }

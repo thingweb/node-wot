@@ -13,73 +13,73 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
-
 
 /**
  * File protocol binding
  */
-import {ProtocolClientFactory, ProtocolClient, Content} from "node-wot-protocols"
-import logger from "node-wot-logger";
+import { ProtocolClientFactory, ProtocolClient, Content } from 'node-wot-protocols'
+import logger from 'node-wot-logger';
 
 import fs = require('fs');
 
 export class FileClientFactory implements ProtocolClientFactory {
-    public static readonly schemes : Array<string> = ["file"];
+  public static readonly schemes: Array<string> = ['file'];
 
-    public getClient() : ProtocolClient {
-        return new FileClient();
-    }
-    
-    public init() : boolean {
-        return true;
-    }
+  public getClient(): ProtocolClient {
+    return new FileClient();
+  }
 
-    public destroy() : boolean {
-        return true;
-    }
-   
-    public getSchemes() : Array<string> {
-        return FileClientFactory.schemes;
-    }
+  public init(): boolean {
+    return true;
+  }
+
+  public destroy(): boolean {
+    return true;
+  }
+
+  public getSchemes(): Array<string> {
+    return FileClientFactory.schemes;
+  }
 }
 
 class FileClient implements ProtocolClient {
-    constructor() {
-        //console.log("File: new client created");
-    }
+  constructor() {
+    // console.log("File: new client created");
+  }
 
-    public readResource(uri : string) : Promise<Content> {
-        return new Promise<Content>((resolve, reject) => {
-            var filepath = uri.split("//");
-            var resource = fs.readFileSync(filepath[1], 'utf8');
-            resolve({ mediaType : "application/json", body : new Buffer(resource) });
-        });
-    }
+  public readResource(uri: string): Promise<Content> {
+    return new Promise<Content>((resolve, reject) => {
+      let filepath = uri.split('//');
+      let resource = fs.readFileSync(filepath[1], 'utf8');
+      resolve({ mediaType: 'application/json', body: new Buffer(resource) });
+    });
+  }
 
-    public writeResource(uri : string, content : Content) : Promise<any> {
-        return;
-    }
+  public writeResource(uri: string, content: Content): Promise<any> {
+    return;
+  }
 
-    public invokeResource(uri: String, payload: Object): Promise<any> {
-        return new Promise<Object>((resolve, reject) => {
-            resolve("POST_" + uri + "_" + new Date())
-        })
-    }
+  public invokeResource(uri: String, payload: Object): Promise<any> {
+    return new Promise<Object>((resolve, reject) => {
+      resolve('POST_' + uri + '_' + new Date())
+    })
+  }
 
-    public unlinkResource(uri: string): Promise<any> {
-        return new Promise<Object>((resolve, reject) => {
-            resolve("DELETE_" + uri + "_" + new Date())
-        })
-    }
+  public unlinkResource(uri: string): Promise<any> {
+    return new Promise<Object>((resolve, reject) => {
+      resolve('DELETE_' + uri + '_' + new Date())
+    })
+  }
 
-    public start() : boolean {
-        return true;
-    }
+  public start(): boolean {
+    return true;
+  }
 
-    public stop() : boolean {
-        return true;
-    }
+  public stop(): boolean {
+    return true;
+  }
 }

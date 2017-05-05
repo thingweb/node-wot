@@ -13,18 +13,18 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
+'use strict'
 
-"use strict"
-
-import fs = require("fs");
-import Servient from "../../servient";
-import {DummyClientFactory} from "../../protocols/dummy/dummy-protocol-client";
-import ConsumedThing from "../../consumed-thing";
-import ThingDescription from "../../td/thing-description";
+import fs = require('fs');
+import Servient from '../../servient';
+import { DummyClientFactory } from '../../protocols/dummy/dummy-protocol-client';
+import ConsumedThing from '../../consumed-thing';
+import ThingDescription from '../../td/thing-description';
 
 /**
  * Servient control for scripts
@@ -33,15 +33,15 @@ import ThingDescription from "../../td/thing-description";
  * Use WoT object to Script
  */
 class MyServient extends Servient {
-    public readConf(): void {
-        fs.readFile(".wotconfig", 'utf-8', (err, data) => {
-            if (err) {
-                console.error(err);
-            }
-            console.log("config:\n");
-            console.dir(data);
-        });
-    }
+  public readConf(): void {
+    fs.readFile('.wotconfig', 'utf-8', (err, data) => {
+      if (err) {
+        console.error(err);
+      }
+      console.log('config:\n');
+      console.dir(data);
+    });
+  }
 }
 
 let srv = new MyServient();
@@ -52,57 +52,57 @@ srv.addClientFactory(dcf);
 
 let wot = srv.start();
 
-console.log("starting servient");
+console.log('starting servient');
 
-wot.createThing("bla").then((thing) => {
-    console.log("there is a thing called " + thing.name);
+wot.createThing('bla').then((thing) => {
+  console.log('there is a thing called ' + thing.name);
 
-    thing
-        .addAction("wuu")
-        .onInvokeAction("wuu",
-            () => {
-                console.log("Woo was called");
-            }
-        );
+  thing
+    .addAction('wuu')
+    .onInvokeAction('wuu',
+    () => {
+      console.log('Woo was called');
+    }
+    );
 
-    thing
-    .addProperty("bar",{ "type" : "number"})
-    .onUpdateProperty("bar",(nV,oV) => {
-        "bar changed from " + oV + " to " + nV;
+  thing
+    .addProperty('bar', { 'type': 'number' })
+    .onUpdateProperty('bar', (nV, oV) => {
+      'bar changed from ' + oV + ' to ' + nV;
     })
-    .setProperty("bar",0)
+    .setProperty('bar', 0)
     .catch(console.error);
 
-    console.log("things are up, now check it");
+  console.log('things are up, now check it');
 
-    let t = srv.getThing("bla");
-    console.log(t.getProperty("bar"));
-    t.invokeAction("wuu");
+  let t = srv.getThing('bla');
+  console.log(t.getProperty('bar'));
+  t.invokeAction('wuu');
 });
 
 // client factory tests
 let dc = dcf.getClient();
 console.log(dcf.getSchemes());
-dc.readResource("dummy://foo").then(console.log).catch(console.error);
+dc.readResource('dummy://foo').then(console.log).catch(console.error);
 
 // console.log();
 // console.log(dc.readResource("unknown://foo"));
 
 // async calls
-console.log("start async calls...");
-for (var i = 0; i < 5; i++) {
-    dc.readResource("dummy://foo_" + i).then(function (val) {
-        console.log(val);
-    }).catch(function (err) {
-        console.error('readResourceAsync error', err.message)
-    });
+console.log('start async calls...');
+for (let i = 0; i < 5; i++) {
+  dc.readResource('dummy://foo_' + i).then(function (val) {
+    console.log(val);
+  }).catch(function (err) {
+    console.error('readResourceAsync error', err.message)
+  });
 }
-console.log("all async calls started (wait for responses)");
+console.log('all async calls started (wait for responses)');
 
 
 // consumed thing tests
 // let servient: Servient, let td: ThingDescription;
 let td = new ThingDescription();
-td.name = "test";
+td.name = 'test';
 let pt = new ConsumedThing(srv, td);
-pt.invokeAction("foo");
+pt.invokeAction('foo');

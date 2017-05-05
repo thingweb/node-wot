@@ -13,47 +13,48 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 /**
  * Resource that provides an asset
  */
 
-import BasicResourceListener from "./basic-resource-listener";
-import logger from "node-wot-logger";
-import {Content,ResourceListener} from "./protocol-interfaces"
+import BasicResourceListener from './basic-resource-listener';
+import logger from 'node-wot-logger';
+import { Content, ResourceListener } from './protocol-interfaces'
 
 export default class AssetResourceListener extends BasicResourceListener implements ResourceListener {
 
-    private asset : Buffer;
-    private mediaType : string;
+  private asset: Buffer;
+  private mediaType: string;
 
-    constructor(asset : string, mediaType : string = "text/plain") {
-        super();
-        this.mediaType = mediaType;
-        this.asset = new Buffer(asset);
-    }
+  constructor(asset: string, mediaType: string = 'text/plain') {
+    super();
+    this.mediaType = mediaType;
+    this.asset = new Buffer(asset);
+  }
 
-    public onRead() : Promise<Content> {
-        logger.debug(`Reading asset`);
-        return new Promise<Content>(
-            (resolve,reject) => resolve({ mediaType: this.mediaType, body: new Buffer(this.asset) })
-        );
-    }
+  public onRead(): Promise<Content> {
+    logger.debug(`Reading asset`);
+    return new Promise<Content>(
+      (resolve, reject) => resolve({ mediaType: this.mediaType, body: new Buffer(this.asset) })
+    );
+  }
 
-    public onWrite(content : Content) : Promise<void> {
-        logger.debug(`Writing '${content.body.toString()}' to asset`);
-        this.mediaType = content.mediaType;
-        this.asset = content.body;
-        return new Promise<void>((resolve,reject) => resolve())
-    }
+  public onWrite(content: Content): Promise<void> {
+    logger.debug(`Writing '${content.body.toString()}' to asset`);
+    this.mediaType = content.mediaType;
+    this.asset = content.body;
+    return new Promise<void>((resolve, reject) => resolve())
+  }
 
-    public onInvoke(content : Content) : Promise<Content> {
-        logger.debug(`Invoking '${content.body.toString()}' on asset`);
-        return new Promise<Content>(
-            (resolve,reject) => resolve({ mediaType: this.mediaType, body: new Buffer("TODO") })
-        );
-    }
+  public onInvoke(content: Content): Promise<Content> {
+    logger.debug(`Invoking '${content.body.toString()}' on asset`);
+    return new Promise<Content>(
+      (resolve, reject) => resolve({ mediaType: this.mediaType, body: new Buffer('TODO') })
+    );
+  }
 }

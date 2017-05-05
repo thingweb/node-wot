@@ -13,8 +13,9 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 /**
@@ -29,41 +30,51 @@
  * ```
  */
 
-import logger from "node-wot-logger";
-import * as url from "url";
-import * as os from "os"
+import logger from 'node-wot-logger';
+import * as url from 'url';
+import * as os from 'os'
 
 export function extractScheme(uri: string) {
-    let parsed = url.parse(uri);
-    // remove trailing ':'
-    let scheme = parsed.protocol.slice(0, -1);
-    logger.debug(`Helpers found scheme '${scheme}'`);
-    return scheme;
+  let parsed = url.parse(uri);
+  // console.log(parsed)
+  // remove trailing ':'
+  if (parsed.protocol === null) {
+    throw new Error(`Protocol in url "${uri}" must be valid`)
+  }
+  let scheme = parsed.protocol.slice(0, -1);
+  logger.debug(`Helpers found scheme '${scheme}'`);
+  return scheme;
 }
 
 export function getAddresses(): Array<string> {
-    let addresses: Array<any> = [];
+  let addresses: Array<any> = [];
 
-    let interfaces = os.networkInterfaces();
+  let interfaces = os.networkInterfaces();
 
-    for (let iface in interfaces) {
-        interfaces[iface].forEach((entry: any) => {
-            logger.silly(`AddressHelper found ${entry.address}`);
-            if (entry.internal === false) {
-                if (entry.family === "IPv4") addresses.push(entry.address);
-                else if (entry.scopeid == 0) addresses.push(entry.address);
-            }
-        });
-    }
+  for (let iface in interfaces) {
+    interfaces[iface].forEach((entry: any) => {
+      logger.silly(`AddressHelper found ${entry.address}`);
+      if (entry.internal === false) {
+        if (entry.family === 'IPv4') {
+          addresses.push(entry.address);
+        } else if (entry.scopeid === 0) {
+          addresses.push(entry.address);
+        }
+      }
+    });
+  }
 
-    addresses.push("127.0.0.1");
+  addresses.push('127.0.0.1');
 
-    logger.verbose(`AddressHelper identified ${addresses}`);
+  logger.verbose(`AddressHelper identified ${addresses}`);
 
-    return addresses;
+  return addresses;
 }
 
 export function toUriLiteral(address: string): string {
-    if (address.indexOf(":") != -1) address = `[${address}]`;
-    return address;
+  if (address.indexOf(':') !== -1) {
+    address = `[${address}]`;
+  }
+  return address;
 }
+

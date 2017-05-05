@@ -17,25 +17,25 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import HttpServer from "../../protocols/http/http-server";
-import CoapServer from "../../protocols/coap/coap-server";
-import AssetResourceListener from "../../resource-listeners/asset-resource-listener";
+import HttpServer from '../../protocols/http/http-server';
+import CoapServer from '../../protocols/coap/coap-server';
+import AssetResourceListener from '../../resource-listeners/asset-resource-listener';
 
 // for level only - use console for output
-import logger from "../../logger";
-logger.level = "debug";
+import logger from '../../logger';
+logger.level = 'debug';
 
-var res1 = new AssetResourceListener("\"Hello World\"", "application/json");
-var res2 = new AssetResourceListener("true", "application/json");
+let res1 = new AssetResourceListener('"Hello World"', 'application/json');
+let res2 = new AssetResourceListener('true', 'application/json');
 
-var hServer = new HttpServer(8081);
-hServer.addResource("/test", res1);
-hServer.addResource("/exit", res2);
+let hServer = new HttpServer(8081);
+hServer.addResource('/test', res1);
+hServer.addResource('/exit', res2);
 hServer.start();
-console.log("HTTP listening on port " + hServer.getPort());
+console.log('HTTP listening on port ' + hServer.getPort());
 
-var cServer = new CoapServer();
-cServer.addResource("/test", res1);
-cServer.addResource("/exit", res2);
+let cServer = new CoapServer();
+cServer.addResource('/test', res1);
+cServer.addResource('/exit', res2);
 cServer.start();
-console.log("CoAP listening on port " + cServer.getPort());
+console.log('CoAP listening on port ' + cServer.getPort());

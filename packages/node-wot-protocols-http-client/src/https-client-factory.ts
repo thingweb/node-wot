@@ -13,38 +13,39 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 /**
  * HTTPS client Factory
  */
 
-import logger from "node-wot-logger";
-import {ProtocolClientFactory, ProtocolClient} from "node-wot-protocols"
-import HttpClient from "./http-client";
+import logger from 'node-wot-logger';
+import { ProtocolClientFactory, ProtocolClient } from 'node-wot-protocols'
+import HttpClient from './http-client';
 
 export default class HttpsClientFactory implements ProtocolClientFactory {
 
-    public static readonly schemes : Array<string> = ["https"];
+  public static readonly schemes: Array<string> = ['https'];
 
-    public getClient() : ProtocolClient {
-        logger.debug(`HttpsClientFactory creating client for '${this.getSchemes()}'`);
-        return new HttpClient(true);
-    }
+  public getClient(): ProtocolClient {
+    logger.debug(`HttpsClientFactory creating client for '${this.getSchemes()}'`);
+    return new HttpClient(true);
+  }
 
-    public init() : boolean {
-        logger.info(`HttpsClientFactory for '${this.getSchemes()}' initializing`);
-        return true;
-    }
+  public init(): boolean {
+    logger.info(`HttpsClientFactory for '${this.getSchemes()}' initializing`);
+    return true;
+  }
 
-    public destroy() : boolean {
-        logger.info(`HttpsClientFactory for '${this.getSchemes()}' destroyed`);
-        return true;
-    }
+  public destroy(): boolean {
+    logger.info(`HttpsClientFactory for '${this.getSchemes()}' destroyed`);
+    return true;
+  }
 
-    public getSchemes() : Array<string> {
-        return HttpsClientFactory.schemes;
-    }
+  public getSchemes(): Array<string> {
+    return HttpsClientFactory.schemes;
+  }
 }

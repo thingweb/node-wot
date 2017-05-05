@@ -13,28 +13,32 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
-import {ResourceListener,Content} from "./protocol-interfaces"
+
+import { ResourceListener, Content } from './protocol-interfaces'
 
 export default class BasicResourceListener implements ResourceListener {
 
-    constructor() { }
+  constructor() {
+    // Intentionally blank. 
+  }
 
-    public onRead() : Promise<Content> {
-        return Promise.reject(new Error("Method Not Allowed"));
-    }
+  public onRead(): Promise<Content> {
+    return Promise.reject(new Error('Method Not Allowed'));
+  }
 
-    public onWrite(content : Content) : Promise<void> {
-        return Promise.reject(new Error("Method Not Allowed"));
-    }
+  public onWrite(content: Content): Promise<void> {
+    return Promise.reject(new Error('Method Not Allowed'));
+  }
 
-    public onInvoke(content : Content) : Promise<Content> {
-        return Promise.reject(new Error("Method Not Allowed"));
-    }
+  public onInvoke(content: Content): Promise<Content> {
+    return Promise.reject(new Error('Method Not Allowed'));
+  }
 
-    public onUnlink() : Promise<void> {
-        return Promise.reject(new Error("Method Not Allowed"));
-    }
+  public onUnlink(): Promise<void> {
+    return Promise.reject(new Error('Method Not Allowed'));
+  }
 }

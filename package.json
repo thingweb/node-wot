@@ -10,14 +10,16 @@
     "pretest": "npm run build",
     "bootstrap": "lerna bootstrap",
     "link": "lerna-run npm link",
-    "prelink": "npm run build"
+    "prelink": "npm run build",
+    "codestyle": "lerna run codestyle"
   },
   "author": "Johannes Hund (johannes.hund@gmail.com)",
   "license": "MIT",
   "devDependencies": {
     "lerna": "^2.0.0-beta.38",
     "lerna-run": "0.0.2",
-    "typescript": "^2.1.6"
+    "typescript": "^2.1.6",
+    "typescript-standard": "^0.3.30"
   },
   "dependencies": {},
   "repository": {
