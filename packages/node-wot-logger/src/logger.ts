@@ -13,8 +13,9 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 import winston = require('winston');
@@ -22,7 +23,7 @@ import winston = require('winston');
 const tsFormat = () => (new Date()).toLocaleTimeString();
 
 const consoleTransport = new winston.transports.Console({
-  timestamp: tsFormat,  
+  timestamp: tsFormat,
   // colorize the output to the console
   colorize: true,
   humanReadableUnhandledException: true
@@ -43,7 +44,7 @@ console.info = logger.info
 console.trace = logger.silly
 console.error = logger.error
 
-//shows objects
+// shows objects
 console.dir = logger.debug
 
 

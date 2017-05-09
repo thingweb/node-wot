@@ -13,90 +13,91 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
-import logger from "node-wot-logger";
+import logger from 'node-wot-logger';
 
-import ThingDescription from "./thing-description";
-import * as TD from "./thing-description";
-import * as AddressHelper from "node-wot-helpers";
+import ThingDescription from './thing-description';
+import * as TD from './thing-description';
+import * as AddressHelper from 'node-wot-helpers';
 
-import { JsonMember, JsonObject, TypedJSON } from "typedjson";
+import { JsonMember, JsonObject, TypedJSON } from 'typedjson';
 
-export function parseTDObject(td : Object) : ThingDescription {
-    // FIXME Is this the best way to verify?
-    return parseTDString(TypedJSON.stringify(td, {enableTypeHints: false})); // disable TypeHints, otherwise __type member is added
+export function parseTDObject(td: Object): ThingDescription {
+  // FIXME Is this the best way to verify?
+  // disable TypeHints, otherwise __type member is added
+  return parseTDString(TypedJSON.stringify(td, { enableTypeHints: false }));
 }
 
-export function parseTDString(json : string) : ThingDescription {
+export function parseTDString(json: string): ThingDescription {
 
-    logger.silly(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
-    let td : ThingDescription = TypedJSON.parse(json, ThingDescription);
+  logger.silly(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
+  let td: ThingDescription = TypedJSON.parse(json, ThingDescription);
 
-    logger.debug(`parseTDString() found ${td.interactions.length} Interaction${td.interactions.length==1?"":"s"}`);
-    /** for each interaction assign the Interaction type (Property, Action, Event)
-     * and, if "base" is given, normalize each Interaction link */
-    for (let interaction of td.interactions) {
+  logger.debug(`parseTDString() found ${td.interactions.length} Interaction${td.interactions.length === 1 ? '' : 's'}`);
+  // for each interaction assign the Interaction type (Property, Action, Event)
+  // and, if "base" is given, normalize each Interaction link
+  for (let interaction of td.interactions) {
 
-        // FIXME @mkovatsc Why does array.includes() not work?
-        if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString())!==-1) {
-            logger.debug(` * Property '${interaction.name}'`);
-            interaction.pattern = TD.InteractionPattern.Property;
-        } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString())!==-1) {
-            logger.debug(` * Action '${interaction.name}'`);
-            interaction.pattern = TD.InteractionPattern.Action;
-        } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString())!==-1) {
-            logger.debug(` * Event '${interaction.name}'`);
-            interaction.pattern = TD.InteractionPattern.Event;
-        } else {
-            logger.error(`parseTDString() found unknown Interaction pattern '${interaction.semanticTypes}'`);
-        }
-
-        /* if a base uri is used normalize all relative hrefs in links */
-        if (td.base !== undefined) {
-            logger.debug(`parseTDString() applying base '${td.base}' to href '${interaction.links[0].href}'`);
-
-            var href:string = interaction.links[0].href;
-
-            var url = require('url');
-
-            /* url modul works only for http --> so replace any protocol to
-            http and after resolving replace orign protocol back*/
-            var n:number = td.base.indexOf(":");
-            var pr:string = td.base.substr(0, n+1); // save origin protocol
-            var uri_temp:string = td.base.replace(pr, "http:"); // replace protocol
-            uri_temp = url.resolve(uri_temp, href) // URL resolving
-            uri_temp = uri_temp.replace("http:", pr ); // replace protocol back to origin
-            interaction.links[0].href = uri_temp;
-        }
+    // FIXME @mkovatsc Why does array.includes() not work?
+    if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString()) !== -1) {
+      logger.debug(` * Property '${interaction.name}'`);
+      interaction.pattern = TD.InteractionPattern.Property;
+    } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString()) !== -1) {
+      logger.debug(` * Action '${interaction.name}'`);
+      interaction.pattern = TD.InteractionPattern.Action;
+    } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString()) !== -1) {
+      logger.debug(` * Event '${interaction.name}'`);
+      interaction.pattern = TD.InteractionPattern.Event;
+    } else {
+      logger.error(`parseTDString() found unknown Interaction pattern '${interaction.semanticTypes}'`);
     }
 
-    return td;
+    /* if a base uri is used normalize all relative hrefs in links */
+    if (td.base !== undefined) {
+      logger.debug(`parseTDString() applying base '${td.base}' to href '${interaction.links[0].href}'`);
+
+      let href: string = interaction.links[0].href;
+
+      let url = require('url');
+
+      /* url modul works only for http --> so replace any protocol to
+      http and after resolving replace orign protocol back*/
+      let n: number = td.base.indexOf(':');
+      let pr: string = td.base.substr(0, n + 1); // save origin protocol
+      let uriTemp: string = td.base.replace(pr, 'http:'); // replace protocol
+      uriTemp = url.resolve(uriTemp, href) // URL resolving
+      uriTemp = uriTemp.replace('http:', pr); // replace protocol back to origin
+      interaction.links[0].href = uriTemp;
+    }
+  }
+
+  return td;
 }
 
-export function serializeTD(td : ThingDescription) : string {
+export function serializeTD(td: ThingDescription): string {
 
-    let json = TypedJSON.stringify(td);
-
-
-    // FIXME TypedJSON also stringifies undefined/null optional members
-    let raw = JSON.parse(json)
-    if (td.base===null || td.base===undefined) {
-        delete raw.base
-    }
-    for (let interaction of raw.interactions) {
-        if (interaction.inputData===null) delete interaction.inputData;
-        if (interaction.writable===null) delete interaction.writable;
-    }
-    json = JSON.stringify(raw);
-    // End of workaround
+  let json = TypedJSON.stringify(td);
 
 
-    logger.silly(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
+  // FIXME TypedJSON also stringifies undefined/null optional members
+  let raw = JSON.parse(json)
+  if (td.base === null || td.base === undefined) {
+    delete raw.base
+  }
+  for (let interaction of raw.interactions) {
+    if (interaction.inputData === null) { delete interaction.inputData; }
+    if (interaction.writable === null) { delete interaction.writable; }
+  }
+  json = JSON.stringify(raw);
+  // End of workaround
 
-    return json;
+
+  logger.silly(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
+
+  return json;
 }
-
 

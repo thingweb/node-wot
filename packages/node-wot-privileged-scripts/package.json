@@ -9,7 +9,8 @@
   "main": "dist/raspberry-servient.js",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/raspberry-servient.ts"
+    "start": "ts-node src/raspberry-servient.ts",
+    "codestyle" : "standard --pretty"
   },
   "author": "the thingweb community",
   "license": "MIT",
@@ -17,7 +18,7 @@
     "@types/node": "^7.0.5",
     "ts-node": "^2.1.0",
     "typescript": "^2.1.6",
-    "typescript-standard": "^0.3.14"
+    "typescript-standard": "^0.3.30"
   },
   "bin": {
     "raspberry-servient": "dist/raspberry-servient.js"

@@ -13,61 +13,62 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
-import logger from "node-wot-logger";
+import logger from 'node-wot-logger';
 
 /** is a plugin for ContentSerdes for a specific format (such as JSON or EXI) */
 export interface ContentCodec {
-    getMediaType() : string
-    bytesToValue(bytes : Buffer) : any
-    valueToBytes(value : any) : Buffer
+  getMediaType(): string
+  bytesToValue(bytes: Buffer): any
+  valueToBytes(value: any): Buffer
 }
 
 export class Content {
-    public mediaType : string;
-    public body : Buffer;
+  public mediaType: string;
+  public body: Buffer;
 
-    constructor(mediaType : string, body : Buffer) {
-        this.mediaType = mediaType;
-        this.body = body;
-    }
+  constructor(mediaType: string, body: Buffer) {
+    this.mediaType = mediaType;
+    this.body = body;
+  }
 }
 
 /** default implementation offerin Json de-/serialisation */
 class JsonCodec implements ContentCodec {
-    getMediaType() : string {
-        return "application/json"
-    }
+  getMediaType(): string {
+    return 'application/json'
+  }
 
-    bytesToValue(bytes : Buffer) : any {
-        logger.debug(`JsonCodec parsing '${bytes.toString()}'`);
-        let parsed : any;
-        try {
-            parsed = JSON.parse(bytes.toString());
-        } catch(err) {
-            if (err instanceof SyntaxError) {
-                // be relaxed about what is received (-> string without quotes)
-                parsed = bytes.toString();
-            } else {
-                throw err;
-            }
-        }
-        // FIXME need to remove wrapping from Current Practices and use RFC 7159
-        if (parsed && parsed.value) {
-            logger.warn(`JsonCodec removing { value: ... } wrapper`);
-            parsed = parsed.value;
-        }
-        return parsed;
+  bytesToValue(bytes: Buffer): any {
+    logger.debug(`JsonCodec parsing '${bytes.toString()}'`);
+    let parsed: any;
+    try {
+      parsed = JSON.parse(bytes.toString());
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        // be relaxed about what is received (-> string without quotes)
+        parsed = bytes.toString();
+      } else {
+        throw err;
+      }
     }
+    // FIXME need to remove wrapping from Current Practices and use RFC 7159
+    if (parsed && parsed.value) {
+      logger.warn(`JsonCodec removing { value: ... } wrapper`);
+      parsed = parsed.value;
+    }
+    return parsed;
+  }
 
-    valueToBytes(value : any) : Buffer {
-        logger.debug(`JsonCodec serializing '${value}'`);
-        let body = JSON.stringify(value);
-        return new Buffer(body);
-    }
+  valueToBytes(value: any): Buffer {
+    logger.debug(`JsonCodec serializing '${value}'`);
+    let body = JSON.stringify(value);
+    return new Buffer(body);
+  }
 }
 
 /**
@@ -75,61 +76,60 @@ class JsonCodec implements ContentCodec {
  * it can accept multiple serializers and decoders
  */
 export class ContentSerdes {
+  private static instance: ContentSerdes;
 
-    public readonly DEFAULT : string = "application/json";
+  public readonly DEFAULT: string = 'application/json';
+  private codecs: Map<string, ContentCodec> = new Map();
+  private constructor() { }
 
-    private codecs : Map<string,ContentCodec>= new Map();
-    private static instance : ContentSerdes;
-
-    private constructor() {}
-
-    public static get() : ContentSerdes {
-        if (!this.instance)  {
-            this.instance = new ContentSerdes();
-            this.instance.addCodec(new JsonCodec());
-        }
-        return this.instance;
+  public static get(): ContentSerdes {
+    if (!this.instance) {
+      this.instance = new ContentSerdes();
+      this.instance.addCodec(new JsonCodec());
     }
+    return this.instance;
+  }
 
-    public addCodec(codec : ContentCodec) {
-        this.codecs.set(codec.getMediaType(), codec);
+  public addCodec(codec: ContentCodec) {
+    this.codecs.set(codec.getMediaType(), codec);
+  }
+
+  public getSupportedMediaTypes(): Array<string> {
+    return Array.from(this.codecs.keys())
+  }
+
+  public bytesToValue(content: Content): any {
+
+    // default to application/json
+    if (content.mediaType === undefined) {
+      content.mediaType = this.DEFAULT;
     }
-
-    public getSupportedMediaTypes() : Array<string> {
-        return Array.from(this.codecs.keys())
+    logger.verbose(`ContentSerdes deserializing from ${content.mediaType}`);
+    // choose codec based on mediaType
+    if (!this.codecs.has(content.mediaType)) {
+      throw new Error(`Unsupported serialisation format: ${content.mediaType}`)
     }
+    let codec = this.codecs.get(content.mediaType)
 
-    public bytesToValue(content : Content) : any {
+    // use codec to deserialize
+    let res = codec.bytesToValue(content.body);
 
-        // default to application/json
-        if (content.mediaType===undefined) content.mediaType = this.DEFAULT;
+    return res;
+  }
 
-        logger.verbose(`ContentSerdes deserializing from ${content.mediaType}`);
-        //choose codec based on mediaType
-        if(!this.codecs.has(content.mediaType)) {
-            throw new Error(`Unsupported serialisation format: ${content.mediaType}`)
-        }
-        let codec = this.codecs.get(content.mediaType)
-
-        //use codec to deserialize
-        let res = codec.bytesToValue(content.body);
-
-        return res;
+  public valueToBytes(value: any, mediaType = this.DEFAULT): Content {
+    logger.verbose(`ContentSerdes serializing to ${mediaType}`);
+    // choose codec based on mediaType
+    if (!this.codecs.has(mediaType)) {
+      throw new Error(`Unsupported serialisation format: ${mediaType}`)
     }
+    let codec = this.codecs.get(mediaType)
 
-    public valueToBytes(value : any, mediaType= this.DEFAULT) : Content {
-        logger.verbose(`ContentSerdes serializing to ${mediaType}`);
-        //choose codec based on mediaType
-        if(!this.codecs.has(mediaType)) {
-            throw new Error(`Unsupported serialisation format: ${mediaType}`)
-        }
-        let codec = this.codecs.get(mediaType)
+    // use codec to serialize
+    let bytes = codec.valueToBytes(value);
 
-        //use codec to serialize
-        let bytes = codec.valueToBytes(value);
-
-        return { mediaType: mediaType, body: bytes };
-    }
+    return { mediaType: mediaType, body: bytes };
+  }
 }
 
 export default ContentSerdes.get();

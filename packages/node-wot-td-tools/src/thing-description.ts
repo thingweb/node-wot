@@ -13,11 +13,12 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
  * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
-import { JsonMember, JsonObject } from "typedjson";
+import { JsonMember, JsonObject } from 'typedjson';
 
 /** Internet Media Types */
 /*export enum MediaType {
@@ -29,9 +30,9 @@ import { JsonMember, JsonObject } from "typedjson";
 
 /** Interaction pattern */
 export enum InteractionPattern {
-    Property = <any>"Property",
-    Action = <any>"Action",
-    Event = <any>"Event"
+  Property = 'Property' as any,
+  Action = 'Action' as any,
+  Event = 'Event' as any
 }
 
 /**
@@ -41,13 +42,13 @@ export enum InteractionPattern {
 @JsonObject()
 export class InteractionLink {
 
-    /** relativ or absulut URI path of the Interaction resource */
-    @JsonMember({ isRequired: true, type: String })
-    public href : string;
+  /** relativ or absulut URI path of the Interaction resource */
+  @JsonMember({ isRequired: true, type: String })
+  public href: string;
 
-    /** used mediaType of the interacion resources */
-    @JsonMember({ isRequired: true, type: String })
-    public mediaType : string;
+  /** used mediaType of the interacion resources */
+  @JsonMember({ isRequired: true, type: String })
+  public mediaType: string;
 }
 
 /**
@@ -56,38 +57,38 @@ export class InteractionLink {
  */
 @JsonObject({ knownTypes: [InteractionLink] })
 export class Interaction {
-    /** @ type information of the Interaction */
-    @JsonMember({ name: "@type", isRequired: true, elements: String })
-    public semanticTypes : Array<string>;
+  /** @ type information of the Interaction */
+  @JsonMember({ name: '@type', isRequired: true, elements: String })
+  public semanticTypes: Array<string>;
 
-    /** name/identifier of the Interaction */
-    @JsonMember({ isRequired: true, type: String })
-    public name : string;
+  /** name/identifier of the Interaction */
+  @JsonMember({ isRequired: true, type: String })
+  public name: string;
 
-    /** type of the Interaction (action, property, event) */
-    public pattern : InteractionPattern;
+  /** type of the Interaction (action, property, event) */
+  public pattern: InteractionPattern;
 
-    /** link information of the Interaction resources */
-    @JsonMember({ isRequired: true,  elements: InteractionLink })
-    public links : Array<InteractionLink>;
+  /** link information of the Interaction resources */
+  @JsonMember({ isRequired: true, elements: InteractionLink })
+  public links: Array<InteractionLink>;
 
-    /** writable flag for the Property */
-    @JsonMember({ type: Boolean })
-    public writable : boolean;
+  /** writable flag for the Property */
+  @JsonMember({ type: Boolean })
+  public writable: boolean;
 
-    //TODO: how to handle types internally?
-    /** JSON Schema for input */
-    @JsonMember({ type: Object })
-    public inputData : any;
+  // TODO: how to handle types internally?
+  /** JSON Schema for input */
+  @JsonMember({ type: Object })
+  public inputData: any;
 
-    /** JSON Schema for output */
-    @JsonMember({ type: Object })
-    public outputData : any;
+  /** JSON Schema for output */
+  @JsonMember({ type: Object })
+  public outputData: any;
 
-    constructor() {
-        this.semanticTypes = [];
-        this.links = [];
-    }
+  constructor() {
+    this.semanticTypes = [];
+    this.links = [];
+  }
 }
 
 /**
@@ -97,29 +98,29 @@ export class Interaction {
 @JsonObject({ knownTypes: [Interaction] })
 export default class ThingDescription {
 
-    /** @context information of the TD */
-    @JsonMember({ name: "@context", elements: String })
-    private context : Array<string>;
+  /** @ type information, usually 'Thing' */
+  @JsonMember({ name: '@type', type: String })
+  public semanticType: string;
 
-    /** @ type information, usually 'Thing' */
-    @JsonMember({ name: "@type", type: String })
-    public semanticType : string;
+  /** human-readable name of the Thing */
+  @JsonMember({ isRequired: true, type: String })
+  public name: string;
 
-    /** human-readable name of the Thing */
-    @JsonMember({ isRequired: true, type: String })
-    public name : string;
+  /** base URI of the Interaction resources */
+  @JsonMember({ type: String })
+  public base: string;
 
-    /** base URI of the Interaction resources */
-    @JsonMember({ type: String })
-    public base : string;
+  /** Interactions of this Thing */
+  @JsonMember({ isRequired: true, elements: Interaction })
+  public interactions: Array<Interaction>;
 
-    /** Interactions of this Thing */
-    @JsonMember({ isRequired: true, elements: Interaction })
-    public interactions : Array<Interaction>;
+  /** @context information of the TD */
+  @JsonMember({ name: '@context', elements: String })
+  private context: Array<string>;
 
-    constructor() {
-        this.context = ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"];
-        this.semanticType = "Thing";
-        this.interactions = [];
-    }
+  constructor() {
+    this.context = ['http://w3c.github.io/wot/w3c-wot-td-context.jsonld'];
+    this.semanticType = 'Thing';
+    this.interactions = [];
+  }
 }

@@ -18,64 +18,64 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import Servient from "../servient";
-import HttpServer from "../protocols/http/http-server";
-import CoapServer from "../protocols/coap/coap-server";
-import logger from "../logger";
-import ThingDescription from "../td/thing-description"
-import HttpClientFactory from "../protocols/http/http-client-factory"
-import CoapClientFactory from "../protocols/coap/coap-client-factory"
-import * as TDParser from "../td/td-parser"
-import * as TD from "../td/thing-description"
+import Servient from '../servient';
+import HttpServer from '../protocols/http/http-server';
+import CoapServer from '../protocols/coap/coap-server';
+import logger from '../logger';
+import ThingDescription from '../td/thing-description'
+import HttpClientFactory from '../protocols/http/http-client-factory'
+import CoapClientFactory from '../protocols/coap/coap-client-factory'
+import * as TDParser from '../td/td-parser'
+import * as TD from '../td/thing-description'
 const net = require('net');
 
 
 function main() {
 
-    let srv = new Servient();
-    let WoT: WoT.WoTFactory;
+  let srv = new Servient();
+  let WoT: WoT.WoTFactory;
 
-    logger.info("created servient for a client consumer ");
+  logger.info('created servient for a client consumer ');
 
-    srv.addServer(new HttpServer())
+  srv.addServer(new HttpServer())
   //  srv.addServer(new CoapServer());
-    srv.addClientFactory(new HttpClientFactory())
+  srv.addClientFactory(new HttpClientFactory())
   //  srv.addClientFactory(new CoapClientFactory())
 
-    logger.info("added servers and HttpClientFactory")
+  logger.info('added servers and HttpClientFactory')
 
 
-    WoT = srv.start();
-    logger.info("started servient")
+  WoT = srv.start();
+  logger.info('started servient')
 
 
-    logger.info("Try to find a node: ");
+  logger.info('Try to find a node: ');
   //  WoT.consumeDescriptionUri("http://192.168.0.152/td").then(thing => {
-//WoT.consumeDescriptionUri("http://plugfest.thingweb.io:8088/things/counter").then(thing => {
-/* panasonic TD */
-WoT.consumeDescriptionUri("http://w3c-ubuntu.cloudapp.net/client/jsonld/airConditioner_p1.jsonld").then(thing => {
-//      logger.info("Things base " + );
+  //WoT.consumeDescriptionUri("http://plugfest.thingweb.io:8088/things/counter").then(thing => {
+  /* panasonic TD */
+  WoT.consumeDescriptionUri('http://w3c-ubuntu.cloudapp.net/client/jsonld/airConditioner_p1.jsonld').then(thing => {
+    //      logger.info("Things base " + );
 
-  let tdObj = thing.getDescription()
-  let td:ThingDescription = TDParser.parseTDObject(tdObj)
+    let tdObj = thing.getDescription()
+    let td: ThingDescription = TDParser.parseTDObject(tdObj)
 
-  logger.info("TD name = " + td.name)
-  logger.info("number of interactions ="+ td.interactions.length)
+    logger.info('TD name = ' + td.name)
+    logger.info('number of interactions =' + td.interactions.length)
 
-  for(let interaction of td.interactions) {
-    logger.info(" name of interaction = "+ interaction.name + " --> "+ interaction.pattern)
+    for (let interaction of td.interactions) {
+      logger.info(' name of interaction = ' + interaction.name + ' --> ' + interaction.pattern)
 
-  if(interaction.pattern===TD.InteractionPattern.Property) {
+      if (interaction.pattern === TD.InteractionPattern.Property) {
 
-      logger.info("call  = "+ thing.getProperty(interaction.name))
-  }
-
-
-  }
-
-    }).catch((err) =>  logger.error("Hier knallts ", err))
+        logger.info('call  = ' + thing.getProperty(interaction.name))
+      }
 
 
-  }
+    }
+
+  }).catch((err) => logger.error('Hier knallts ', err))
+
+
+}
 
 main();

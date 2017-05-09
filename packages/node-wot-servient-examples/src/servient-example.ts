@@ -17,24 +17,24 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import Servient from "../../servient";
-import HttpClientFactory from "../../protocols/http/http-client-factory";
-import CoapClientFactory from "../../protocols/coap/coap-client-factory";
-import HttpServer from "../../protocols/http/http-server";
-import CoapServer from "../../protocols/coap/coap-server";
+import Servient from '../../servient';
+import HttpClientFactory from '../../protocols/http/http-client-factory';
+import CoapClientFactory from '../../protocols/coap/coap-client-factory';
+import HttpServer from '../../protocols/http/http-server';
+import CoapServer from '../../protocols/coap/coap-server';
 
-import ThingDescription from "../../td/thing-description";
-import * as TD from "../../td/thing-description";
+import ThingDescription from '../../td/thing-description';
+import * as TD from '../../td/thing-description';
 
-const async = require("async");
+const async = require('async');
 
 // for level only - use console for output
-import logger from "../../logger";
-logger.level = "silly";
+import logger from '../../logger';
+logger.level = 'silly';
 
-logger.info("INFO");
-logger.debug("DEBUG");
-logger.silly("SILLY");
+logger.info('INFO');
+logger.debug('DEBUG');
+logger.silly('SILLY');
 
 console.log(`\n# Setting up Servient with HTTP and CoAP\n`);
 
@@ -43,114 +43,116 @@ let servient = new Servient();
 servient.addClientFactory(new HttpClientFactory());
 servient.addClientFactory(new CoapClientFactory());
 
-console.log("Starting servient");
+console.log('Starting servient');
 let wot = servient.start();
 
 async.series([
-    (next : Function) => {
+  (next: Function) => {
 
-        console.log(`\n# Consuming Thing over HTTP\n`);
+    console.log(`\n# Consuming Thing over HTTP\n`);
 
-        wot.consumeDescriptionUri("http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld").then( (thing) => {
-                console.log(`### Thing name: ${thing.name}`);
-                thing.getProperty("myProp").then( (res) => {
-                    console.log(`### myProp value: ${res}`);
-                    thing.setProperty("myProp", "4711").then( (res) => {
-                        console.log(`### myProp set successfully`);
-                        thing.getProperty("myProp").then( (res) => {
-                            console.log(`### myProp value: ${res}`);
-                            thing.invokeAction("myAction", "").then( (res) => {
-                                console.log(`### myAction result: ${res}`);
-                                next();
-                            }).catch( (err) => console.error(err) );
-                        }).catch( (err) => console.error(err) );
-                    }).catch( (err) => console.error(err) );
-                }).catch( (err) => console.error(err) );
-            }).catch( (err) => console.error(err) );
-    },
-    (next : Function) => {
+    wot.consumeDescriptionUri('http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld').then((thing) => {
+      console.log(`### Thing name: ${thing.name}`);
+      thing.getProperty('myProp').then((res) => {
+        console.log(`### myProp value: ${res}`);
+        thing.setProperty('myProp', '4711').then((res) => {
+          console.log(`### myProp set successfully`);
+          thing.getProperty('myProp').then((res) => {
+            console.log(`### myProp value: ${res}`);
+            thing.invokeAction('myAction', '').then((res) => {
+              console.log(`### myAction result: ${res}`);
+              next();
+            }).catch((err) => console.error(err));
+          }).catch((err) => console.error(err));
+        }).catch((err) => console.error(err));
+      }).catch((err) => console.error(err));
+    }).catch((err) => console.error(err));
+  },
+  (next: Function) => {
 
-        console.log(`\n# Consuming Thing over CoAP\n`);
+    console.log(`\n# Consuming Thing over CoAP\n`);
 
-        let td = {
-            "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
-            "@type": "Thing",
-            "name": "PlugtestServer",
-            "interactions": [
-                {
-                    "@type": ["Property"],
-                    "name": "coapProp",
-                    "outputData": { "valueType": { "type": "string" } },
-                    "writable": false,
-                    "links": [
-                        { "href": "coap://californium.eclipse.org:5683/path/sub1", "mediaType": "application/json" }
-                    ]
-                },
-                {
-                    "@type": ["Action"],
-                    "name": "coapAction",
-                    "outputData": { "valueType": { "type": "string" } },
-                    "inputData": { "valueType": { "type": "string" } },
-                    "links": [
-                        { "href": "coap://californium.eclipse.org:5683/large-post", "mediaType": "application/json" }
-                    ]
-                }
+    let td = {
+      '@context': ['http://w3c.github.io/wot/w3c-wot-td-context.jsonld'],
+      '@type': 'Thing',
+      'name': 'PlugtestServer',
+      'interactions': [
+        {
+          '@type': ['Property'],
+          'name': 'coapProp',
+          'outputData': { 'valueType': { 'type': 'string' } },
+          'writable': false,
+          'links': [
+            { 'href': 'coap://californium.eclipse.org:5683/path/sub1', 'mediaType': 'application/json' }
+          ]
+        },
+        {
+          '@type': ['Action'],
+          'name': 'coapAction',
+          'outputData': { 'valueType': { 'type': 'string' } },
+          'inputData': { 'valueType': { 'type': 'string' } },
+          'links': [
+            { 'href': 'coap://californium.eclipse.org:5683/large-post', 'mediaType': 'application/json' }
+          ]
+        }
 
-            ]
-        };
+      ]
+    };
 
-        wot.consumeDescription(td).then( (thing) => {
-                console.log(`### Thing name: ${thing.name}`);
-                thing.getProperty("coapProp").then( (res) => {
-                    console.log(`### coapProp value: ${res}`);
-                    thing.setProperty("coapProp", "4711").then( (res) => {
-                        console.log(`### coapProp set successfully`);
-                        thing.getProperty("coapProp").then( (res) => {
-                            console.log(`### coapProp value: ${res}`);
-                            thing.invokeAction("coapAction", "lower").then( (res) => {
-                                console.log(`### coapAction result: ${res}`);
-                                next();
-                            }).catch( (err) => console.error(err) );
-                        }).catch( (err) => console.error(err) );
-                    }).catch( (err) => console.error(err) );
-                }).catch( (err) => console.error(err) );
-            }).catch( (err) => console.error(err) );
-    },
-    (next : Function) => {
+    wot.consumeDescription(td).then((thing) => {
+      console.log(`### Thing name: ${thing.name}`);
+      thing.getProperty('coapProp').then((res) => {
+        console.log(`### coapProp value: ${res}`);
+        thing.setProperty('coapProp', '4711').then((res) => {
+          console.log(`### coapProp set successfully`);
+          thing.getProperty('coapProp').then((res) => {
+            console.log(`### coapProp value: ${res}`);
+            thing.invokeAction('coapAction', 'lower').then((res) => {
+              console.log(`### coapAction result: ${res}`);
+              next();
+            }).catch((err) => console.error(err));
+          }).catch((err) => console.error(err));
+        }).catch((err) => console.error(err));
+      }).catch((err) => console.error(err));
+    }).catch((err) => console.error(err));
+  },
+  (next: Function) => {
 
-        console.log(`\n# Exposing Thing\n`);
+    console.log(`\n# Exposing Thing\n`);
 
-        let srv = new Servient();
-        logger.info("created servient");
+    let srv = new Servient();
+    logger.info('created servient');
 
-        srv.addServer(new HttpServer());
-        srv.addServer(new CoapServer());
+    srv.addServer(new HttpServer());
+    srv.addServer(new CoapServer());
 
-        logger.info("added servers");
+    logger.info('added servers');
 
-        let WoT = srv.start();
-        logger.info("started servient")
+    let WoT = srv.start();
+    logger.info('started servient')
 
-        WoT.createThing("led").then(led => {
-            led
-                .addProperty("brightness", { type: "integer", minimum: 0, maximum: 255 })
-                .addProperty("color", { type: "object",
-                                        properties: {
-                                            r: { type: "integer", minimum: 0, maximum: 255 },
-                                            g: { type: "integer", minimum: 0, maximum: 255 },
-                                            b: { type: "integer", minimum: 0, maximum: 255 }
-                                        }})
-                .addAction("gradient");
-            led.onUpdateProperty("brightness", (nu, old) => {
-                console.log("New brightness: " + nu);
-            });
-            led.onUpdateProperty("color", (nu, old) => {
-                console.log("New color: " + nu);
-            });
-            led.setProperty("brightness", 0);
-            led.setProperty("color", {r:0,g:0,b:0});
+    WoT.createThing('led').then(led => {
+      led
+        .addProperty('brightness', { type: 'integer', minimum: 0, maximum: 255 })
+        .addProperty('color', {
+          type: 'object',
+          properties: {
+            r: { type: 'integer', minimum: 0, maximum: 255 },
+            g: { type: 'integer', minimum: 0, maximum: 255 },
+            b: { type: 'integer', minimum: 0, maximum: 255 }
+          }
+        })
+        .addAction('gradient');
+      led.onUpdateProperty('brightness', (nu, old) => {
+        console.log('New brightness: ' + nu);
+      });
+      led.onUpdateProperty('color', (nu, old) => {
+        console.log('New color: ' + nu);
+      });
+      led.setProperty('brightness', 0);
+      led.setProperty('color', { r: 0, g: 0, b: 0 });
 
-            next();
-        });
-    }
+      next();
+    });
+  }
 ]);
