@@ -1,7 +1,8 @@
 {
-  "name": "node-wot",
+  "name": "node-wot-root",
+  "private": true,
   "version": "0.0.2",
-  "description": "Web of Things implementation based on node.js and typescript",
+  "description": "Web of Things implementation based on node.js and typescript (root project)",
   "main": "dist/main.js",
   "scripts": {
     "build": "lerna run build",
