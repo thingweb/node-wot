@@ -18,7 +18,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import { JsonMember, JsonObject } from 'typedjson';
+import { JsonMember, JsonObject } from 'typedjson-npm';
 
 /** Internet Media Types */
 /*export enum MediaType {
