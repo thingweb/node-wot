@@ -1,37 +1,15 @@
 {
-    // Use IntelliSense to learn about possible Node.js debug attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    // Verwendet IntelliSense zum Ermitteln möglicher Node.js-Debugattribute.
+    // Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
+    // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
             "type": "node",
             "request": "launch",
-            "name": "Run example",
-            "program": "${workspaceRoot}/dist/examples/main.js",
-            "cwd": "${workspaceRoot}",
-            "outFiles": [],
-            "sourceMaps": true,
-            "preLaunchTask": "build"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Run TDTransformer examples",
-            "program": "${workspaceRoot}/dist/examples/tdtransformer-examples.js",
-            "cwd": "${workspaceRoot}",
-            "outFiles": [],
-            "sourceMaps": true,
-            "preLaunchTask": "build"
-        },
-        {
-            "type": "node",
-            "request": "attach",
-            "name": "An den Prozess anfügen",
-            "port": 5858,
-            "outFiles": [],
-            "sourceMaps": true
+            "name": "Launch Testthing",
+            "program": "${workspaceRoot}/packages/node-wot/dist/command-line-tool/wot-servient.js",
+            "cwd": "${workspaceRoot}/examples/testthing/"
         }
     ]
 }
