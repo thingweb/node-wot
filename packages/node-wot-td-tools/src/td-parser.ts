@@ -80,8 +80,9 @@ export function parseTDString(json: string): ThingDescription {
 
 export function serializeTD(td: ThingDescription): string {
 
-  let json = TypedJSON.stringify(td);
-
+// avoid enableTypeHints
+ TypedJSON.config({"enableTypeHints": false});
+ let json = TypedJSON.stringify(td);
 
   // FIXME TypedJSON also stringifies undefined/null optional members
   let raw = JSON.parse(json)
@@ -90,6 +91,7 @@ export function serializeTD(td: ThingDescription): string {
   }
   for (let interaction of raw.interactions) {
     if (interaction.inputData === null) { delete interaction.inputData; }
+    if (interaction.outputData === null) { delete interaction.outputData; }
     if (interaction.writable === null) { delete interaction.writable; }
   }
   json = JSON.stringify(raw);
