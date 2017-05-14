@@ -1,5 +1,17 @@
 // just an example script - to be moved into other repo
 
+function checkPropertyWrite(expected, actual) {
+    let output = "Property " + expected + " written with " + actual;
+    if (expected === actual) console.log("PASS: " + output);
+    else console.error("FAIL: " + output);
+}
+
+function checkActionInvocation(name, expected, actual) {
+    let output = "Action " + name + " invoked with " + actual;
+    if (expected === actual) console.log("PASS: " + output);
+    else console.error("FAIL: " + output);
+}
+
 WoT.createThing("TestThing")
     .then(function (thing) {
         console.log("created " + thing.name);
@@ -10,11 +22,11 @@ WoT.createThing("TestThing")
 
         thing
             .addProperty("int", { type: "integer" })
-            .setProperty("int", 0);
+            .setProperty("int", 42);
 
         thing
             .addProperty("num", { type: "number" })
-            .setProperty("num", 0);
+            .setProperty("num", 3.14);
 
         thing
             .addProperty("string", { type: "string" })
@@ -38,22 +50,43 @@ WoT.createThing("TestThing")
 
         // Property checks
         thing
-            .onUpdateProperty("num", (param) => {
+            .onUpdateProperty("bool", (param) => {
+                checkPropertyWrite("boolean", typeof param);
+            })
+            .onUpdateProperty("int", (param) => {
                 let inputtype = typeof param;
-                console.log("Property num written with " + inputtype);
+                if (param === Math.floor(param)) inputtype = "integer";
+                checkPropertyWrite("integer", inputtype);
+            })
+            .onUpdateProperty("num", (param) => {
+                checkPropertyWrite("number", typeof param);
+            })
+            .onUpdateProperty("string", (param) => {
+                checkPropertyWrite("string", typeof param);
+            })
+            .onUpdateProperty("array", (param) => {
+                let inputtype = typeof param;
+                if (Array.isArray(param)) inputtype = "array";
+                checkPropertyWrite("array", inputtype);
+            })
+            .onUpdateProperty("object", (param) => {
+                let inputtype = typeof param;
+                if (Array.isArray(param)) inputtype = "array";
+                if (param === null) inputtype = "null";
+                checkPropertyWrite("object", inputtype);
             });
 
         // Actions
         thing
             .addAction("void-void")
             .onInvokeAction("void-void", function (param) {
-                console.log("Action void-void invoked with " + param);
+                checkActionInvocation("void-void", "null", typeof param);
             });
 
         thing
             .addAction("void-int", null, { type: "integer" })
             .onInvokeAction("void-int", function (param) {
-                console.log("Action void-int invoked with " + param);
+                checkActionInvocation("void-int", "null", typeof param);
                 return 0
             });
 
@@ -61,14 +94,16 @@ WoT.createThing("TestThing")
             .addAction("int-void", { type: "integer" })
             .onInvokeAction("int-void", function (param) {
                 let inputtype = typeof param;
-                console.log("Action int-void invoked with " + inputtype);
+                if (param === Math.floor(param)) inputtype = "integer";
+                checkActionInvocation("int-void", "integer", inputtype);
             });
 
         thing
             .addAction("int-int", { type: "integer" }, { type: "integer" })
             .onInvokeAction("int-int", function (param) {
                 let inputtype = typeof param;
-                console.log("Action int-int invoked with " + inputtype);
+                if (param === Math.floor(param)) inputtype = "integer";
+                checkActionInvocation("int-int", "integer", inputtype);
                 return param+1;
             });
 
@@ -76,8 +111,9 @@ WoT.createThing("TestThing")
             .addAction("int-string", { type: "string" })
             .onInvokeAction("int-string", function (param) {
                 let inputtype = typeof param;
-                console.log("Action int-string invoked with " + inputtype);
-                if (inputtype=="string") {
+                if (param === Math.floor(param)) inputtype = "integer";
+                checkActionInvocation("int-string", "integer", inputtype);
+                if (inputtype=="integer") {
                     return new String(param)
                                     .replace(/0/g,"zero-")
                                     .replace(/1/g,"one-")
@@ -105,7 +141,7 @@ WoT.createThing("TestThing")
                     "prop2"
                 ]})
             .onInvokeAction("void-complex", function (param) {
-                console.log("Action void-complex invoked with " + param);
+                checkActionInvocation("void-complex", "null", typeof param);
                 return {"prop1": 123, "prop2" : "abc"};
             });
 
@@ -120,7 +156,6 @@ WoT.createThing("TestThing")
                     "prop2"
                 ]})
             .onInvokeAction("complex-void", function (param) {
-                let inputtype = typeof param;
-                console.log("Action complex-void invoked with " + inputtype);
+                checkActionInvocation("complex-void", "object", typeof param);
             });
     });
