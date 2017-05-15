@@ -38,14 +38,15 @@ const loggerOpts: winston.LoggerOptions = {
 export const logger: winston.LoggerInstance = new winston.Logger(loggerOpts);
 export default logger;
 
-console.log = logger.verbose
+// no redirect of direct output, e.g., command line tools
+//console.log = logger.verbose
+// log levels
+console.error = logger.error
 console.warn = logger.warn
 console.info = logger.info
-console.trace = logger.silly
-console.error = logger.error
-
+console.trace = logger.debug
 // shows objects
-console.dir = logger.debug
+console.dir = logger.silly
 
 
 /* usage */
