@@ -100,15 +100,15 @@ Examples: wot-servient
 
 wot-servient.conf.json:
 {
-    servient: {
-        scriptDir: AUTORUN,
-        scriptAction: RUNSCRIPT
+    "servient": {
+        "scriptDir": AUTORUN,
+        "scriptAction": RUNSCRIPT
     },
-    http: {
-        port: HPORT
+    "http": {
+        "port": HPORT
     },
-    log : {
-        level : LEVEL
+    "log": {
+        "level": LEVEL
     }
 }
   AUTORUN is a path string for the directory to load at startup
