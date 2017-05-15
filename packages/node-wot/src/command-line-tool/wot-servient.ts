@@ -32,7 +32,6 @@ import HttpServer from "node-wot-protocols-http-server";
 import HttpClientFactory from "node-wot-protocols-http-client";
 
 // tools
-import logger from "node-wot-logger";
 import fs = require("fs");
 import * as path from "path";
 
@@ -43,12 +42,12 @@ const readConf = function () : Promise<any> {
     return new Promise((resolve, reject) => {
         fs.readFile(path.join(baseDir, confFile), "utf-8", (err, data) => {
             if (err) {
-                logger.warn("using defaults due to", err.message);
+                console.warn("using defaults due to", err.message);
                 reject(err);
             }
             if (data) {
                 const config = JSON.parse(data);
-                logger.info("using conf file", confFile);
+                console.info("using conf file", confFile);
                 resolve(config);
             }
         });
@@ -57,12 +56,12 @@ const readConf = function () : Promise<any> {
 
 const runScripts = function(srv : DefaultServient, scripts : Array<string>) : void {
     scripts.forEach((fname) => {
-        logger.info("reading script", fname);
+        console.info("reading script", fname);
         fs.readFile(fname, "utf8", (err, data) => {
             if (err) {
-                logger.error("error while reading script", err);
+                console.error("error while reading script", err);
             } else {
-                logger.info("running script", data);
+                console.info("running script", data);
                 srv.runPriviledgedScript(data);
             }
         });
@@ -73,7 +72,7 @@ const runAllScripts = function(srv : DefaultServient) : void {
     const scriptDir = path.join(baseDir, srv.config.servient.scriptDir);
     fs.readdir(scriptDir, (err, files) => {
         if (err) {
-            logger.warn("error while loading directory", err);
+            console.warn("error while loading directory", err);
             return;
         }
 
@@ -81,7 +80,7 @@ const runAllScripts = function(srv : DefaultServient) : void {
         let scripts = files.filter( (file) => {
             return (file.substr(0, 1) !== "." && file.slice(-3) === ".js");
         });
-        logger.info(`loading directory '${scriptDir}' with ${scripts.length} script${scripts.length>1 ? "s" : ""}`);
+        console.info(`loading directory '${scriptDir}' with ${scripts.length} script${scripts.length>1 ? "s" : ""}`);
         
         runScripts(srv, scripts.map(value => path.join(scriptDir, value)));
     });
@@ -90,7 +89,7 @@ const runAllScripts = function(srv : DefaultServient) : void {
 // main
 if (process.argv.length>2) {
     process.argv.slice(2).forEach( (arg) => {
-        if (arg.match(/-h|--help|\/?|\/h/i)) {
+        if (arg.match(/^(-h|--help|\/?|\/h)$/i)) {
             console.log(`Usage: wot-servient [SCRIPT]...
 Run a WoT Servient in the current directory. Automatically loads all .js files in the directory.
 If wot-servient.conf.json exists, that configuration is applied and scripts in 'scriptDir' are loaded.
@@ -131,7 +130,7 @@ readConf()
     .then(servient => {
         servient.start();
         if (process.argv.length>2) {
-            logger.info(`loading ${process.argv.length-2} command line script${process.argv.length-2>1 ? "s" : ""}`);
+            console.info(`loading ${process.argv.length-2} command line script${process.argv.length-2>1 ? "s" : ""}`);
             return runScripts(servient, process.argv.slice(2));
         } else {
             return runAllScripts(servient);
