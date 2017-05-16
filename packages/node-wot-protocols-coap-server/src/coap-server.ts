@@ -162,12 +162,12 @@ export default class CoapServer implements ProtocolServer {
         requestHandler.onRead()
           .then(content => {
             res.code = '2.05';
-            // TODO better mediaType check; more strict and throw Error?
-            if (!content.mediaType || content.mediaType === '') {
+            if (!content.mediaType) {
               logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
             } else {
               res.setOption('Content-Format', content.mediaType);
             }
+            // finish
             res.end(content.body);
           })
           .catch(err => {
@@ -179,6 +179,7 @@ export default class CoapServer implements ProtocolServer {
         requestHandler.onWrite({ mediaType: mediaType, body: req.payload })
           .then(() => {
             res.code = '2.04';
+            // finish with diagnostic payload
             res.end('Changed');
           })
           .catch(err => {
@@ -189,13 +190,18 @@ export default class CoapServer implements ProtocolServer {
       } else if (req.method === 'POST') {
         requestHandler.onInvoke({ mediaType: mediaType, body: req.payload })
           .then(content => {
-            res.code = '2.05';
-            // TODO better mediaType check; more strict and throw Error?
-            if (!content.mediaType || content.mediaType === '') {
-              logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
+            // Actions may have a void return (no outputData)
+            if (content.body === null) {
+              res.code = '2.04';
             } else {
-              res.setOption('Content-Format', content.mediaType);
+              res.code = '2.05';
+              if (!content.mediaType) {
+                logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
+              } else {
+                res.setOption('Content-Format', content.mediaType);
+              }
             }
+            // finish with whatever
             res.end(content.body);
           })
           .catch(err => {
@@ -207,11 +213,12 @@ export default class CoapServer implements ProtocolServer {
         requestHandler.onUnlink()
           .then(() => {
             res.code = '2.02';
+            // finish with diagnostic payload
             res.end('Deleted');
           })
           .catch(err => {
-            // logger.verbose(`CoapServer on port ${this.getPort()}`
-            // +` got internal error on unlink '${requestUri.pathname}': ${err.message}`);
+            logger.verbose(`CoapServer on port ${this.getPort()}`
+              +` got internal error on unlink '${requestUri.pathname}': ${err.message}`);
             res.code = '5.00'; res.end(err.message);
           });
       } else {

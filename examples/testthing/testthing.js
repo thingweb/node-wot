@@ -1,20 +1,20 @@
-// just an example script - to be moved into other repo
+"use strict"
 
 function checkPropertyWrite(expected, actual) {
     let output = "Property " + expected + " written with " + actual;
-    if (expected === actual) console.log("PASS: " + output);
+    if (expected === actual) console.info("PASS: " + output);
     else console.error("FAIL: " + output);
 }
 
 function checkActionInvocation(name, expected, actual) {
     let output = "Action " + name + " invoked with " + actual;
-    if (expected === actual) console.log("PASS: " + output);
+    if (expected === actual) console.info("PASS: " + output);
     else console.error("FAIL: " + output);
 }
 
 WoT.createThing("TestThing")
     .then(function (thing) {
-        console.log("created " + thing.name);
+        console.info("created " + thing.name);
 
         thing
             .addProperty("bool", { type: "boolean" })

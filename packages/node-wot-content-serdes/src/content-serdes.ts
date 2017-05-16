@@ -130,12 +130,12 @@ export class ContentSerdes {
 
   public valueToBytes(value: any, mediaType = this.DEFAULT): Content {
 
-    if (value === undefined) logger.error("ContentSerdes given no value");
+    if (value === undefined) logger.warn("ContentSerdes valueToBytes got no value");
 
     logger.verbose(`ContentSerdes serializing to ${mediaType}`);
     // choose codec based on mediaType
     if (!this.codecs.has(mediaType)) {
-      throw new Error(`Unsupported serialisation format: ${mediaType}`)
+      throw new Error(`Unsupported serialization format: ${mediaType}`)
     }
     let codec = this.codecs.get(mediaType)
 

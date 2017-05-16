@@ -142,9 +142,8 @@ export default class HttpServer implements ProtocolServer {
       if (req.method === 'GET') {
         requestHandler.onRead()
           .then(content => {
-            // TODO better mediaType check; more strict and throw Error?
-            if (!content.mediaType || content.mediaType === '') {
-              logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
+            if (!content.mediaType) {
+              logger.warn(`HttpServer got no Media Type from '${requestUri.pathname}'`);
             } else {
               res.setHeader('Content-Type', content.mediaType);
             }
@@ -181,13 +180,17 @@ export default class HttpServer implements ProtocolServer {
           logger.verbose(`HttpServer on port ${this.getPort()} completed body '${body}'`);
           requestHandler.onInvoke({ mediaType: mediaType, body: Buffer.concat(body) })
             .then(content => {
-              // TODO better mediaType check; more strict and throw Error?
-              if (!content.mediaType || content.mediaType === '') {
-                logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
+              // Actions may have a void return (no outputData)
+              if (content.body === null) {
+                res.writeHead(204);
               } else {
-                res.setHeader('Content-Type', content.mediaType);
+                if (!content.mediaType) {
+                  logger.warn(`HttpServer got no Media Type from '${requestUri.pathname}'`);
+                } else {
+                  res.setHeader('Content-Type', content.mediaType);
+                }
+                res.writeHead(200);
               }
-              res.writeHead(200);
               res.end(content.body);
             })
             .catch((err) => {
