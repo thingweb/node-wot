@@ -47,14 +47,14 @@ export default class WoTImpl implements WoT.WoTFactory {
     consumeDescriptionUri(uri: string): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
             let client = this.srv.getClientFor(Helpers.extractScheme(uri));
-            logger.info(`WoTImpl consuming TD at ${uri} with ${client}`);
+            logger.info(`WoTImpl consuming TD from ${uri} with ${client}`);
             client.readResource(uri).then((content) => {
-                if (content.mediaType !== 'application/json')
-                    logger.warn(`parsing TD from ${content.mediaType}`)
-                let thingdesc = TDParser.parseTDString(content.body.toString());
-                let pt = new ConsumedThing(this.srv, thingdesc);
+                if (content.mediaType !== "application/json")
+                    logger.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
+                let td = TDParser.parseTDString(content.body.toString());
+                let thing = new ConsumedThing(this.srv, td);
                 client.stop();
-                resolve(pt);
+                resolve(thing);
             })
                 .catch((err) => { console.error(err); });
         });
@@ -101,8 +101,8 @@ export default class WoTImpl implements WoT.WoTFactory {
             let client = this.srv.getClientFor(uri);
             logger.info(`WoTImpl creating new ExposedThing from TD at ${uri} with ${client}`);
             client.readResource(uri).then((content) => {
-                if (content.mediaType !== 'application/json')
-                    logger.warn(`parsing TD from ${content.mediaType}`)
+                if (content.mediaType !== "application/json")
+                    logger.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
                 let thingdesc = TDParser.parseTDString(content.body.toString());
                 let mything = new ExposedThing(this.srv, thingdesc.name);
                 if (this.srv.addThing(mything)) {

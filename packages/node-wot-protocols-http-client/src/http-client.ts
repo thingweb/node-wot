@@ -50,9 +50,9 @@ export default class HttpClient implements ProtocolClient {
       logger.info(`HttpClient sending GET to ${uri}`);
       let req = http.request(options, (res) => {
         logger.info(`HttpClient received ${res.statusCode} from ${uri}`);
-        logger.debug(`HttpClient received Content-Type: ${res.headers['Content-Type']}`);
+        logger.debug(`HttpClient received Content-Type: ${res.headers['content-type']}`);
         logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
-        let mediaType: string = res.headers['Content-Type'];
+        let mediaType: string = res.headers['content-type']; // note: node http uses lower case here
         let body: Array<any> = [];
         res.on('data', (data) => { body.push(data) });
         res.on('end', () => {
@@ -105,9 +105,9 @@ export default class HttpClient implements ProtocolClient {
       logger.info(`HttpClient sending GET to ${uri}`);
       let req = http.request(options, (res) => {
         logger.info(`HttpClient received ${res.statusCode} from ${uri}`);
-        logger.debug(`HttpClient received Content-Type: ${res.headers['Content-Type']}`);
+        logger.debug(`HttpClient received Content-Type: ${res.headers['content-type']}`);
         logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
-        let mediaType: string = res.headers['Content-Type'];
+        let mediaType: string = res.headers['content-type'];
         let body: Array<any> = [];
         res.on('data', (data) => { body.push(data) });
         res.on('end', () => {
