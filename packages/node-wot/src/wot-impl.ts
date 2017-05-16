@@ -48,14 +48,15 @@ export default class WoTImpl implements WoT.WoTFactory {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
             let client = this.srv.getClientFor(Helpers.extractScheme(uri));
             logger.info(`WoTImpl consuming TD from ${uri} with ${client}`);
-            client.readResource(uri).then((content) => {
-                if (content.mediaType !== "application/json")
-                    logger.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
-                let td = TDParser.parseTDString(content.body.toString());
-                let thing = new ConsumedThing(this.srv, td);
-                client.stop();
-                resolve(thing);
-            })
+            client.readResource(uri)
+                .then((content) => {
+                    if (content.mediaType !== "application/json")
+                        logger.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
+                    let td = TDParser.parseTDString(content.body.toString());
+                    let thing = new ConsumedThing(this.srv, td);
+                    client.stop();
+                    resolve(thing);
+                })
                 .catch((err) => { console.error(err); });
         });
     }
@@ -110,7 +111,7 @@ export default class WoTImpl implements WoT.WoTFactory {
                 } else {
                     reject(new Error("WoTImpl could not create Thing from TD: " + mything))
                 }
-            }).catch((err) => logger.error("failed fetching TD", err));
+            }).catch((err) => logger.error("WoTImpl failed fetching TD", err));
         });
     }
 

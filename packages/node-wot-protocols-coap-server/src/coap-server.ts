@@ -59,7 +59,7 @@ export default class CoapServer implements ProtocolServer {
 
   public addResource(path: string, res: ResourceListener): boolean {
     if (this.resources[path] !== undefined) {
-      logger.warn(`CoapServer on port ${this.getPort()} already has ResourceListener ${path}`);
+      logger.warn(`CoapServer on port ${this.getPort()} already has ResourceListener '${path}' - skipping`);
       return false;
     } else {
       logger.debug(`CoapServer on port ${this.getPort()} addeding resource '${path}'`);
@@ -74,18 +74,17 @@ export default class CoapServer implements ProtocolServer {
   }
 
   public start(): boolean {
-    logger.info('CoapServer starting on '
-      + (this.address !== undefined ? this.address + ' ' : '') + 'port ' + this.port);
+    logger.info(`CoapServer starting on ${(this.address !== undefined ? this.address + ' ' : '')}port ${this.port}`);
 
     if (this.socketFree()) {
       this.server.listen(this.port, this.address, () => { this.running = true; });
+      // converting async listen API to sync start function
       setTimeout(() => {
-        // put something in the loop, since .listen() sometimes finishes immediately and deasync blocks
+        // put something in the event loop, since .listen() sometimes finishes immediately and deasync blocks
       }, 0);
       while (!this.running && !this.failed) {
         deasync.runLoopOnce();
       }
-      // synchronous return useless anyway due to async server API
       return this.running;
     } else {
       this.server.emit('error', new Error('listen EADDRINUSE ' + this.port));
@@ -141,12 +140,12 @@ export default class CoapServer implements ProtocolServer {
   }
 
   private handleRequest(req: any, res: any) {
-    logger.info(`CoapServer on port ${this.getPort()} received ${req.method} ${req.url}`
+    logger.verbose(`CoapServer on port ${this.getPort()} received ${req.method} ${req.url}`
       + ` from ${req.rsinfo.address} port ${req.rsinfo.port}`);
     res.on('finish', () => {
-      logger.info(`CoapServer replied with ${res.code} to ${req.rsinfo.address} port ${req.rsinfo.port}`);
-      // TODO find way to access information
-      // logger.debug(`CoapServer sent Content-Format: '${res.options}'`);
+      logger.verbose(`CoapServer replied with ${res.code} to ${req.rsinfo.address} port ${req.rsinfo.port}`);
+      // FIXME res.options is undefined, no other useful property to get Content-Format
+      //logger.warn(`CoapServer sent Content-Format: '${res.options['Content-Format']}'`);
     });
 
     let requestUri = url.parse(req.url);
@@ -171,7 +170,7 @@ export default class CoapServer implements ProtocolServer {
             res.end(content.body);
           })
           .catch(err => {
-            logger.verbose(`CoapServer on port ${this.getPort()}`
+            logger.error(`CoapServer on port ${this.getPort()}`
               + ` got internal error on read '${requestUri.pathname}': ${err.message}`);
             res.code = '5.00'; res.end(err.message);
           });
@@ -183,7 +182,7 @@ export default class CoapServer implements ProtocolServer {
             res.end('Changed');
           })
           .catch(err => {
-            logger.verbose(`CoapServer on port ${this.getPort()}`
+            logger.error(`CoapServer on port ${this.getPort()}`
               + ` got internal error on write '${requestUri.pathname}': ${err.message}`);
             res.code = '5.00'; res.end(err.message);
           });
@@ -205,7 +204,7 @@ export default class CoapServer implements ProtocolServer {
             res.end(content.body);
           })
           .catch(err => {
-            logger.verbose(`CoapServer on port ${this.getPort()}`
+            logger.error(`CoapServer on port ${this.getPort()}`
               + ` got internal error on invoke '${requestUri.pathname}': ${err.message}`);
             res.code = '5.00'; res.end(err.message);
           });
@@ -217,8 +216,8 @@ export default class CoapServer implements ProtocolServer {
             res.end('Deleted');
           })
           .catch(err => {
-            logger.verbose(`CoapServer on port ${this.getPort()}`
-              +` got internal error on unlink '${requestUri.pathname}': ${err.message}`);
+            logger.error(`CoapServer on port ${this.getPort()}`
+              + ` got internal error on unlink '${requestUri.pathname}': ${err.message}`);
             res.code = '5.00'; res.end(err.message);
           });
       } else {

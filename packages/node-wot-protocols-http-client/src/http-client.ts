@@ -47,12 +47,12 @@ export default class HttpClient implements ProtocolClient {
       // TODO get explicit binding from TD
       options.method = 'GET';
 
-      logger.info(`HttpClient sending GET to ${uri}`);
+      logger.verbose(`HttpClient sending GET to ${uri}`);
       let req = http.request(options, (res) => {
-        logger.info(`HttpClient received ${res.statusCode} from ${uri}`);
-        logger.debug(`HttpClient received Content-Type: ${res.headers['content-type']}`);
-        logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+        logger.verbose(`HttpClient received ${res.statusCode} from ${uri}`);
         let mediaType: string = res.headers['content-type']; // note: node http uses lower case here
+        logger.debug(`HttpClient received Content-Type: ${mediaType}`);
+        logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         let body: Array<any> = [];
         res.on('data', (data) => { body.push(data) });
         res.on('end', () => {
@@ -73,9 +73,9 @@ export default class HttpClient implements ProtocolClient {
       options.method = 'PUT';
       options.headers = { 'Content-Type': content.mediaType, 'Content-Length': content.body.byteLength };
 
-      logger.info(`HttpClient sending PUT to ${uri}`);
+      logger.verbose(`HttpClient sending PUT to ${uri}`);
       let req = http.request(options, (res) => {
-        logger.info(`HttpClient received ${res.statusCode} from ${uri}`);
+        logger.verbose(`HttpClient received ${res.statusCode} from ${uri}`);
         logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         // Although 204 without payload is expected, data must be read 
         // to complete request (http blocks socket otherwise)
@@ -102,12 +102,12 @@ export default class HttpClient implements ProtocolClient {
       if (content) {
         options.headers = { 'Content-Type': content.mediaType, 'Content-Length': content.body.byteLength };
       }
-      logger.info(`HttpClient sending GET to ${uri}`);
+      logger.verbose(`HttpClient sending POST to ${uri}`);
       let req = http.request(options, (res) => {
-        logger.info(`HttpClient received ${res.statusCode} from ${uri}`);
-        logger.debug(`HttpClient received Content-Type: ${res.headers['content-type']}`);
+        logger.verbose(`HttpClient received ${res.statusCode} from ${uri}`);
+        let mediaType: string = res.headers['content-type']; // note: node http uses lower case here
+        logger.debug(`HttpClient received Content-Type: ${mediaType}`);
         logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
-        let mediaType: string = res.headers['content-type'];
         let body: Array<any> = [];
         res.on('data', (data) => { body.push(data) });
         res.on('end', () => {
@@ -129,9 +129,9 @@ export default class HttpClient implements ProtocolClient {
       // TODO get explicit binding from TD
       options.method = 'DELETE';
 
-      logger.info(`HttpClient sending DELETE to ${uri}`);
+      logger.verbose(`HttpClient sending DELETE to ${uri}`);
       let req = http.request(options, (res) => {
-        logger.info(`HttpClient received ${res.statusCode} from ${uri}`);
+        logger.verbose(`HttpClient received ${res.statusCode} from ${uri}`);
         logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         // Although 204 without payload is expected, data must be read
         //  to complete request (http blocks socket otherwise)

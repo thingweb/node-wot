@@ -60,7 +60,7 @@ export default class HttpServer implements ProtocolServer {
 
   public addResource(path: string, res: ResourceListener): boolean {
     if (this.resources[path] !== undefined) {
-      logger.warn(`HttpServer on port ${this.getPort()} already has ResourceListener ${path}`);
+      logger.warn(`HttpServer on port ${this.getPort()} already has ResourceListener '${path}' - skipping`);
       return false;
     } else {
       logger.debug(`HttpServer on port ${this.getPort()} addeding resource '${path}'`);
@@ -77,13 +77,11 @@ export default class HttpServer implements ProtocolServer {
   public start(): boolean {
     logger.info(`HttpServer starting on ${(this.address !== undefined ? this.address + ' ' : '')}port ${this.port}`);
     this.server.listen(this.port, this.address);
-    // FIXME .listen() is async, but works for http
-    // this.server.listening not available on v4.2
+    // converting async listen API to sync start function
     this.server.once('listening', () => { this.running = true; });
     while (!this.running && !this.failed) {
       deasync.runLoopOnce();
     }
-    // synchronous return useless anyway due to async server API
     return this.running;
   }
 
@@ -110,11 +108,11 @@ export default class HttpServer implements ProtocolServer {
   }
 
   private handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
-    logger.info(`HttpServer on port ${this.getPort()} received ${req.method} ${req.url}`
+    logger.verbose(`HttpServer on port ${this.getPort()} received ${req.method} ${req.url}`
       + ` from ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
 
     res.on('finish', () => {
-      logger.info(`HttpServer replied with ${res.statusCode} to `
+      logger.verbose(`HttpServer replied with ${res.statusCode} to `
         + `${req.socket.remoteAddress} port ${req.socket.remotePort}`);
       logger.debug(`HttpServer sent Content-Type: '${res.getHeader('Content-Type')}'`);
     });
@@ -132,8 +130,9 @@ export default class HttpServer implements ProtocolServer {
 
     let requestUri = url.parse(req.url);
     let requestHandler = this.resources[requestUri.pathname];
-    // TODO must be rejected with 415 Unsupported Media Type, guessing not allowed
-    let mediaType = req.headers['Content-Type'] ? req.headers['Content-Type'] : ContentSerdes.DEFAULT;
+    let mediaType = req.headers["content-type"];
+    // FIXME must be rejected with 415 Unsupported Media Type, guessing not allowed -> debug/testing flag
+    if (!mediaType) mediaType = ContentSerdes.DEFAULT;
 
     if (requestHandler === undefined) {
       res.writeHead(404);
@@ -151,7 +150,7 @@ export default class HttpServer implements ProtocolServer {
             res.end(content.body);
           })
           .catch(err => {
-            logger.verbose(`HttpServer on port ${this.getPort()} got internal error on read ` +
+            logger.error(`HttpServer on port ${this.getPort()} got internal error on read ` +
               `'${requestUri.pathname}': ${err.message}`);
             res.writeHead(500);
             res.end(err.message);
@@ -160,14 +159,14 @@ export default class HttpServer implements ProtocolServer {
         let body: Array<any> = [];
         req.on('data', (data) => { body.push(data) });
         req.on('end', () => {
-          logger.verbose(`HttpServer on port ${this.getPort()} completed body '${body}'`);
+          logger.debug(`HttpServer on port ${this.getPort()} completed body '${body}'`);
           requestHandler.onWrite({ mediaType: mediaType, body: Buffer.concat(body) })
             .then(() => {
               res.writeHead(204);
               res.end('');
             })
             .catch(err => {
-              logger.verbose(`HttpServer on port ${this.getPort()} got internal error on `
+              logger.error(`HttpServer on port ${this.getPort()} got internal error on `
                 + `write '${requestUri.pathname}': ${err.message}`);
               res.writeHead(500);
               res.end(err.message);
@@ -177,7 +176,7 @@ export default class HttpServer implements ProtocolServer {
         let body: Array<any> = [];
         req.on('data', (data) => { body.push(data) });
         req.on('end', () => {
-          logger.verbose(`HttpServer on port ${this.getPort()} completed body '${body}'`);
+          logger.debug(`HttpServer on port ${this.getPort()} completed body '${body}'`);
           requestHandler.onInvoke({ mediaType: mediaType, body: Buffer.concat(body) })
             .then(content => {
               // Actions may have a void return (no outputData)
@@ -194,7 +193,7 @@ export default class HttpServer implements ProtocolServer {
               res.end(content.body);
             })
             .catch((err) => {
-              logger.verbose(`HttpServer on port ${this.getPort()} got internal error on `
+              logger.error(`HttpServer on port ${this.getPort()} got internal error on `
                 + `invoke '${requestUri.pathname}': ${err.message}`);
               res.writeHead(500);
               res.end(err.message);
@@ -207,7 +206,7 @@ export default class HttpServer implements ProtocolServer {
             res.end('');
           })
           .catch(err => {
-            logger.verbose(`HttpServer on port ${this.getPort()} got internal error on `
+            logger.error(`HttpServer on port ${this.getPort()} got internal error on `
               + `unlink '${requestUri.pathname}': ${err.message}`);
             res.writeHead(500);
             res.end(err.message);
@@ -218,5 +217,4 @@ export default class HttpServer implements ProtocolServer {
       }
     }
   }
-
 }

@@ -52,7 +52,7 @@ export default class DefaultServient extends Servient {
 
         Object.assign(this.config, config);
         logger.level = this.config.log.level;
-        logger.info("configured servient", this.config);
+        logger.info("DefaultServient configured", this.config);
 
         let httpServer = (typeof this.config.http.port === "number") ? new HttpServer(this.config.http.port) : new HttpServer();
         this.addServer(httpServer);
@@ -64,7 +64,7 @@ export default class DefaultServient extends Servient {
      */
     public start() {
         let WoT = super.start();
-        logger.info("started servient");
+        logger.info("DefaultServient started");
 
         WoT.createThing("servient").then(thing => {
 

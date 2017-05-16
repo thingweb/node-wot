@@ -57,15 +57,13 @@ let gradVector: Color;
 function main() {
 
   let servient = new Servient();
-  logger.info('created servient');
 
   servient.addServer(new HttpServer());
   servient.addServer(new CoapServer());
-  logger.info('added servers');
 
   // get WoT object for privileged script
   let wot = servient.start();
-  logger.info('started servient')
+  logger.info('RaspberryServient started');
 
   wot.createThing('unicorn').then(thing => {
     unicorn = thing;

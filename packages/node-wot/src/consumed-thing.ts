@@ -97,7 +97,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     logger.info(`ConsumedThing '${this.name}' getting ${link.href}`);
                     client.readResource(link.href).then( (content) => {
                         if (!content.mediaType) content.mediaType = link.mediaType;
-                        logger.info(`decoding media type ${content.mediaType} in readProperty`);
+                        logger.verbose(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
                         let value = ContentSerdes.bytesToValue(content);
                         resolve(value);
                     });
@@ -150,7 +150,8 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     let input = ContentSerdes.valueToBytes(parameter, link.mediaType.toString());
 
                     client.invokeResource(link.href, input).then( (output) => {
-                        // TODO #5 client returns Buffer on invoke; ConsumedThing would have the necessary TD valueType rule...
+                        if (!output.mediaType) output.mediaType = link.mediaType;
+                        logger.verbose(`ConsumedThing decoding '${output.mediaType}' in invokeAction`);
                         let value = ContentSerdes.bytesToValue(output);
                         resolve(value);
                     });

@@ -2,19 +2,25 @@
 
 function checkPropertyWrite(expected, actual) {
     let output = "Property " + expected + " written with " + actual;
-    if (expected === actual) console.info("PASS: " + output);
-    else console.error("FAIL: " + output);
+    if (expected === actual) {
+        console.info("PASS: " + output);
+    } else {
+        throw new Error("FAIL: " + output);
+    }
 }
 
 function checkActionInvocation(name, expected, actual) {
     let output = "Action " + name + " invoked with " + actual;
-    if (expected === actual) console.info("PASS: " + output);
-    else console.error("FAIL: " + output);
+    if (expected === actual) {
+        console.info("PASS: " + output);
+    } else {
+        throw new Error("FAIL: " + output);
+    }
 }
 
 WoT.createThing("TestThing")
     .then(function (thing) {
-        console.info("created " + thing.name);
+        console.info(thing.name + " running");
 
         thing
             .addProperty("bool", { type: "boolean" })
