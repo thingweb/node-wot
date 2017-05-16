@@ -40,9 +40,16 @@ export default class ActionResourceListener extends BasicResourceListener implem
     }
 
     public onInvoke(value: Content): Promise<Content> {
-        let param = ContentSerdes.bytesToValue(value); // TODO get mediatype
-        return this.thing.invokeAction(this.name,param).then((value) => {
-            return ContentSerdes.valueToBytes(value);
+        let param = ContentSerdes.bytesToValue(value);
+        return this.thing.invokeAction(this.name, param).then((value) => {
+            // TODO do assertion with this.description and spit warning?
+            if (value === undefined) {
+                // action without outputData - skip ContentSerdes
+                return { mediaType: null, body: null };
+                // TODO set status code (TODO) to 2.04
+            } else {
+                return ContentSerdes.valueToBytes(value);
+            }
         });
     }
 }

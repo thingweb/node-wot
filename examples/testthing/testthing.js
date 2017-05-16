@@ -72,7 +72,6 @@ WoT.createThing("TestThing")
             .onUpdateProperty("object", (param) => {
                 let inputtype = typeof param;
                 if (Array.isArray(param)) inputtype = "array";
-                if (param === null) inputtype = "null";
                 checkPropertyWrite("object", inputtype);
             });
 
@@ -80,13 +79,13 @@ WoT.createThing("TestThing")
         thing
             .addAction("void-void")
             .onInvokeAction("void-void", function (param) {
-                checkActionInvocation("void-void", "null", typeof param);
+                checkActionInvocation("void-void", "undefined", typeof param);
             });
 
         thing
             .addAction("void-int", null, { type: "integer" })
             .onInvokeAction("void-int", function (param) {
-                checkActionInvocation("void-int", "null", typeof param);
+                checkActionInvocation("void-int", "undefined", typeof param);
                 return 0
             });
 
@@ -141,7 +140,7 @@ WoT.createThing("TestThing")
                     "prop2"
                 ]})
             .onInvokeAction("void-complex", function (param) {
-                checkActionInvocation("void-complex", "null", typeof param);
+                checkActionInvocation("void-complex", "undefined", typeof param);
                 return {"prop1": 123, "prop2" : "abc"};
             });
 

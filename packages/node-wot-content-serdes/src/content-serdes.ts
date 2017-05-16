@@ -50,13 +50,18 @@ class JsonCodec implements ContentCodec {
       parsed = JSON.parse(bytes.toString());
     } catch (err) {
       if (err instanceof SyntaxError) {
-        // be relaxed about what is received (-> string without quotes)
-        parsed = bytes.toString();
+        if (bytes.byteLength == 0) {
+          // empty payload -> void/undefined
+          parsed = undefined;
+        } else {
+          // be relaxed about what is received -> string without quotes
+          parsed = bytes.toString();
+        }
       } else {
         throw err;
       }
     }
-    // FIXME need to remove wrapping from Current Practices and use RFC 7159
+    // remove legacy wrapping and use RFC 7159
     if (parsed && parsed.value) {
       logger.warn(`JsonCodec removing { value: ... } wrapper`);
       parsed = parsed.value;
@@ -100,10 +105,16 @@ export class ContentSerdes {
 
   public bytesToValue(content: Content): any {
 
-    // default to application/json
     if (content.mediaType === undefined) {
-      content.mediaType = this.DEFAULT;
+      if (content.body.byteLength > 0) {
+        // default to application/json
+        content.mediaType = this.DEFAULT;
+      } else {
+        // empty payload without media type -> void/undefined (note: e.g., empty payload with text/plain -> "")
+        return;
+      }
     }
+
     logger.verbose(`ContentSerdes deserializing from ${content.mediaType}`);
     // choose codec based on mediaType
     if (!this.codecs.has(content.mediaType)) {
@@ -118,6 +129,9 @@ export class ContentSerdes {
   }
 
   public valueToBytes(value: any, mediaType = this.DEFAULT): Content {
+
+    if (value === undefined) logger.error("ContentSerdes given no value");
+
     logger.verbose(`ContentSerdes serializing to ${mediaType}`);
     // choose codec based on mediaType
     if (!this.codecs.has(mediaType)) {
