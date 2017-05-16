@@ -24,7 +24,9 @@ import * as Rest from "./resource-listeners/all-resource-listeners"
 import Servient from "./servient";
 import * as TDGenerator from "./td-generator"
 
-export default class ExposedThing implements WoT.DynamicThing {
+import * as WoT from 'wot-types-draft';
+
+export default class ExposedThing implements WoT.ExposedThing {
     // these arrays and their contents are mutable
     private interactions: Array<TD.Interaction> = [];
     private interactionStates: { [key: string]: InteractionState } = {}; //TODO migrate to Map

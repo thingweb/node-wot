@@ -10,7 +10,7 @@
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register",
     "build": "tsc",
-    "codestyle" : ""
+    "codestyle": ""
   },
   "author": "the thingweb community",
   "license": "MIT",
@@ -32,9 +32,10 @@
     "node-wot-helpers": "^0.1.0",
     "node-wot-logger": "^0.1.0",
     "node-wot-protocols": "^0.1.0",
-    "node-wot-td-tools": "^0.1.0",
-    "wot-typescript-definitions": "^0.2.3",
     "node-wot-protocols-http-client": "^0.1.0",
-    "node-wot-protocols-http-server": "^0.1.0"
+    "node-wot-protocols-http-server": "^0.1.0",
+    "node-wot-td-tools": "^0.1.0",
+    "wot-types-draft": "0.0.1",
+    "wot-typescript-definitions": "^0.2.3"
   }
 }

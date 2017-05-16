@@ -25,6 +25,8 @@ import * as TD from "node-wot-td-tools";
 import * as Helpers from "node-wot-helpers";
 import ContentSerdes from "node-wot-content-serdes"
 
+import * as WoT from 'wot-types-draft';
+
 interface ClientAndLink {
     client: ProtocolClient
     link: TD.InteractionLink

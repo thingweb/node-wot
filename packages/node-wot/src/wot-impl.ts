@@ -25,7 +25,8 @@ import ConsumedThing from "./consumed-thing";
 import * as Helpers from "node-wot-helpers";
 import * as TDParser from "node-wot-td-tools";
 
-import * as WoT from 'wot-typescript-definitions';
+import * as WoT from 'wot-types-draft';
+import { Observable } from 'rxjs'
 
 export default class WoTImpl implements WoT.WoTFactory {
     private srv: Servient;
@@ -34,9 +35,12 @@ export default class WoTImpl implements WoT.WoTFactory {
         this.srv = srv;
     }
 
-    discover(discoveryType: string, filter: Object): Promise<WoT.ConsumedThing> {
-        return new Promise<WoT.ConsumedThing>((resolve, reject) => {
-
+    discover(filter?: Object): Observable<WoT.ConsumedThing> {
+        return new Observable<WoT.ConsumedThing>(subscriber => {
+            //find things
+            //for each found thing
+            //subscriber.next(thing);
+            subscriber.complete();
         });
     }
 
@@ -80,8 +84,8 @@ export default class WoTImpl implements WoT.WoTFactory {
      *
      * @param name name/identifier of the thing to be created
      */
-    createThing(name: string): Promise<WoT.DynamicThing> {
-        return new Promise<WoT.DynamicThing>((resolve, reject) => {
+    createThing(name: string): Promise<WoT.ExposedThing> {
+        return new Promise<WoT.ExposedThing>((resolve, reject) => {
             logger.info(`WoTImpl creating new ExposedThing '${name}'`);
             let mything = new ExposedThing(this.srv, name);
             if (this.srv.addThing(mything)) {
