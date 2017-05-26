@@ -26,6 +26,7 @@ import * as Helpers from "node-wot-helpers";
 import * as TDParser from "node-wot-td-tools";
 
 import * as WoT from 'wot-typescript-definitions';
+import ThingDescription from 'node-wot-td-tools/src/thing-description';
 
 export default class WoTImpl implements WoT.WoTFactory {
     private srv: Servient;
@@ -115,15 +116,26 @@ export default class WoTImpl implements WoT.WoTFactory {
         });
     }
 
-    createFromDescription(thingDescription: Object): Promise<WoT.ExposedThing> {
+    createFromDescription(thingDescription: ThingDescription): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
-            let thingdesc = TDParser.parseTDObject(thingDescription);
+            //not necessary to parse if it is already obj
+            //let thingdesc = TDParser.parseTDObject(thingDescription);
             logger.info(`WoTImpl creating new ExposedThing from object`);
-            let mything = new ExposedThing(this.srv, thingdesc.name);
-            if (this.srv.addThing(mything)) {
-                resolve(mything);
+            let myThing = new ExposedThing(this.srv, thingDescription.name);
+            if (this.srv.addThing(myThing)) {
+                //add actions
+                //let interactions = myThing.
+                /*
+                myThing
+                    .addAction("updateFirmware")
+                    .onInvokeAction("updateFirmware", function(input) {
+                        console.log("Update Firmware request received");
+                        console.log(input);
+                    });
+                    */
+                resolve(myThing);
             } else {
-                reject(new Error("WoTImpl could not create Thing from object: " + mything))
+                reject(new Error("WoTImpl could not create Thing from object: " + myThing))
             }
         });
     }
