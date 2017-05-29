@@ -105,12 +105,59 @@ export default class WoTImpl implements WoT.WoTFactory {
             client.readResource(uri).then((content) => {
                 if (content.mediaType !== "application/json")
                     logger.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
-                let thingdesc = TDParser.parseTDString(content.body.toString());
-                let mything = new ExposedThing(this.srv, thingdesc.name);
-                if (this.srv.addThing(mything)) {
-                    resolve(mything);
+                let thingDescription = TDParser.parseTDString(content.body.toString());
+                let myThing = new ExposedThing(this.srv, thingDescription.name);
+                if (this.srv.addThing(myThing)) {
+                    //copy paste from below  
+                    let interactions: Array<any> = thingDescription.interactions;
+                for(var i=0; i<interactions.length;i++){
+                    let currentInter = interactions[i]; 
+                    let interType= currentInter['@type'][0];
+                    if(interType==='Action'){
+                        let actionName: string = currentInter.name;
+                        try{
+                            let inputValueType: Object = currentInter.inputData.valueType;
+                            let outputValueType: Object = currentInter.outputData.valueType;
+                            myThing.addAction(actionName,inputValueType,outputValueType);
+                        }catch(err){
+                            //it means that we couldn't find the input AND output, we'll try individual cases
+                            try{
+                                let inputValueType: Object = currentInter.inputData.valueType;
+                                myThing.addAction(actionName,inputValueType);
+                            } catch (err2){
+                                try{
+                                    let outputValueType: Object = currentInter.outputData.valueType;
+                                    myThing.addAction(actionName,{},outputValueType);
+                                }catch(err3){
+                                    //worst case, we just create with the name
+                                            //should there be the semantics case as well?
+                                    myThing.addAction(actionName);
+                                }
+                            }      
+                        } 
+
+                    } else if (interType==='Property'){
+                        //maybe there should be more things added?
+                        let propertyName: string = currentInter.name;
+                        let outputValueType: Object = currentInter.outputData.valueType;
+                        myThing.addProperty(propertyName, outputValueType);
+                        
+                        
+                    } else if(interType==='Event'){
+                        //currently there isnt much implemented that's why I add only the name and nothing else
+                        let eventName: string = currentInter.name;
+                        myThing.addEvent(eventName);
+                       
+                    } else {
+                        logger.info("Wrong interaction type for number ", i );
+                    }
+                   
+                }
+
+               
+                resolve(myThing);
                 } else {
-                    reject(new Error("WoTImpl could not create Thing from TD: " + mything))
+                    reject(new Error("WoTImpl could not create Thing from TD: " + myThing))
                 }
             }).catch((err) => logger.error("WoTImpl failed fetching TD", err));
         });
@@ -123,16 +170,56 @@ export default class WoTImpl implements WoT.WoTFactory {
             logger.info(`WoTImpl creating new ExposedThing from object`);
             let myThing = new ExposedThing(this.srv, thingDescription.name);
             if (this.srv.addThing(myThing)) {
-                //add actions
-                //let interactions = myThing.
-                /*
-                myThing
-                    .addAction("updateFirmware")
-                    .onInvokeAction("updateFirmware", function(input) {
-                        console.log("Update Firmware request received");
-                        console.log(input);
-                    });
-                    */
+                //add base field
+                //add actions:
+                    //get the interactions
+                        //for each interaction, add it like event, action or property (first actions)
+                let interactions: Array<any> = thingDescription.interactions;
+                for(var i=0; i<interactions.length;i++){
+                    let currentInter = interactions[i]; 
+                    let interType= currentInter['@type'][0];
+                    if(interType==='Action'){
+                        let actionName: string = currentInter.name;
+                        try{
+                            let inputValueType: Object = currentInter.inputData.valueType;
+                            let outputValueType: Object = currentInter.outputData.valueType;
+                            myThing.addAction(actionName,inputValueType,outputValueType);
+                        }catch(err){
+                            //it means that we couldn't find the input AND output, we'll try individual cases
+                            try{
+                                let inputValueType: Object = currentInter.inputData.valueType;
+                                myThing.addAction(actionName,inputValueType);
+                            } catch (err2){
+                                try{
+                                    let outputValueType: Object = currentInter.outputData.valueType;
+                                    myThing.addAction(actionName,{},outputValueType);
+                                }catch(err3){
+                                    //worst case, we just create with the name
+                                            //should there be the semantics case as well?
+                                    myThing.addAction(actionName);
+                                }
+                            }      
+                        } 
+
+                    } else if (interType==='Property'){
+                        //maybe there should be more things added?
+                        let propertyName: string = currentInter.name;
+                        let outputValueType: Object = currentInter.outputData.valueType;
+                        myThing.addProperty(propertyName, outputValueType);
+                        
+                        
+                    } else if(interType==='Event'){
+                        //currently there isnt much implemented that's why I add only the name and nothing else
+                        let eventName: string = currentInter.name;
+                        myThing.addEvent(eventName);
+                       
+                    } else {
+                        logger.info("Wrong interaction type for number ", i );
+                    }
+                   
+                }
+
+               
                 resolve(myThing);
             } else {
                 reject(new Error("WoTImpl could not create Thing from object: " + myThing))

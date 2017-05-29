@@ -8,7 +8,7 @@
         .addProperty("count", { type: "integer" })
         .setProperty("count",0);
 	
-	thing
+	    thing
         .onUpdateProperty("count",
             function(newValue, oldValue) {
                 console.log(oldValue + " -> " + newValue);

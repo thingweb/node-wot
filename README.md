@@ -50,3 +50,11 @@ wot-servient
 * you can query the count by http://localhost:8080/counter/properties/count
 * you can modify the count via POST on http://localhost:8080/counter/actions/increment and http://localhost:8080/counter/actions/decrement
 * application logic is in ``examples/scripts/counter.js``
+
+## How to use the library
+
+This library implements the Scripting API defined in the [WoT Current Practices](https://w3c.github.io/wot/current-practices/wot-practices.html#scripting-api) document. 
+
+You can also see _examples/scripts_ to have a feeling of how to script a Thing.
+
+Not everything has been succesfully implemented.

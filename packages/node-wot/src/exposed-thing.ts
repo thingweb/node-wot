@@ -229,7 +229,20 @@ export default class ExposedThing implements WoT.DynamicThing {
     /**
      * declare a new eventsource for the ExposedThing
      */
-    addEvent(eventName: string): ExposedThing { return this; }
+    addEvent(eventName: string): ExposedThing { 
+        
+        let newEvent = new TD.Interaction();
+        newEvent.pattern = TD.InteractionPattern.Event;
+        newEvent.name = eventName;
+
+        this.interactions.push(newEvent);
+
+         let eventState = new InteractionState();
+        eventState.handlers = [];
+
+        this.interactionStates[eventName] = eventState;
+
+        return this; }
 
     /**
      * remove a property from the ExposedThing
