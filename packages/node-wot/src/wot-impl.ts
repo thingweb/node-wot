@@ -108,52 +108,56 @@ export default class WoTImpl implements WoT.WoTFactory {
                 let thingDescription = TDParser.parseTDString(content.body.toString());
                 let myThing = new ExposedThing(this.srv, thingDescription.name);
                 if (this.srv.addThing(myThing)) {
-                    //copy paste from below  
+                    //copy paste from the createFromDescription
+
+                    //it is not working, there is a problem above at getClientFor
+                    
+                    /*  
                     let interactions: Array<any> = thingDescription.interactions;
-                for(var i=0; i<interactions.length;i++){
-                    let currentInter = interactions[i]; 
-                    let interType= currentInter['@type'][0];
-                    if(interType==='Action'){
-                        let actionName: string = currentInter.name;
-                        try{
-                            let inputValueType: Object = currentInter.inputData.valueType;
-                            let outputValueType: Object = currentInter.outputData.valueType;
-                            myThing.addAction(actionName,inputValueType,outputValueType);
-                        }catch(err){
-                            //it means that we couldn't find the input AND output, we'll try individual cases
+                    for(var i=0; i<interactions.length;i++){
+                        let currentInter = interactions[i]; 
+                        let interType= currentInter['@type'][0];
+                        if(interType==='Action'){
+                            let actionName: string = currentInter.name;
                             try{
                                 let inputValueType: Object = currentInter.inputData.valueType;
-                                myThing.addAction(actionName,inputValueType);
-                            } catch (err2){
+                                let outputValueType: Object = currentInter.outputData.valueType;
+                                myThing.addAction(actionName,inputValueType,outputValueType);
+                            }catch(err){
+                                //it means that we couldn't find the input AND output, we'll try individual cases
                                 try{
-                                    let outputValueType: Object = currentInter.outputData.valueType;
-                                    myThing.addAction(actionName,{},outputValueType);
-                                }catch(err3){
-                                    //worst case, we just create with the name
-                                            //should there be the semantics case as well?
-                                    myThing.addAction(actionName);
-                                }
-                            }      
-                        } 
+                                    let inputValueType: Object = currentInter.inputData.valueType;
+                                    myThing.addAction(actionName,inputValueType);
+                                } catch (err2){
+                                    try{
+                                        let outputValueType: Object = currentInter.outputData.valueType;
+                                        myThing.addAction(actionName,{},outputValueType);
+                                    }catch(err3){
+                                        //worst case, we just create with the name
+                                                //should there be the semantics case as well?
+                                        myThing.addAction(actionName);
+                                    }
+                                }      
+                            } 
 
-                    } else if (interType==='Property'){
-                        //maybe there should be more things added?
-                        let propertyName: string = currentInter.name;
-                        let outputValueType: Object = currentInter.outputData.valueType;
-                        myThing.addProperty(propertyName, outputValueType);
+                        } else if (interType==='Property'){
+                            //maybe there should be more things added?
+                            let propertyName: string = currentInter.name;
+                            let outputValueType: Object = currentInter.outputData.valueType;
+                            myThing.addProperty(propertyName, outputValueType);
+                            
+                            
+                        } else if(interType==='Event'){
+                            //currently there isnt much implemented that's why I add only the name and nothing else
+                            let eventName: string = currentInter.name;
+                            myThing.addEvent(eventName);
                         
-                        
-                    } else if(interType==='Event'){
-                        //currently there isnt much implemented that's why I add only the name and nothing else
-                        let eventName: string = currentInter.name;
-                        myThing.addEvent(eventName);
-                       
-                    } else {
-                        logger.info("Wrong interaction type for number ", i );
+                        } else {
+                            logger.info("Wrong interaction type for number ", i );
+                        }
+                    
                     }
-                   
-                }
-
+*/
                
                 resolve(myThing);
                 } else {
