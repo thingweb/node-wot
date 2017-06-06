@@ -26,7 +26,7 @@ import * as Helpers from "node-wot-helpers";
 import * as TDParser from "node-wot-td-tools";
 
 import * as WoT from 'wot-typescript-definitions';
-import ThingDescription from 'node-wot-td-tools/src/thing-description';
+import {ThingDescription} from 'node-wot-td-tools';
 
 export default class WoTImpl implements WoT.WoTFactory {
     private srv: Servient;
