@@ -117,15 +117,26 @@ export class ContentSerdes {
 
     logger.verbose(`ContentSerdes deserializing from ${content.mediaType}`);
     // choose codec based on mediaType
-    if (!this.codecs.has(content.mediaType)) {
+    let isolMediaType: string=this.isolateMediaType(content.mediaType)
+
+    if (!this.codecs.has(isolMediaType)) {
+      
       throw new Error(`Unsupported serialisation format: ${content.mediaType}`)
     }
-    let codec = this.codecs.get(content.mediaType)
+    let codec = this.codecs.get(isolMediaType)
 
     // use codec to deserialize
     let res = codec.bytesToValue(content.body);
 
     return res;
+  }
+  public isolateMediaType(mediaTypeValue:string):string {
+        let semiColumnIndex=mediaTypeValue.indexOf(';');
+        if (semiColumnIndex>0){
+            return mediaTypeValue.substring(0,semiColumnIndex);    
+        } else {
+            return mediaTypeValue;
+        }
   }
 
   public valueToBytes(value: any, mediaType = this.DEFAULT): Content {
