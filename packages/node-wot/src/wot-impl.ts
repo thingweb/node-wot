@@ -105,7 +105,7 @@ export default class WoTImpl implements WoT.WoTFactory {
             client.readResource(uri).then((content) => {
                 if (content.mediaType !== "application/json")
                     logger.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
-                    let thingDescription :any= TDParser.parseTDString(content.body.toString());//ThingDescription type doesnt work for some reason
+                    let thingDescription :ThingDescription= TDParser.parseTDString(content.body.toString());//ThingDescription type doesnt work for some reason
                 
                     //this.createFromDescription(thingDescription);
             }).catch((err) => logger.error("WoTImpl failed fetching TD", err));
