@@ -24,7 +24,7 @@ import ThingDescription from './thing-description';
 import * as TD from './thing-description';
 import * as AddressHelper from 'node-wot-helpers';
 
-import { JsonMember, JsonObject, TypedJSON } from 'typedjson';
+import { JsonMember, JsonObject, TypedJSON } from 'typedjson-npm';
 
 export function parseTDObject(td: Object): ThingDescription {
   // FIXME Is this the best way to verify?
