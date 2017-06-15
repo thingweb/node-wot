@@ -36,6 +36,16 @@ export default class HttpClient implements ProtocolClient {
     this.agent = secure ? new https.Agent({ keepAlive: true }) : new http.Agent({ keepAlive: true });
   }
 
+  private getContentType(res : http.ClientResponse) : string {
+    let header : string | string[] = res.headers['content-type']; // note: node http uses lower case here
+    if(Array.isArray(header)) {
+      // this should never be the case as only cookie headers are returned as array
+      // but anyways...
+      return (header.length > 0) ? header[0] : ""; 
+    } else
+    return header;
+  }
+
   public toString(): string {
     return `[HttpClient]`;
   }
@@ -50,7 +60,7 @@ export default class HttpClient implements ProtocolClient {
       logger.verbose(`HttpClient sending GET to ${uri}`);
       let req = http.request(options, (res) => {
         logger.verbose(`HttpClient received ${res.statusCode} from ${uri}`);
-        let mediaType: string = res.headers['content-type']; // note: node http uses lower case here
+        let mediaType: string = this.getContentType(res);
         logger.debug(`HttpClient received Content-Type: ${mediaType}`);
         logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         let body: Array<any> = [];
@@ -105,7 +115,7 @@ export default class HttpClient implements ProtocolClient {
       logger.verbose(`HttpClient sending POST to ${uri}`);
       let req = http.request(options, (res) => {
         logger.verbose(`HttpClient received ${res.statusCode} from ${uri}`);
-        let mediaType: string = res.headers['content-type']; // note: node http uses lower case here
+        let mediaType: string = this.getContentType(res);        
         logger.debug(`HttpClient received Content-Type: ${mediaType}`);
         logger.silly(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         let body: Array<any> = [];

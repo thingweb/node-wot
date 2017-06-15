@@ -130,9 +130,10 @@ export default class HttpServer implements ProtocolServer {
 
     let requestUri = url.parse(req.url);
     let requestHandler = this.resources[requestUri.pathname];
-    let mediaType = req.headers["content-type"];
+    let contentTypeHeader : string | string[] = req.headers["content-type"];
+    let mediaType : string = Array.isArray(contentTypeHeader) ? contentTypeHeader[0] : contentTypeHeader;
     // FIXME must be rejected with 415 Unsupported Media Type, guessing not allowed -> debug/testing flag
-    if (!mediaType) mediaType = ContentSerdes.DEFAULT;
+    if (!mediaType || mediaType.length == 0) mediaType = ContentSerdes.DEFAULT;
 
     if (requestHandler === undefined) {
       res.writeHead(404);
