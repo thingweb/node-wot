@@ -1,11 +1,11 @@
 {
-  "name": "node-wot-privileged-scripts",
+  "name": "raspberry-demo-servient",
   "version": "0.1.0",
   "private": true,
   "files": [
     "dist/"
   ],
-  "description": "Examples for privileged script Servients (node.js require etc.)",
+  "description": "Example servient used in raspberry-pi demo with unicornhat",
   "main": "dist/raspberry-servient.js",
   "scripts": {
     "build": "tsc",
@@ -24,10 +24,7 @@
     "raspberry-servient": "dist/raspberry-servient.js"
   },
   "dependencies": {
-    "wot-typescript-definitions": "^0.2.3",
     "node-wot": "^0.2.0",
-    "node-wot-protocols-coap-server": "^0.1.0",
-    "node-wot-protocols-http-server": "^0.1.0",
-    "node-wot-logger": "^0.1.0"
+    "node-wot-protocols-coap-server": "^0.1.0"
   }
 }

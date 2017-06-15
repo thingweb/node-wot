@@ -24,12 +24,12 @@
 // global W3C WoT Scripting API definitions
 import _ from 'wot-typescript-definitions';
 // node-wot implementation of W3C WoT Servient 
-import Servient from 'node-wot';
+import {Servient,logger,HttpServer} from 'node-wot';
+
 // exposed protocols
-import HttpServer from 'node-wot-protocols-http-server';
 import CoapServer from 'node-wot-protocols-coap-server';
+
 // tools
-import logger from 'node-wot-logger';
 const net = require('net');
 
 // the UnicornHat API daemon listens on a Unix socket at /var/run/mysocket
