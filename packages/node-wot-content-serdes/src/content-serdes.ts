@@ -76,6 +76,25 @@ class JsonCodec implements ContentCodec {
   }
 }
 
+class TextCodec implements ContentCodec {
+  getMediaType(): string {
+    return 'text/plain'
+  }
+
+  bytesToValue(bytes: Buffer): any {
+    logger.debug(`TextCodec parsing '${bytes.toString()}'`);
+    let parsed: any;
+    parsed = bytes.toString();
+    return parsed;
+  }
+
+  valueToBytes(value: any): Buffer {
+    logger.debug(`TextCodec serializing '${value}'`);
+    let body = value;
+    return new Buffer(body);
+  }
+}
+
 /**
  * is a singleton that is used to serialize and deserialize data
  * it can accept multiple serializers and decoders
@@ -91,6 +110,7 @@ export class ContentSerdes {
     if (!this.instance) {
       this.instance = new ContentSerdes();
       this.instance.addCodec(new JsonCodec());
+      this.instance.addCodec(new TextCodec());
     }
     return this.instance;
   }
