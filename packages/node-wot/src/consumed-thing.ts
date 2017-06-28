@@ -76,7 +76,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     }
 
     private findInteraction(name: string, type: TD.InteractionPattern) {
-        let res = this.td.interactions.filter((ia) => ia.pattern === type && ia.name === name)
+        let res = this.td.interaction.filter((ia) => ia.pattern === type && ia.name === name)
         return (res.length > 0) ? res[0] : null;
     }
 
@@ -90,7 +90,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
             if (!property) {
                 reject(new Error(`ConsumedThing '${this.name}' cannot find Property '${propertyName}'`));
             } else {
-                let {client, link} = this.getClientFor(property.links);
+                let {client, link} = this.getClientFor(property.link);
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
@@ -117,7 +117,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
             if (!property) {
                 reject(new Error(`ConsumedThing '${this.name}' cannot find Property '${propertyName}'`));
             } else {
-                let {client, link} = this.getClientFor(property.links);
+                let {client, link} = this.getClientFor(property.link);
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
@@ -139,7 +139,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
             if (!action) {
                 reject(new Error(`ConsumedThing '${this.name}' cannot find Action '${actionName}'`));
             } else {
-                let {client, link} = this.getClientFor(action.links);
+                let {client, link} = this.getClientFor(action.link);
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {

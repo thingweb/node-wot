@@ -123,7 +123,7 @@ export default class WoTImpl implements WoT.WoTFactory {
                 //add actions:
                     //get the interactions
                         //for each interaction, add it like event, action or property (first actions)
-                let interactions: Array<any> = thingDescription.interactions;
+                let interactions: Array<any> = thingDescription.interaction;
                 for(var i=0; i<interactions.length;i++){
                     let currentInter = interactions[i]; 
                     let interType= currentInter['@type'][0];

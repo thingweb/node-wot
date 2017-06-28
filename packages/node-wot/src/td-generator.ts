@@ -47,10 +47,10 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
     genTD.name = thing.name
 
     /* assign all interactions from ExposedThing */
-    genTD.interactions = thing.getInteractions()
+    genTD.interaction = thing.getInteractions()
 
-    logger.debug(`generateTD() found ${genTD.interactions.length} Interaction${genTD.interactions.length==1?"":"s"}`);
-    for (let interaction of   genTD.interactions) {
+    logger.debug(`generateTD() found ${genTD.interaction.length} Interaction${genTD.interaction.length==1?"":"s"}`);
+    for (let interaction of   genTD.interaction) {
       /* empty semantic type array*/
       interaction.semanticTypes = []
       /* assign interaction pattern to the rdf @type*/
@@ -80,21 +80,21 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
           
                 /* depending of the resource pattern, uri is constructed */
                 if(interaction.pattern === TD.InteractionPattern.Property) {
-                      interaction.links[l] = new TD.InteractionLink()
-                      interaction.links[l].href = href+"/properties/" + interaction.name
-                      interaction.links[l].mediaType = med
+                      interaction.link[l] = new TD.InteractionLink()
+                      interaction.link[l].href = href+"/properties/" + interaction.name
+                      interaction.link[l].mediaType = med
                 }
                 else if(interaction.pattern === TD.InteractionPattern.Action) {
-                      interaction.links[l] = new TD.InteractionLink()
-                      interaction.links[l].href = href+"/actions/" + interaction.name
-                      interaction.links[l].mediaType = med
+                      interaction.link[l] = new TD.InteractionLink()
+                      interaction.link[l].href = href+"/actions/" + interaction.name
+                      interaction.link[l].mediaType = med
                 }
                 if(interaction.pattern === TD.InteractionPattern.Event) {
-                      interaction.links[l] = new TD.InteractionLink()
-                      interaction.links[l].href = href+"/events/" + interaction.name
-                      interaction.links[l].mediaType = med
+                      interaction.link[l] = new TD.InteractionLink()
+                      interaction.link[l].href = href+"/events/" + interaction.name
+                      interaction.link[l].mediaType = med
                 }
-                logger.debug(`generateTD() assign href  ${interaction.links[l].href } for interaction ${interaction.name}`);
+                logger.debug(`generateTD() assign href  ${interaction.link[l].href } for interaction ${interaction.name}`);
                 l++
               }
           }
@@ -106,6 +106,8 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
 
     }
+
+
 
     return genTD;
 }

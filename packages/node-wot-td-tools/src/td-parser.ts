@@ -37,10 +37,10 @@ export function parseTDString(json: string): ThingDescription {
   logger.silly(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
   let td: ThingDescription = TypedJSON.parse(json, ThingDescription);
 
-  logger.debug(`parseTDString() found ${td.interactions.length} Interaction${td.interactions.length === 1 ? '' : 's'}`);
+  logger.debug(`parseTDString() found ${td.interaction.length} Interaction${td.interaction.length === 1 ? '' : 's'}`);
   // for each interaction assign the Interaction type (Property, Action, Event)
   // and, if "base" is given, normalize each Interaction link
-  for (let interaction of td.interactions) {
+  for (let interaction of td.interaction) {
 
     // FIXME @mkovatsc Why does array.includes() not work?
     if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString()) !== -1) {
@@ -58,9 +58,9 @@ export function parseTDString(json: string): ThingDescription {
 
     /* if a base uri is used normalize all relative hrefs in links */
     if (td.base !== undefined) {
-      logger.debug(`parseTDString() applying base '${td.base}' to href '${interaction.links[0].href}'`);
+      logger.debug(`parseTDString() applying base '${td.base}' to href '${interaction.link[0].href}'`);
 
-      let href: string = interaction.links[0].href;
+      let href: string = interaction.link[0].href;
 
       let url = require('url');
 
@@ -71,7 +71,7 @@ export function parseTDString(json: string): ThingDescription {
       let uriTemp: string = td.base.replace(pr, 'http:'); // replace protocol
       uriTemp = url.resolve(uriTemp, href) // URL resolving
       uriTemp = uriTemp.replace('http:', pr); // replace protocol back to origin
-      interaction.links[0].href = uriTemp;
+      interaction.link[0].href = uriTemp;
     }
   }
 
@@ -89,7 +89,7 @@ export function serializeTD(td: ThingDescription): string {
   if (td.base === null || td.base === undefined) {
     delete raw.base
   }
-  for (let interaction of raw.interactions) {
+  for (let interaction of raw.interaction) {
     if (interaction.inputData === null) { delete interaction.inputData; }
     if (interaction.outputData === null) { delete interaction.outputData; }
     if (interaction.writable === null) { delete interaction.writable; }

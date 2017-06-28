@@ -36,7 +36,7 @@ import * as TD from './thing-description';
  * @param name of the interaction which is searched for
  */
 export function findInteractionByName(td: ThingDescription, name: string) {
-  let res = td.interactions.filter((ia) => ia.name === name)
+  let res = td.interaction.filter((ia) => ia.name === name)
   return (res.length > 0) ? res[0] : null;
 }
 
@@ -46,7 +46,7 @@ export function findInteractionByName(td: ThingDescription, name: string) {
  * @param name of the interaction which is searched for
  */
 export function findInteractionByNameType(td: ThingDescription, name: string, pattern: TD.InteractionPattern) {
-  let res = td.interactions.filter((ia) => ia.pattern === pattern && ia.name === name)
+  let res = td.interaction.filter((ia) => ia.pattern === pattern && ia.name === name)
   return (res.length > 0) ? res[0] : null;
 }
 

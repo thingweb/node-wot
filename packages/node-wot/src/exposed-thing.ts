@@ -184,7 +184,8 @@ export default class ExposedThing implements WoT.DynamicThing {
         newProp.pattern = TD.InteractionPattern.Property;
         newProp.name = propertyName;
       //  newProp.inputData = { 'valueType' : valueType};
-        newProp.outputData =  { 'valueType' : valueType};
+       // newProp.outputData =  { 'valueType' : valueType};
+        newProp.outputData =  valueType;
         newProp.writable = true; //we need a param for this
 
         this.interactions.push(newProp);
@@ -211,9 +212,14 @@ export default class ExposedThing implements WoT.DynamicThing {
         let newAction = new TD.Interaction();
         newAction.pattern = TD.InteractionPattern.Action;
         newAction.name = actionName;
-        newAction.inputData = inputType ? { 'valueType' : inputType} : null;
+        /*newAction.inputData = inputType ? { 'valueType' : inputType} : null;
         newAction.outputData = outputType ? { 'valueType' : outputType} : null;
+*/
 
+        newAction.inputData = inputType ? inputType : null;
+        newAction.outputData = outputType ? outputType : null;
+
+     
         this.interactions.push(newAction);
 
         let actionState = new InteractionState();

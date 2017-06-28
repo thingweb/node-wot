@@ -70,7 +70,7 @@ export class Interaction {
 
   /** link information of the Interaction resources */
   @JsonMember({ isRequired: true, elements: InteractionLink })
-  public links: Array<InteractionLink>;
+  public link: Array<InteractionLink>;
 
   /** writable flag for the Property */
   @JsonMember({ type: Boolean })
@@ -87,7 +87,7 @@ export class Interaction {
 
   constructor() {
     this.semanticTypes = [];
-    this.links = [];
+    this.link = [];
   }
 }
 
@@ -99,8 +99,8 @@ export class Interaction {
 export default class ThingDescription {
 
   /** @ type information, usually 'Thing' */
-  @JsonMember({ name: '@type', type: String })
-  public semanticType: string;
+  @JsonMember({ name: '@type', elements: String })
+  public semanticType: Array<string>;
 
   /** human-readable name of the Thing */
   @JsonMember({ isRequired: true, type: String })
@@ -112,7 +112,7 @@ export default class ThingDescription {
 
   /** Interactions of this Thing */
   @JsonMember({ isRequired: true, elements: Interaction })
-  public interactions: Array<Interaction>;
+  public interaction: Array<Interaction>;
 
   /** @context information of the TD */
   @JsonMember({ name: '@context', elements: String })
@@ -120,7 +120,7 @@ export default class ThingDescription {
 
   constructor() {
     this.context = ['http://w3c.github.io/wot/w3c-wot-td-context.jsonld'];
-    this.semanticType = 'Thing';
-    this.interactions = [];
+    this.semanticType = ['Thing'];
+    this.interaction = [];
   }
 }
