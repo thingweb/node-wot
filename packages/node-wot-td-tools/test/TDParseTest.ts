@@ -113,7 +113,8 @@ class TDParserTest {
         let td : ThingDescription = TDParser.parseTDString(tdSample1);
 
         expect(td).to.have.property("context").that.has.lengthOf(1);
-        expect(td).to.have.property("semanticType").that.equals("Thing");
+        expect(td).to.have.property("semanticType").to.have.lengthOf(1);
+        expect(td.semanticType[0]).equals("Thing");
         expect(td).to.have.property("name").that.equals("MyTemperatureThing");
         expect(td).to.not.have.property("base");
 
@@ -132,7 +133,8 @@ class TDParserTest {
         let td : ThingDescription = TDParser.parseTDString(tdSample2);
 
         expect(td).to.have.property("context").that.has.lengthOf(1);
-        expect(td).to.have.property("semanticType").that.equals("Thing");
+        expect(td).to.have.property("semanticType").to.have.lengthOf(1);
+        expect(td.semanticType[0]).equals("Thing");
         expect(td).to.have.property("name").that.equals("MyTemperatureThing2");
         expect(td).to.not.have.property("base");
 
@@ -150,7 +152,8 @@ class TDParserTest {
         let td : ThingDescription = TDParser.parseTDString(tdSample3);
 
         expect(td).to.have.property("context").that.has.lengthOf(1);
-        expect(td).to.have.property("semanticType").that.equals("Thing");
+        expect(td).to.have.property("semanticType").to.have.lengthOf(1);
+        expect(td.semanticType[0]).equals("Thing");
         expect(td).to.have.property("name").that.equals("MyTemperatureThing3");
         expect(td).to.have.property("base").that.equals("coap://mytemp.example.com:5683/interactions/");
 

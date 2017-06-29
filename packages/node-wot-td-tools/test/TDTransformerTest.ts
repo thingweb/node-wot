@@ -33,7 +33,7 @@ class TDTransformerTest {
     
     @test("convert simple SantaClara TD")
     simple_TD1_V2() {
-		var td1_V2 = JSON.parse('{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": ["Thing"],"name": "MyTemperatureThing","interaction": [{"@type": ["Property"],"name": "temperature","outputData": {"valueType": { "type": "number" }},"writable": false,"link": [{"href" : "coap://mytemp.example.com:5683/temp","mediaType": "application/json"}]}]}');
+		var td1_V2 = JSON.parse('{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": "Thing","name": "MyTemperatureThing","interactions": [{"@type": ["Property"],"name": "temperature","outputData": {"valueType": { "type": "number" }},"writable": false,"links": [{"href" : "coap://mytemp.example.com:5683/temp","mediaType": "application/json"}]}]}');
 		
 		let td1_V1 = TDTransformer.transformTDV2ObjToV1Obj(td1_V2);
 		

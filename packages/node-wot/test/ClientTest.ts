@@ -91,27 +91,24 @@ class TrapClientFactory implements ProtocolClientFactory {
 
 let myThingDesc = {
     "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
-    "@type": "Thing",
+    "@type": ["Thing"],
     "name": "aThing",
-    "interactions": [
+    "interaction": [
         {
             "@type": ["Property"],
             "name": "aProperty",
-            "outputData":
-            { "valueType": { "type": "number" } },
+            "outputData": { "type": "number" },
             "writable": false,
-            "links": [
+            "link": [
                 { "href": "test://host/athing/properties/aproperty", "mediaType": "application/json" }
             ]
         },
         {
             "@type": ["Action"],
             "name": "anAction",
-            "outputData":
-            { "valueType": { "type": "number" } },
-            "inputData":
-            { "valueType": { "type": "number" } },
-            "links": [
+            "outputData": { "type": "number" },
+            "inputData": { "type": "number" },
+            "link": [
                 { "href": "test://host/athing/actions/anaction", "mediaType": "application/json" }
             ]
         }
