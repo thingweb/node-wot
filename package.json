@@ -19,7 +19,7 @@
   "devDependencies": {
     "lerna": "^2.0.0-beta.38",
     "lerna-run": "0.0.2",
-    "typescript": "^2.1.6",
+    "typescript": "2.3.2",
     "typescript-standard": "^0.3.30"
   },
   "dependencies": {},
