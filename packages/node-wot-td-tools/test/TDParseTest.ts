@@ -33,15 +33,15 @@ import * as AddressHelper from "node-wot-helpers";
 /** sample TD json-ld string from the CP page*/
 let tdSample1 = `{
   "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
-  "@type": "Thing",
+  "@type": ["Thing"],
   "name": "MyTemperatureThing",
-  "interactions": [
+  "interaction": [
     {
       "@type": ["Property"],
       "name": "temperature",
-      "outputData": {"valueType": { "type": "number" }},
+      "outputData":  { "type": "number" },
       "writable": false,
-      "links": [{
+      "link": [{
         "href" : "coap://mytemp.example.com:5683/temp",
         "mediaType": "application/json"
         }]
@@ -51,15 +51,15 @@ let tdSample1 = `{
 /** sample TD json-ld string from the CP page*/
 let tdSample2 = `{
   "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
-  "@type": "Thing",
+  "@type": ["Thing"],
   "name": "MyTemperatureThing2",
-  "interactions": [
+  "interaction": [
     {
       "@type": ["Property"],
       "name": "temperature",
-      "outputData": {"valueType": { "type": "number" }},
+      "outputData":  { "type": "number" },
       "writable": true,
-      "links": [{
+      "link": [{
         "href" : "coap://mytemp.example.com:5683/temp",
         "mediaType": "application/json"
         }]
@@ -69,16 +69,16 @@ let tdSample2 = `{
 /** sample TD json-ld string from the CP page*/
 let tdSample3 = `{
   "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
-  "@type": "Thing",
+  "@type": ["Thing"],
   "name": "MyTemperatureThing3",
   "base": "coap://mytemp.example.com:5683/interactions/",
-  "interactions": [
+  "interaction": [
     {
       "@type": ["Property"],
       "name": "temperature",
-      "outputData": {"valueType": { "type": "number" }},
+      "outputData":  { "type": "number" },
       "writable": true,
-      "links": [{
+      "link": [{
         "href" : "temp",
         "mediaType": "application/json"
         }]
@@ -86,9 +86,9 @@ let tdSample3 = `{
     {
       "@type": ["Property"],
       "name": "temperature2",
-      "outputData": {"valueType": { "type": "number" }},
+      "outputData": { "type": "number" },
       "writable": false,
-      "links": [{
+      "link": [{
         "href" : "./temp",
         "mediaType": "application/json"
         }]
@@ -96,9 +96,9 @@ let tdSample3 = `{
     {
       "@type": ["Property"],
       "name": "humidity",
-      "outputData": {"valueType": { "type": "number" }},
+      "outputData": { "type": "number" },
       "writable": false,
-      "links": [{
+      "link": [{
         "href" : "/humid",
         "mediaType": "application/json"
         }]
@@ -117,15 +117,15 @@ class TDParserTest {
         expect(td).to.have.property("name").that.equals("MyTemperatureThing");
         expect(td).to.not.have.property("base");
 
-        expect(td.interactions).to.have.lengthOf(1);
-        expect(td.interactions[0]).to.have.property("semanticTypes").that.contains("Property");
-        expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
-        expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
-        expect(td.interactions[0]).to.have.property("writable").that.equals(false);
+        expect(td.interaction).to.have.lengthOf(1);
+        expect(td.interaction[0]).to.have.property("semanticTypes").that.contains("Property");
+        expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
+        expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
+        expect(td.interaction[0]).to.have.property("writable").that.equals(false);
 
-        expect(td.interactions[0].links).to.have.lengthOf(1);
-        expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
-        expect(td.interactions[0].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
+        expect(td.interaction[0].link).to.have.lengthOf(1);
+        expect(td.interaction[0].link[0]).to.have.property("mediaType").that.equals("application/json");
+        expect(td.interaction[0].link[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
     }
 
     @test "should parse writable Property"() {
@@ -136,14 +136,14 @@ class TDParserTest {
         expect(td).to.have.property("name").that.equals("MyTemperatureThing2");
         expect(td).to.not.have.property("base");
 
-        expect(td.interactions).to.have.lengthOf(1);
-        expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
-        expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
-        expect(td.interactions[0]).to.have.property("writable").that.equals(true);
+        expect(td.interaction).to.have.lengthOf(1);
+        expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
+        expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
+        expect(td.interaction[0]).to.have.property("writable").that.equals(true);
 
-        expect(td.interactions[0].links).to.have.lengthOf(1);
-        expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
-        expect(td.interactions[0].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
+        expect(td.interaction[0].link).to.have.lengthOf(1);
+        expect(td.interaction[0].link[0]).to.have.property("mediaType").that.equals("application/json");
+        expect(td.interaction[0].link[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
     }
 
     @test "should parse and apply base Property"() {
@@ -154,30 +154,30 @@ class TDParserTest {
         expect(td).to.have.property("name").that.equals("MyTemperatureThing3");
         expect(td).to.have.property("base").that.equals("coap://mytemp.example.com:5683/interactions/");
 
-        expect(td.interactions).to.have.lengthOf(3);
-        expect(td.interactions[0]).to.have.property("name").that.equals("temperature");
-        expect(td.interactions[0]).to.have.property("pattern").that.equals("Property");
-        expect(td.interactions[0]).to.have.property("writable").that.equals(true);
+        expect(td.interaction).to.have.lengthOf(3);
+        expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
+        expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
+        expect(td.interaction[0]).to.have.property("writable").that.equals(true);
 
-        expect(td.interactions[0].links).to.have.lengthOf(1);
-        expect(td.interactions[0].links[0]).to.have.property("mediaType").that.equals("application/json");
-        expect(td.interactions[0].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
+        expect(td.interaction[0].link).to.have.lengthOf(1);
+        expect(td.interaction[0].link[0]).to.have.property("mediaType").that.equals("application/json");
+        expect(td.interaction[0].link[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
 
-        expect(td.interactions[1]).to.have.property("name").that.equals("temperature2");
-        expect(td.interactions[1]).to.have.property("pattern").that.equals("Property");
-        expect(td.interactions[1]).to.have.property("writable").that.equals(false);
+        expect(td.interaction[1]).to.have.property("name").that.equals("temperature2");
+        expect(td.interaction[1]).to.have.property("pattern").that.equals("Property");
+        expect(td.interaction[1]).to.have.property("writable").that.equals(false);
 
-        expect(td.interactions[1].links).to.have.lengthOf(1);
-        expect(td.interactions[1].links[0]).to.have.property("mediaType").that.equals("application/json");
-        expect(td.interactions[1].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
+        expect(td.interaction[1].link).to.have.lengthOf(1);
+        expect(td.interaction[1].link[0]).to.have.property("mediaType").that.equals("application/json");
+        expect(td.interaction[1].link[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
 
-        expect(td.interactions[2]).to.have.property("name").that.equals("humidity");
-        expect(td.interactions[2]).to.have.property("pattern").that.equals("Property");
-        expect(td.interactions[2]).to.have.property("writable").that.equals(false);
+        expect(td.interaction[2]).to.have.property("name").that.equals("humidity");
+        expect(td.interaction[2]).to.have.property("pattern").that.equals("Property");
+        expect(td.interaction[2]).to.have.property("writable").that.equals(false);
 
-        expect(td.interactions[2].links).to.have.lengthOf(1);
-        expect(td.interactions[2].links[0]).to.have.property("mediaType").that.equals("application/json");
-        expect(td.interactions[2].links[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/humid");
+        expect(td.interaction[2].link).to.have.lengthOf(1);
+        expect(td.interaction[2].link[0]).to.have.property("mediaType").that.equals("application/json");
+        expect(td.interaction[2].link[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/humid");
     }
 
     @test "should return same TD in round-trips"() {
