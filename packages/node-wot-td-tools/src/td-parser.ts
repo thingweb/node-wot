@@ -80,6 +80,8 @@ export function parseTDString(json: string): ThingDescription {
 
 export function serializeTD(td: ThingDescription): string {
 
+//for (let i of td.interaction) console.log("######", i.outputData);
+
 // avoid enableTypeHints
  TypedJSON.config({"enableTypeHints": false});
  let json = TypedJSON.stringify(td);
@@ -93,6 +95,13 @@ export function serializeTD(td: ThingDescription): string {
     if (interaction.inputData === null) { delete interaction.inputData; }
     if (interaction.outputData === null) { delete interaction.outputData; }
     if (interaction.writable === null) { delete interaction.writable; }
+    // FIXME TypedJSON also converts Array to Object with number keys
+    if (interaction.outputData && interaction.outputData.required !== undefined) {
+      console.log("### HOTFIX for TypedJSON ###");
+      let reqs = [];
+      for (let req in interaction.outputData.required) reqs.push(interaction.outputData.required[req]);
+      interaction.outputData.required = reqs;
+    }
   }
   json = JSON.stringify(raw);
   // End of workaround
