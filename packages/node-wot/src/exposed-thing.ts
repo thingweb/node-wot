@@ -178,14 +178,14 @@ export default class ExposedThing implements WoT.DynamicThing {
      * @param propertyName Name of the property
      * @param valueType type specification of the value (JSON schema)
      */
-    addProperty(propertyName: string, valueType: Object, initialValue?: any): ExposedThing {
+    addProperty(propertyName: string, outputType: Object, initialValue?: any): ExposedThing {
         // new way
         let newProp = new TD.Interaction();
         newProp.pattern = TD.InteractionPattern.Property;
         newProp.name = propertyName;
       //  newProp.inputData = { 'valueType' : valueType};
        // newProp.outputData =  { 'valueType' : valueType};
-        newProp.outputData =  valueType;
+        newProp.outputData =  outputType;
         newProp.writable = true; //we need a param for this
 
         this.interactions.push(newProp);
