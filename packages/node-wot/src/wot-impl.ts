@@ -116,7 +116,7 @@ export default class WoTImpl implements WoT.WoTFactory {
         return new Promise((resolve, reject) => {
             //not necessary to parse if it is already obj
             //let thingdesc = TDParser.parseTDObject(thingDescription);
-            logger.info(`WoTImpl creating new ExposedThing from object`);
+            logger.info(`WoTImpl creating new ExposedThing from Thing Description`);
             let myThing = new ExposedThing(this.srv, thingDescription.name);
             if (this.srv.addThing(myThing)) {
                 //add base field
@@ -126,7 +126,7 @@ export default class WoTImpl implements WoT.WoTFactory {
                 let interactions: Array<any> = thingDescription.interaction;
                 for(var i=0; i<interactions.length;i++){
                     let currentInter = interactions[i]; 
-                    let interType= currentInter['@type'][0];
+                    let interType= currentInter['semanticTypes'][0];
                     if(interType==='Action'){
                         let actionName: string = currentInter.name;
                         try{
