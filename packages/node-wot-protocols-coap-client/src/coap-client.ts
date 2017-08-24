@@ -22,7 +22,6 @@
  * CoAP client based on coap by mcollina
  */
 import { ProtocolClient, Content } from 'node-wot-protocols'
-import logger from 'node-wot-logger';
 
 let coap = require('coap');
 import * as url from 'url';
@@ -47,12 +46,12 @@ export default class CoapClient implements ProtocolClient {
       // TODO get explicit binding from TD
       options.method = 'GET';
 
-      logger.info(`CoapClient sending GET to ${uri}`);
+      console.info(`CoapClient sending GET to ${uri}`);
       let req = this.agent.request(options);
       req.on('response', (res: any) => {
-        logger.info(`CoapClient received ${res.code} from ${uri}`);
-        logger.debug(`CoapClient received Content-Format: ${res.headers['Content-Format']}`);
-        logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
+        console.info(`CoapClient received ${res.code} from ${uri}`);
+        console.log(`CoapClient received Content-Format: ${res.headers['Content-Format']}`);
+        console.log(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
         let mediaType = res.headers['Content-Format'];
         resolve({ mediaType: mediaType, body: res.payload });
       });
@@ -69,11 +68,11 @@ export default class CoapClient implements ProtocolClient {
       // TODO get explicit binding from TD
       options.method = 'PUT';
 
-      logger.info(`CoapClient sending PUT to ${uri}`);
+      console.info(`CoapClient sending PUT to ${uri}`);
       let req = this.agent.request(options);
       req.on('response', (res: any) => {
-        logger.info(`CoapClient received ${res.code} from ${uri}`);
-        logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
+        console.info(`CoapClient received ${res.code} from ${uri}`);
+        console.log(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
         resolve();
       });
       req.on('error', (err: Error) => reject(err));
@@ -91,12 +90,12 @@ export default class CoapClient implements ProtocolClient {
       // TODO get explicit binding from TD
       options.method = 'POST';
 
-      logger.info(`CoapClient sending GET to ${uri}`);
+      console.info(`CoapClient sending GET to ${uri}`);
       let req = this.agent.request(options);
       req.on('response', (res: any) => {
-        logger.info(`CoapClient received ${res.code} from ${uri}`);
-        logger.debug(`CoapClient received Content-Format: ${res.headers['Content-Format']}`);
-        logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
+        console.info(`CoapClient received ${res.code} from ${uri}`);
+        console.log(`CoapClient received Content-Format: ${res.headers['Content-Format']}`);
+        console.log(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
         let mediaType = res.headers['Content-Format'];
         resolve({ mediaType: mediaType, body: res.payload });
       });
@@ -116,11 +115,11 @@ export default class CoapClient implements ProtocolClient {
       // TODO get explicit binding from TD
       options.method = 'DELETE';
 
-      logger.info(`CoapClient sending DELETE to ${uri}`);
+      console.info(`CoapClient sending DELETE to ${uri}`);
       let req = this.agent.request(options);
       req.on('response', (res: any) => {
-        logger.info(`CoapClient received ${res.code} from ${uri}`);
-        logger.silly(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
+        console.info(`CoapClient received ${res.code} from ${uri}`);
+        console.log(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
         resolve();
       });
       req.on('error', (err: Error) => reject(err));

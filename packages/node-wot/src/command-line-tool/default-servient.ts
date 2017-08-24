@@ -27,8 +27,6 @@ import Servient from "../servient";
 // protocols used
 import HttpServer from "node-wot-protocols-http-server";
 import HttpClientFactory from "node-wot-protocols-http-client";
-// tools
-import logger from "node-wot-logger";
 
 export default class DefaultServient extends Servient {
 
@@ -51,8 +49,7 @@ export default class DefaultServient extends Servient {
         super();
 
         Object.assign(this.config, config);
-        logger.level = this.config.log.level;
-        logger.info("DefaultServient configured", this.config);
+        console.info("DefaultServient configured", this.config);
 
         let httpServer = (typeof this.config.http.port === "number") ? new HttpServer(this.config.http.port) : new HttpServer();
         this.addServer(httpServer);
@@ -64,21 +61,21 @@ export default class DefaultServient extends Servient {
      */
     public start() {
         let WoT = super.start();
-        logger.info("DefaultServient started");
+        console.info("DefaultServient started");
 
         WoT.createThing("servient").then(thing => {
 
             thing
                 .addAction("log", { type: "string" })
                 .onInvokeAction("log", (msg) => {
-                    logger.info(msg);
+                    console.info(msg);
                     return `logged '${msg}`;
                 });
             
             thing
                 .addAction("shutdown")
                 .onInvokeAction("shutdown", () => {
-                    logger.info("shutting down by remote");
+                    console.info("shutting down by remote");
                     this.shutdown();
                 });
 
@@ -86,7 +83,7 @@ export default class DefaultServient extends Servient {
             thing
                 .addAction("runScript", { type: "string" })
                 .onInvokeAction("runScript", (script) => {
-                    logger.debug("runnig script", script);
+                    console.log("runnig script", script);
                     return this.runScript(script);
                 });
 

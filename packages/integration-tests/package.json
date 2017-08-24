@@ -15,7 +15,6 @@
     "coap": "^0.20.0",
     "mocha": "^3.2.0",
     "mocha-typescript": "^1.0.19",
-    "node-wot-logger": "^0.1.0",
     "node-wot-protocols": "^0.1.0",
     "node-wot-protocols-coap-client": "^0.1.0",
     "node-wot-protocols-coap-server": "^0.1.0",

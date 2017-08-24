@@ -22,8 +22,6 @@
  * HTTP Server based on http
  */
 
-import logger from 'node-wot-logger';
-
 import * as http from 'http';
 import * as url from 'url';
 import ContentSerdes from 'node-wot-content-serdes';
@@ -50,7 +48,7 @@ export default class HttpServer implements ProtocolServer {
     }
 
     this.server.on('error', (err) => {
-      logger.error(`HttpServer for port ${this.port} failed: ${err.message}`); this.failed = true;
+      console.error(`HttpServer for port ${this.port} failed: ${err.message}`); this.failed = true;
     });
   }
 
@@ -60,22 +58,22 @@ export default class HttpServer implements ProtocolServer {
 
   public addResource(path: string, res: ResourceListener): boolean {
     if (this.resources[path] !== undefined) {
-      logger.warn(`HttpServer on port ${this.getPort()} already has ResourceListener '${path}' - skipping`);
+      console.warn(`HttpServer on port ${this.getPort()} already has ResourceListener '${path}' - skipping`);
       return false;
     } else {
-      logger.debug(`HttpServer on port ${this.getPort()} addeding resource '${path}'`);
+      console.log(`HttpServer on port ${this.getPort()} addeding resource '${path}'`);
       this.resources[path] = res;
       return true;
     }
   }
 
   public removeResource(path: string): boolean {
-    logger.debug(`HttpServer on port ${this.getPort()} removing resource '${path}'`);
+    console.log(`HttpServer on port ${this.getPort()} removing resource '${path}'`);
     return delete this.resources[path];
   }
 
   public start(): boolean {
-    logger.info(`HttpServer starting on ${(this.address !== undefined ? this.address + ' ' : '')}port ${this.port}`);
+    console.info(`HttpServer starting on ${(this.address !== undefined ? this.address + ' ' : '')}port ${this.port}`);
     this.server.listen(this.port, this.address);
     // converting async listen API to sync start function
     this.server.once('listening', () => { this.running = true; });
@@ -86,7 +84,7 @@ export default class HttpServer implements ProtocolServer {
   }
 
   public stop(): boolean {
-    logger.info(`HttpServer stopping on port ${this.getPort()} (running=${this.running})`);
+    console.info(`HttpServer stopping on port ${this.getPort()} (running=${this.running})`);
     let closed = this.running;
     this.server.once('close', () => { closed = true; });
     this.server.close();
@@ -108,13 +106,13 @@ export default class HttpServer implements ProtocolServer {
   }
 
   private handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
-    logger.verbose(`HttpServer on port ${this.getPort()} received ${req.method} ${req.url}`
+    console.log(`HttpServer on port ${this.getPort()} received ${req.method} ${req.url}`
       + ` from ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
 
     res.on('finish', () => {
-      logger.verbose(`HttpServer replied with ${res.statusCode} to `
+      console.log(`HttpServer replied with ${res.statusCode} to `
         + `${req.socket.remoteAddress} port ${req.socket.remotePort}`);
-      logger.debug(`HttpServer sent Content-Type: '${res.getHeader('Content-Type')}'`);
+      console.log(`HttpServer sent Content-Type: '${res.getHeader('Content-Type')}'`);
     });
 
     // Set CORS headers
@@ -143,7 +141,7 @@ export default class HttpServer implements ProtocolServer {
         requestHandler.onRead()
           .then(content => {
             if (!content.mediaType) {
-              logger.warn(`HttpServer got no Media Type from '${requestUri.pathname}'`);
+              console.warn(`HttpServer got no Media Type from '${requestUri.pathname}'`);
             } else {
               res.setHeader('Content-Type', content.mediaType);
             }
@@ -151,7 +149,7 @@ export default class HttpServer implements ProtocolServer {
             res.end(content.body);
           })
           .catch(err => {
-            logger.error(`HttpServer on port ${this.getPort()} got internal error on read ` +
+            console.error(`HttpServer on port ${this.getPort()} got internal error on read ` +
               `'${requestUri.pathname}': ${err.message}`);
             res.writeHead(500);
             res.end(err.message);
@@ -160,14 +158,14 @@ export default class HttpServer implements ProtocolServer {
         let body: Array<any> = [];
         req.on('data', (data) => { body.push(data) });
         req.on('end', () => {
-          logger.debug(`HttpServer on port ${this.getPort()} completed body '${body}'`);
+          console.log(`HttpServer on port ${this.getPort()} completed body '${body}'`);
           requestHandler.onWrite({ mediaType: mediaType, body: Buffer.concat(body) })
             .then(() => {
               res.writeHead(204);
               res.end('');
             })
             .catch(err => {
-              logger.error(`HttpServer on port ${this.getPort()} got internal error on `
+              console.error(`HttpServer on port ${this.getPort()} got internal error on `
                 + `write '${requestUri.pathname}': ${err.message}`);
               res.writeHead(500);
               res.end(err.message);
@@ -177,7 +175,7 @@ export default class HttpServer implements ProtocolServer {
         let body: Array<any> = [];
         req.on('data', (data) => { body.push(data) });
         req.on('end', () => {
-          logger.debug(`HttpServer on port ${this.getPort()} completed body '${body}'`);
+          console.log(`HttpServer on port ${this.getPort()} completed body '${body}'`);
           requestHandler.onInvoke({ mediaType: mediaType, body: Buffer.concat(body) })
             .then(content => {
               // Actions may have a void return (no outputData)
@@ -185,7 +183,7 @@ export default class HttpServer implements ProtocolServer {
                 res.writeHead(204);
               } else {
                 if (!content.mediaType) {
-                  logger.warn(`HttpServer got no Media Type from '${requestUri.pathname}'`);
+                  console.warn(`HttpServer got no Media Type from '${requestUri.pathname}'`);
                 } else {
                   res.setHeader('Content-Type', content.mediaType);
                 }
@@ -194,7 +192,7 @@ export default class HttpServer implements ProtocolServer {
               res.end(content.body);
             })
             .catch((err) => {
-              logger.error(`HttpServer on port ${this.getPort()} got internal error on `
+              console.error(`HttpServer on port ${this.getPort()} got internal error on `
                 + `invoke '${requestUri.pathname}': ${err.message}`);
               res.writeHead(500);
               res.end(err.message);
@@ -207,7 +205,7 @@ export default class HttpServer implements ProtocolServer {
             res.end('');
           })
           .catch(err => {
-            logger.error(`HttpServer on port ${this.getPort()} got internal error on `
+            console.error(`HttpServer on port ${this.getPort()} got internal error on `
               + `unlink '${requestUri.pathname}': ${err.message}`);
             res.writeHead(500);
             res.end(err.message);

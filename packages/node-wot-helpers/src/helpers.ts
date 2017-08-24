@@ -30,7 +30,6 @@
  * ```
  */
 
-import logger from 'node-wot-logger';
 import * as url from 'url';
 import * as os from 'os'
 
@@ -42,7 +41,7 @@ export function extractScheme(uri: string) {
     throw new Error(`Protocol in url "${uri}" must be valid`)
   }
   let scheme = parsed.protocol.slice(0, -1);
-  logger.debug(`Helpers found scheme '${scheme}'`);
+  console.log(`Helpers found scheme '${scheme}'`);
   return scheme;
 }
 
@@ -53,7 +52,7 @@ export function getAddresses(): Array<string> {
 
   for (let iface in interfaces) {
     interfaces[iface].forEach((entry: any) => {
-      logger.silly(`AddressHelper found ${entry.address}`);
+      console.log(`AddressHelper found ${entry.address}`);
       if (entry.internal === false) {
         if (entry.family === 'IPv4') {
           addresses.push(entry.address);
@@ -66,7 +65,7 @@ export function getAddresses(): Array<string> {
 
   addresses.push('127.0.0.1');
 
-  logger.verbose(`AddressHelper identified ${addresses}`);
+  console.log(`AddressHelper identified ${addresses}`);
 
   return addresses;
 }

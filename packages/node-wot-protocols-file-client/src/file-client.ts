@@ -22,7 +22,6 @@
  * File protocol binding
  */
 import { ProtocolClientFactory, ProtocolClient, Content } from 'node-wot-protocols'
-import logger from 'node-wot-logger';
 
 import fs = require('fs');
 
