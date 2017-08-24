@@ -58,3 +58,7 @@ This library implements the Scripting API defined in the [WoT Current Practices]
 You can also see _examples/scripts_ to have a feeling of how to script a Thing.
 
 Not everything has been succesfully implemented.
+
+## Logging
+
+We used to have a node-wot-logger package to allow fine-grained logging (by means of Winston). It turned out though that depending on the actual use-case other logging libraries might be better suited. Hence we do not want to prescribe which logging library to use. Having said that, we use console statements which can be easily overriden to use the prefered logging library if needed (see [here](https://gist.github.com/spmason/1670196)).
