@@ -121,7 +121,7 @@ export default class HttpServer implements ProtocolServer {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Request-Method', '*');
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, HEAD, GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'content-type, *');
+    res.setHeader('Access-Control-Allow-Headers', 'content-type, authorization, *');
     if (req.method === 'OPTIONS') {
       res.writeHead(200);
       res.end();
