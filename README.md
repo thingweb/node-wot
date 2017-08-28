@@ -20,6 +20,11 @@ $ cd node-wot
 # install root dependencies (locally installs tools like typescript and lerna)
 npm install 
 
+# WORKAROUND FOR WINDOWS: build bin files (bug in Lerna/NPM)
+# cd packages/node-wot
+# tsc
+# cd ../..
+
 # bootstrap the packages (installs dependencies and links the inter-dependencies)
 # Note: This step is automatically done on building or testing
 npm run bootstrap
