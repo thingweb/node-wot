@@ -116,7 +116,7 @@ export default class WoTImpl implements WoT.WoTFactory {
         return new Promise((resolve, reject) => {
             //not necessary to parse if it is already obj
             //let thingdesc = TDParser.parseTDObject(thingDescription);
-            logger.info(`WoTImpl creating new ExposedThing from object`);
+            logger.info(`WoTImpl creating new ExposedThing from Thing Description`);
             let myThing = new ExposedThing(this.srv, thingDescription.name);
             if (this.srv.addThing(myThing)) {
                 //add base field
@@ -126,22 +126,22 @@ export default class WoTImpl implements WoT.WoTFactory {
                 let interactions: Array<any> = thingDescription.interaction;
                 for(var i=0; i<interactions.length;i++){
                     let currentInter = interactions[i]; 
-                    let interType= currentInter['@type'][0];
+                    let interType= currentInter['semanticTypes'][0];
                     if(interType==='Action'){
                         let actionName: string = currentInter.name;
                         try{
-                            let inputValueType: Object = currentInter.inputData.valueType;
-                            let outputValueType: Object = currentInter.outputData.valueType;
-                            myThing.addAction(actionName,inputValueType,outputValueType);
+                            let inputType: Object = currentInter.inputData;
+                            let outputType: Object = currentInter.outputData;
+                            myThing.addAction(actionName,inputType,outputType);
                         }catch(err){
                             //it means that we couldn't find the input AND output, we'll try individual cases
                             try{
-                                let inputValueType: Object = currentInter.inputData.valueType;
-                                myThing.addAction(actionName,inputValueType);
+                                let inputType: Object = currentInter.inputData;
+                                myThing.addAction(actionName,inputType);
                             } catch (err2){
                                 try{
-                                    let outputValueType: Object = currentInter.outputData.valueType;
-                                    myThing.addAction(actionName,{},outputValueType);
+                                    let outputType: Object = currentInter.outputData;
+                                    myThing.addAction(actionName,{},outputType);
                                 }catch(err3){
                                     //worst case, we just create with the name
                                             //should there be the semantics case as well?
@@ -153,8 +153,8 @@ export default class WoTImpl implements WoT.WoTFactory {
                     } else if (interType==='Property'){
                         //maybe there should be more things added?
                         let propertyName: string = currentInter.name;
-                        let outputValueType: Object = currentInter.outputData.valueType;
-                        myThing.addProperty(propertyName, outputValueType);
+                        let outputType: Object = currentInter.outputData;
+                        myThing.addProperty(propertyName, outputType);
                         
                         
                     } else if(interType==='Event'){

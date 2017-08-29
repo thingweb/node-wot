@@ -9,7 +9,7 @@
   "typings": "dist/logger.d.ts",
   "scripts": {
     "build": "tsc",
-    "codestyle" : "standard --pretty"
+    "codestyle": "standard --pretty"
   },
   "author": "the thingweb community",
   "license": "MIT",
