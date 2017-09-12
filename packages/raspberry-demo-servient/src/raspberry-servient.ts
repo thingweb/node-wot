@@ -24,7 +24,7 @@
 // global W3C WoT Scripting API definitions
 import _ from 'wot-typescript-definitions';
 // node-wot implementation of W3C WoT Servient 
-import {Servient,logger,HttpServer} from 'node-wot';
+import {Servient,HttpServer} from 'node-wot';
 
 // exposed protocols
 import CoapServer from 'node-wot-protocols-coap-server';
@@ -63,7 +63,7 @@ function main() {
 
   // get WoT object for privileged script
   let wot = servient.start();
-  logger.info('RaspberryServient started');
+  console.info('RaspberryServient started');
 
   wot.createThing('unicorn').then(thing => {
     unicorn = thing;

@@ -18,8 +18,6 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import logger from 'node-wot-logger';
-
 import ThingDescription from './thing-description';
 import * as TD from './thing-description';
 import * as AddressHelper from 'node-wot-helpers';
@@ -34,31 +32,31 @@ export function parseTDObject(td: Object): ThingDescription {
 
 export function parseTDString(json: string): ThingDescription {
 
-  logger.silly(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
+  console.log(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
   let td: ThingDescription = TypedJSON.parse(json, ThingDescription);
 
-  logger.debug(`parseTDString() found ${td.interaction.length} Interaction${td.interaction.length === 1 ? '' : 's'}`);
+  console.log(`parseTDString() found ${td.interaction.length} Interaction${td.interaction.length === 1 ? '' : 's'}`);
   // for each interaction assign the Interaction type (Property, Action, Event)
   // and, if "base" is given, normalize each Interaction link
   for (let interaction of td.interaction) {
 
     // FIXME @mkovatsc Why does array.includes() not work?
     if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString()) !== -1) {
-      logger.debug(` * Property '${interaction.name}'`);
+      console.log(` * Property '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Property;
     } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString()) !== -1) {
-      logger.debug(` * Action '${interaction.name}'`);
+      console.log(` * Action '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Action;
     } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString()) !== -1) {
-      logger.debug(` * Event '${interaction.name}'`);
+      console.log(` * Event '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Event;
     } else {
-      logger.error(`parseTDString() found unknown Interaction pattern '${interaction.semanticTypes}'`);
+      console.error(`parseTDString() found unknown Interaction pattern '${interaction.semanticTypes}'`);
     }
 
     /* if a base uri is used normalize all relative hrefs in links */
     if (td.base !== undefined) {
-      logger.debug(`parseTDString() applying base '${td.base}' to href '${interaction.link[0].href}'`);
+      console.log(`parseTDString() applying base '${td.base}' to href '${interaction.link[0].href}'`);
 
       let href: string = interaction.link[0].href;
 
@@ -107,7 +105,7 @@ export function serializeTD(td: ThingDescription): string {
   // End of workaround
 
 
-  logger.silly(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
+  console.log(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
 
   return json;
 }

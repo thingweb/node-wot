@@ -18,8 +18,6 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import logger from 'node-wot-logger';
-
 /** is a plugin for ContentSerdes for a specific format (such as JSON or EXI) */
 export interface ContentCodec {
   getMediaType(): string
@@ -44,7 +42,7 @@ class JsonCodec implements ContentCodec {
   }
 
   bytesToValue(bytes: Buffer): any {
-    logger.debug(`JsonCodec parsing '${bytes.toString()}'`);
+    console.log(`JsonCodec parsing '${bytes.toString()}'`);
     let parsed: any;
     try {
       parsed = JSON.parse(bytes.toString());
@@ -63,14 +61,14 @@ class JsonCodec implements ContentCodec {
     }
     // remove legacy wrapping and use RFC 7159
     if (parsed && parsed.value) {
-      logger.warn(`JsonCodec removing { value: ... } wrapper`);
+      console.warn(`JsonCodec removing { value: ... } wrapper`);
       parsed = parsed.value;
     }
     return parsed;
   }
 
   valueToBytes(value: any): Buffer {
-    logger.debug(`JsonCodec serializing '${value}'`);
+    console.log(`JsonCodec serializing '${value}'`);
     let body = JSON.stringify(value);
     return new Buffer(body);
   }
@@ -82,14 +80,14 @@ class TextCodec implements ContentCodec {
   }
 
   bytesToValue(bytes: Buffer): any {
-    logger.debug(`TextCodec parsing '${bytes.toString()}'`);
+    console.log(`TextCodec parsing '${bytes.toString()}'`);
     let parsed: any;
     parsed = bytes.toString();
     return parsed;
   }
 
   valueToBytes(value: any): Buffer {
-    logger.debug(`TextCodec serializing '${value}'`);
+    console.log(`TextCodec serializing '${value}'`);
     let body = value;
     return new Buffer(body);
   }
@@ -135,7 +133,7 @@ export class ContentSerdes {
       }
     }
 
-    logger.verbose(`ContentSerdes deserializing from ${content.mediaType}`);
+    console.log(`ContentSerdes deserializing from ${content.mediaType}`);
     // choose codec based on mediaType
     let isolMediaType: string=this.isolateMediaType(content.mediaType)
 
@@ -161,9 +159,9 @@ export class ContentSerdes {
 
   public valueToBytes(value: any, mediaType = this.DEFAULT): Content {
 
-    if (value === undefined) logger.warn("ContentSerdes valueToBytes got no value");
+    if (value === undefined) console.warn("ContentSerdes valueToBytes got no value");
 
-    logger.verbose(`ContentSerdes serializing to ${mediaType}`);
+    console.log(`ContentSerdes serializing to ${mediaType}`);
     // choose codec based on mediaType
     if (!this.codecs.has(mediaType)) {
       throw new Error(`Unsupported serialization format: ${mediaType}`)

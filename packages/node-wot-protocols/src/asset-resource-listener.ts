@@ -23,7 +23,6 @@
  */
 
 import BasicResourceListener from './basic-resource-listener';
-import logger from 'node-wot-logger';
 import { Content, ResourceListener } from './protocol-interfaces'
 
 export default class AssetResourceListener extends BasicResourceListener implements ResourceListener {
@@ -38,21 +37,21 @@ export default class AssetResourceListener extends BasicResourceListener impleme
   }
 
   public onRead(): Promise<Content> {
-    logger.debug(`Reading asset`);
+    console.log(`Reading asset`);
     return new Promise<Content>(
       (resolve, reject) => resolve({ mediaType: this.mediaType, body: new Buffer(this.asset) })
     );
   }
 
   public onWrite(content: Content): Promise<void> {
-    logger.debug(`Writing '${content.body.toString()}' to asset`);
+    console.log(`Writing '${content.body.toString()}' to asset`);
     this.mediaType = content.mediaType;
     this.asset = content.body;
     return new Promise<void>((resolve, reject) => resolve())
   }
 
   public onInvoke(content: Content): Promise<Content> {
-    logger.debug(`Invoking '${content.body.toString()}' on asset`);
+    console.log(`Invoking '${content.body.toString()}' on asset`);
     return new Promise<Content>(
       (resolve, reject) => resolve({ mediaType: this.mediaType, body: new Buffer('TODO') })
     );

@@ -17,7 +17,6 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import logger from "node-wot-logger";
 
 import ExposedThing from "./exposed-thing";
 import WoTImpl from "./wot-impl";
@@ -73,13 +72,13 @@ export default class Servient {
     }
 
     public addResourceListener(path : string, resourceListener : ResourceListener) {
-        logger.verbose(`Servient adding ResourceListener '${path}' of type ${resourceListener.constructor.name}`);
+        console.log(`Servient adding ResourceListener '${path}' of type ${resourceListener.constructor.name}`);
         this.listeners.set(path,resourceListener);
         this.servers.forEach(srv => srv.addResource(path,resourceListener))
     }
 
     public removeResourceListener(path : string) {
-        logger.verbose(`Servient removing ResourceListener '${path}'`);
+        console.log(`Servient removing ResourceListener '${path}'`);
         this.listeners.delete(path);
         this.servers.forEach(srv => srv.removeResource(path))
     }
@@ -99,13 +98,13 @@ export default class Servient {
     }
 
     public hasClientFor(scheme: string) : boolean {
-        logger.debug(`Servient checking for '${scheme}' scheme in ${this.clientFactories.size} ClientFactories`);
+        console.log(`Servient checking for '${scheme}' scheme in ${this.clientFactories.size} ClientFactories`);
         return this.clientFactories.has(scheme);
     }
 
     public getClientFor(scheme: string): ProtocolClient {
         if(this.clientFactories.has(scheme)) {
-            logger.verbose(`Servient creating client for scheme '${scheme}'`);
+            console.log(`Servient creating client for scheme '${scheme}'`);
             return this.clientFactories.get(scheme).getClient();
         } else {
             // FIXME returning null was bad - Error or Promise?
