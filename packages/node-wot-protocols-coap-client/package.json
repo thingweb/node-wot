@@ -1,6 +1,6 @@
 {
   "name": "node-wot-protocols-coap-client",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "files": [
     "dist/"
   ],
@@ -25,6 +25,6 @@
   },
   "dependencies": {
     "coap": "^0.20.0",
-    "node-wot-protocols": "^0.1.0"
+    "node-wot-protocols": "0.3.0"
   }
 }

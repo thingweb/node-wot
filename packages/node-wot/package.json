@@ -1,6 +1,6 @@
 {
   "name": "node-wot",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "files": [
     "dist/"
   ],
@@ -28,12 +28,12 @@
     "wot-servient": "dist/command-line-tool/wot-servient.js"
   },
   "dependencies": {
-    "node-wot-content-serdes": "^0.1.0",
-    "node-wot-helpers": "^0.1.0",
-    "node-wot-protocols": "^0.1.0",
-    "node-wot-td-tools": "^0.1.0",
+    "node-wot-content-serdes": "0.3.0",
+    "node-wot-helpers": "0.3.0",
+    "node-wot-protocols": "0.3.0",
+    "node-wot-td-tools": "0.3.0",
     "wot-typescript-definitions": "^0.2.3",
-    "node-wot-protocols-http-client": "^0.1.0",
-    "node-wot-protocols-http-server": "^0.1.0"
+    "node-wot-protocols-http-client": "0.3.0",
+    "node-wot-protocols-http-server": "0.3.0"
   }
 }
