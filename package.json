@@ -20,7 +20,7 @@
     "lerna": "2.1.1",
     "lerna-run": "0.0.2",
     "typescript": "2.3.2",
-    "typescript-standard": "^0.3.30"
+    "typescript-standard": "0.3.30"
   },
   "dependencies": {},
   "repository": {

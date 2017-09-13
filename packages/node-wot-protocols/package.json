@@ -14,9 +14,9 @@
   "author": "the thingweb community",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^7.0.5",
-    "typescript": "2.3.2",
-    "typescript-standard": "^0.3.30"
+    "@types/node": "8.0.28",
+    "typescript": "2.5.2",
+    "typescript-standard": "0.3.30"
   },
   "dependencies": {}
 }
