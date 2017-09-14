@@ -17,7 +17,6 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import logger from "node-wot-logger";
 import Servient from "./servient"
 import ExposedThing from "./exposed-thing"
 import {ThingDescription} from "node-wot-td-tools"
@@ -34,7 +33,7 @@ import * as Helpers from "node-wot-helpers"
 */
 export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDescription {
 
-    logger.silly(`generateTD() \n\`\`\`\n${thing}\n\`\`\``);
+    console.log(`generateTD() \n\`\`\`\n${thing}\n\`\`\``);
 
 
 
@@ -43,13 +42,13 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
 
 
-    logger.debug(`generateTD() assign name ${thing.name}`);
+    console.log(`generateTD() assign name ${thing.name}`);
     genTD.name = thing.name
 
     /* assign all interactions from ExposedThing */
     genTD.interaction = thing.getInteractions()
 
-    logger.debug(`generateTD() found ${genTD.interaction.length} Interaction${genTD.interaction.length==1?"":"s"}`);
+    console.log(`generateTD() found ${genTD.interaction.length} Interaction${genTD.interaction.length==1?"":"s"}`);
     for (let interaction of   genTD.interaction) {
       /* empty semantic type array*/
       interaction.semanticTypes = []
@@ -94,7 +93,7 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
                       interaction.link[l].href = href+"/events/" + interaction.name
                       interaction.link[l].mediaType = med
                 }
-                logger.debug(`generateTD() assign href  ${interaction.link[l].href } for interaction ${interaction.name}`);
+                console.log(`generateTD() assign href  ${interaction.link[l].href } for interaction ${interaction.name}`);
                 l++
               }
           }

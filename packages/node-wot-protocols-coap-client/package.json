@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "coap": "^0.20.0",
-    "node-wot-logger": "^0.1.0",
     "node-wot-protocols": "^0.1.0"
   }
 }

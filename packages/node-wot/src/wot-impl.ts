@@ -17,8 +17,6 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import logger from "node-wot-logger";
-
 import Servient from "./servient";
 import ExposedThing from "./exposed-thing";
 import ConsumedThing from "./consumed-thing";
@@ -48,11 +46,11 @@ export default class WoTImpl implements WoT.WoTFactory {
     consumeDescriptionUri(uri: string): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
             let client = this.srv.getClientFor(Helpers.extractScheme(uri));
-            logger.info(`WoTImpl consuming TD from ${uri} with ${client}`);
+            console.info(`WoTImpl consuming TD from ${uri} with ${client}`);
             client.readResource(uri)
                 .then((content) => {
                     if (content.mediaType !== "application/json")
-                        logger.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
+                        console.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
                     let td = TDParser.parseTDString(content.body.toString());
                     let thing = new ConsumedThing(this.srv, td);
                     client.stop();
@@ -69,7 +67,7 @@ export default class WoTImpl implements WoT.WoTFactory {
      */
     consumeDescription(thingDescription: Object): Promise<WoT.ConsumedThing> {
         return new Promise<WoT.ConsumedThing>((resolve, reject) => {
-            logger.info(`WoTImpl consuming TD from object`);
+            console.info(`WoTImpl consuming TD from object`);
             let td = TDParser.parseTDObject(thingDescription);
             let thing = new ConsumedThing(this.srv, td);
             resolve(thing);
@@ -83,7 +81,7 @@ export default class WoTImpl implements WoT.WoTFactory {
      */
     createThing(name: string): Promise<WoT.DynamicThing> {
         return new Promise<WoT.DynamicThing>((resolve, reject) => {
-            logger.info(`WoTImpl creating new ExposedThing '${name}'`);
+            console.info(`WoTImpl creating new ExposedThing '${name}'`);
             let mything = new ExposedThing(this.srv, name);
             if (this.srv.addThing(mything)) {
                 resolve(mything);
@@ -101,14 +99,14 @@ export default class WoTImpl implements WoT.WoTFactory {
     createFromDescriptionUri(uri: string): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
             let client = this.srv.getClientFor(uri);
-            logger.info(`WoTImpl creating new ExposedThing from TD at ${uri} with ${client}`);
+            console.info(`WoTImpl creating new ExposedThing from TD at ${uri} with ${client}`);
             client.readResource(uri).then((content) => {
                 if (content.mediaType !== "application/json")
-                    logger.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
+                    console.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
                     let thingDescription :ThingDescription= TDParser.parseTDString(content.body.toString());//ThingDescription type doesnt work for some reason
                 
                     //this.createFromDescription(thingDescription);
-            }).catch((err) => logger.error("WoTImpl failed fetching TD", err));
+            }).catch((err) => console.error("WoTImpl failed fetching TD", err));
         });
     }
 
@@ -116,7 +114,7 @@ export default class WoTImpl implements WoT.WoTFactory {
         return new Promise((resolve, reject) => {
             //not necessary to parse if it is already obj
             //let thingdesc = TDParser.parseTDObject(thingDescription);
-            logger.info(`WoTImpl creating new ExposedThing from Thing Description`);
+            console.info(`WoTImpl creating new ExposedThing from object`);
             let myThing = new ExposedThing(this.srv, thingDescription.name);
             if (this.srv.addThing(myThing)) {
                 //add base field
@@ -163,7 +161,7 @@ export default class WoTImpl implements WoT.WoTFactory {
                         myThing.addEvent(eventName);
                        
                     } else {
-                        logger.info("Wrong interaction type for number ", i );
+                        console.info("Wrong interaction type for number ", i );
                     }
                    
                 }

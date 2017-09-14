@@ -17,7 +17,6 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import logger from "node-wot-logger";
 import {ProtocolClient} from "node-wot-protocols"
 import Servient from "./servient";
 import {ThingDescription} from "node-wot-td-tools"
@@ -41,7 +40,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         this.srv = servient
         this.name = td.name;
         this.td = td;
-        logger.info(`ConsumedThing '${this.name}' created`);
+        console.info(`ConsumedThing '${this.name}' created`);
     }
 
     // lazy singleton for ProtocolClient per scheme
@@ -54,18 +53,18 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         let cacheIdx = schemes.findIndex(scheme => this.clients.has(scheme))
 
         if (cacheIdx !== -1) {
-            logger.debug(`ConsumedThing '${this.name}' chose cached client for '${schemes[cacheIdx]}'`);
+            console.log(`ConsumedThing '${this.name}' chose cached client for '${schemes[cacheIdx]}'`);
             let client = this.clients.get(schemes[cacheIdx]);
             let link = links[cacheIdx];
             return { client: client, link: link };
         } else {
-            logger.silly(`ConsumedThing '${this.name}' has no client in cache (${cacheIdx})`);
+            console.log(`ConsumedThing '${this.name}' has no client in cache (${cacheIdx})`);
             let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme));
             if (srvIdx === -1) throw new Error(`ConsumedThing '${this.name}' missing ClientFactory for '${schemes}'`);
-            logger.silly(`ConsumedThing '${this.name}' chose protocol '${schemes[srvIdx]}'`);
+            console.log(`ConsumedThing '${this.name}' chose protocol '${schemes[srvIdx]}'`);
             let client = this.srv.getClientFor(schemes[srvIdx]);
             if (client) {
-                logger.debug(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
+                console.log(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
                 this.clients.set(schemes[srvIdx], client);
                 let link = links[srvIdx];
                 return { client: client, link: link }
@@ -94,10 +93,10 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
-                    logger.info(`ConsumedThing '${this.name}' getting ${link.href}`);
+                    console.info(`ConsumedThing '${this.name}' getting ${link.href}`);
                     client.readResource(link.href).then( (content) => {
                         if (!content.mediaType) content.mediaType = link.mediaType;
-                        logger.verbose(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
+                        console.log(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
                         let value = ContentSerdes.bytesToValue(content);
                         resolve(value);
                     });
@@ -121,7 +120,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
-                    logger.info(`ConsumedThing '${this.name}' setting ${link.href} to '${newValue}'`);
+                    console.info(`ConsumedThing '${this.name}' setting ${link.href} to '${newValue}'`);
                     let payload = ContentSerdes.valueToBytes(newValue,link.mediaType)
                     resolve(client.writeResource(link.href, payload));
                 }
@@ -143,7 +142,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
-                    logger.info(`ConsumedThing '${this.name}' invoking ${link.href} with '${parameter}'`);
+                    console.info(`ConsumedThing '${this.name}' invoking ${link.href} with '${parameter}'`);
                     // TODO #5 client expects Buffer; ConsumedThing would have the necessary TD valueType rule...
 
                     let mediaType = link.mediaType;
@@ -151,7 +150,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
 
                     client.invokeResource(link.href, input).then( (output) => {
                         if (!output.mediaType) output.mediaType = link.mediaType;
-                        logger.verbose(`ConsumedThing decoding '${output.mediaType}' in invokeAction`);
+                        console.log(`ConsumedThing decoding '${output.mediaType}' in invokeAction`);
                         let value = ContentSerdes.bytesToValue(output);
                         resolve(value);
                     });

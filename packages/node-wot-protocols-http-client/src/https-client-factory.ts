@@ -22,7 +22,6 @@
  * HTTPS client Factory
  */
 
-import logger from 'node-wot-logger';
 import { ProtocolClientFactory, ProtocolClient } from 'node-wot-protocols'
 import HttpClient from './http-client';
 
@@ -31,17 +30,17 @@ export default class HttpsClientFactory implements ProtocolClientFactory {
   public static readonly schemes: Array<string> = ['https'];
 
   public getClient(): ProtocolClient {
-    logger.debug(`HttpsClientFactory creating client for '${this.getSchemes()}'`);
+    console.log(`HttpsClientFactory creating client for '${this.getSchemes()}'`);
     return new HttpClient(true);
   }
 
   public init(): boolean {
-    logger.info(`HttpsClientFactory for '${this.getSchemes()}' initializing`);
+    console.info(`HttpsClientFactory for '${this.getSchemes()}' initializing`);
     return true;
   }
 
   public destroy(): boolean {
-    logger.info(`HttpsClientFactory for '${this.getSchemes()}' destroyed`);
+    console.info(`HttpsClientFactory for '${this.getSchemes()}' destroyed`);
     return true;
   }
 

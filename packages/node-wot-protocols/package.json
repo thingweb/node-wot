@@ -8,15 +8,15 @@
   "main": "dist/protocol-interfaces.js",
   "typings": "dist/protocol-interfaces.d.ts",
   "scripts": {
-    "build" : "tsc",
-    "codestyle" : "standard --pretty"
+    "build": "tsc",
+    "codestyle": "standard --pretty"
   },
   "author": "the thingweb community",
   "license": "MIT",
   "devDependencies": {
-    "node-wot-logger" : "^0.1.0",
+    "@types/node": "^7.0.5",
+    "typescript": "2.3.2",
     "typescript-standard": "^0.3.30"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

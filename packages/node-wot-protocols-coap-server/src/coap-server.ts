@@ -22,7 +22,6 @@
  * CoAP Server based on coap by mcollina
  */
 
-import logger from 'node-wot-logger';
 import * as url from 'url';
 import ContentSerdes from 'node-wot-content-serdes';
 import { ProtocolServer, ResourceListener, Content } from 'node-wot-protocols'
@@ -49,7 +48,7 @@ export default class CoapServer implements ProtocolServer {
     }
 
     this.server.on('error', (err: Error) => {
-      logger.error(`CoapServer for port ${this.port} failed: ${err.message}`); this.failed = true;
+      console.error(`CoapServer for port ${this.port} failed: ${err.message}`); this.failed = true;
     });
   }
 
@@ -59,22 +58,22 @@ export default class CoapServer implements ProtocolServer {
 
   public addResource(path: string, res: ResourceListener): boolean {
     if (this.resources[path] !== undefined) {
-      logger.warn(`CoapServer on port ${this.getPort()} already has ResourceListener '${path}' - skipping`);
+      console.warn(`CoapServer on port ${this.getPort()} already has ResourceListener '${path}' - skipping`);
       return false;
     } else {
-      logger.debug(`CoapServer on port ${this.getPort()} addeding resource '${path}'`);
+      console.log(`CoapServer on port ${this.getPort()} addeding resource '${path}'`);
       this.resources[path] = res;
       return true;
     }
   }
 
   public removeResource(path: string): boolean {
-    logger.debug(`CoapServer on port ${this.getPort()} removing resource '${path}'`);
+    console.log(`CoapServer on port ${this.getPort()} removing resource '${path}'`);
     return delete this.resources[path];
   }
 
   public start(): boolean {
-    logger.info(`CoapServer starting on ${(this.address !== undefined ? this.address + ' ' : '')}port ${this.port}`);
+    console.info(`CoapServer starting on ${(this.address !== undefined ? this.address + ' ' : '')}port ${this.port}`);
 
     if (this.socketFree()) {
       this.server.listen(this.port, this.address, () => { this.running = true; });
@@ -93,7 +92,7 @@ export default class CoapServer implements ProtocolServer {
   }
 
   public stop(): boolean {
-    logger.info(`CoapServer stopping on port ${this.getPort()} (running=${this.running})`);
+    console.info(`CoapServer stopping on port ${this.getPort()} (running=${this.running})`);
     let closed = this.running;
     this.server.close(() => { closed = true; });
 
@@ -140,10 +139,10 @@ export default class CoapServer implements ProtocolServer {
   }
 
   private handleRequest(req: any, res: any) {
-    logger.verbose(`CoapServer on port ${this.getPort()} received ${req.method} ${req.url}`
+    console.log(`CoapServer on port ${this.getPort()} received ${req.method} ${req.url}`
       + ` from ${req.rsinfo.address} port ${req.rsinfo.port}`);
     res.on('finish', () => {
-      logger.verbose(`CoapServer replied with ${res.code} to ${req.rsinfo.address} port ${req.rsinfo.port}`);
+      console.log(`CoapServer replied with ${res.code} to ${req.rsinfo.address} port ${req.rsinfo.port}`);
       // FIXME res.options is undefined, no other useful property to get Content-Format
       //logger.warn(`CoapServer sent Content-Format: '${res.options['Content-Format']}'`);
     });
@@ -162,7 +161,7 @@ export default class CoapServer implements ProtocolServer {
           .then(content => {
             res.code = '2.05';
             if (!content.mediaType) {
-              logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
+              console.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
             } else {
               res.setOption('Content-Format', content.mediaType);
             }
@@ -170,7 +169,7 @@ export default class CoapServer implements ProtocolServer {
             res.end(content.body);
           })
           .catch(err => {
-            logger.error(`CoapServer on port ${this.getPort()}`
+            console.error(`CoapServer on port ${this.getPort()}`
               + ` got internal error on read '${requestUri.pathname}': ${err.message}`);
             res.code = '5.00'; res.end(err.message);
           });
@@ -182,7 +181,7 @@ export default class CoapServer implements ProtocolServer {
             res.end('Changed');
           })
           .catch(err => {
-            logger.error(`CoapServer on port ${this.getPort()}`
+            console.error(`CoapServer on port ${this.getPort()}`
               + ` got internal error on write '${requestUri.pathname}': ${err.message}`);
             res.code = '5.00'; res.end(err.message);
           });
@@ -195,7 +194,7 @@ export default class CoapServer implements ProtocolServer {
             } else {
               res.code = '2.05';
               if (!content.mediaType) {
-                logger.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
+                console.warn(`CoapServer got no Media Type from '${requestUri.pathname}'`);
               } else {
                 res.setOption('Content-Format', content.mediaType);
               }
@@ -204,7 +203,7 @@ export default class CoapServer implements ProtocolServer {
             res.end(content.body);
           })
           .catch(err => {
-            logger.error(`CoapServer on port ${this.getPort()}`
+            console.error(`CoapServer on port ${this.getPort()}`
               + ` got internal error on invoke '${requestUri.pathname}': ${err.message}`);
             res.code = '5.00'; res.end(err.message);
           });
@@ -216,7 +215,7 @@ export default class CoapServer implements ProtocolServer {
             res.end('Deleted');
           })
           .catch(err => {
-            logger.error(`CoapServer on port ${this.getPort()}`
+            console.error(`CoapServer on port ${this.getPort()}`
               + ` got internal error on unlink '${requestUri.pathname}': ${err.message}`);
             res.code = '5.00'; res.end(err.message);
           });
