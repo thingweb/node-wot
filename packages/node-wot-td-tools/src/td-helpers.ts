@@ -61,3 +61,18 @@ export function findInteractionBySemantics(td: ThingDescription, vocabularies: A
 
   return '';
 }
+
+//need two tests
+export function findProtocol(td : ThingDescription) : string {
+	let base:string = td.base;
+	let columnLoc:number = base.indexOf(":");
+	return base.substring(0,columnLoc);
+}
+
+export function findPort(td : ThingDescription) : number { 
+	let base:string = td.base;
+	let columnLoc:number= base.indexOf(':',6);
+	let divLoc:number = base.indexOf('/',columnLoc);
+	let returnString:string = base.substring(columnLoc+1, divLoc);
+	return parseInt(returnString);
+}
