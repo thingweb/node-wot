@@ -15,7 +15,7 @@
     "codestyle": "lerna run codestyle"
   },
   "author": "Johannes Hund (johannes.hund@gmail.com)",
-  "license": "MIT",
+  "license": "W3C Software License",
   "devDependencies": {
     "lerna": "2.1.1",
     "lerna-run": "0.0.2",

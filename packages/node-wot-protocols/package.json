@@ -12,7 +12,7 @@
     "codestyle": "standard --pretty"
   },
   "author": "the thingweb community",
-  "license": "MIT",
+  "license": "W3C Software License",
   "devDependencies": {
     "@types/node": "8.0.28",
     "typescript": "2.5.2",

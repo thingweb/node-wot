@@ -13,7 +13,7 @@
     "codestyle" : ""
   },
   "author": "the thingweb community",
-  "license": "MIT",
+  "license": "W3C Software License",
   "devDependencies": {
     "@types/chai": "4.0.4",
     "@types/node": "8.0.28",

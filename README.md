@@ -6,7 +6,7 @@ Build:
 
 ## License
 
-MIT License
+W3C Software License
 
 ## How to get ready for coding
 
