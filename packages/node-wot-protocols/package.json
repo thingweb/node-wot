@@ -1,6 +1,6 @@
 {
   "name": "node-wot-protocols",
-  "version": "0.3.0",
+  "version": "0.3.0-SNAPSHOT.1",
   "files": [
     "dist/"
   ],
