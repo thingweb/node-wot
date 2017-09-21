@@ -1,12 +1,12 @@
 {
-  "name": "node-wot-protocols-coap-server",
+  "name": "node-wot-protocol-coap",
   "version": "0.3.0-SNAPSHOT.2",
   "files": [
     "dist/"
   ],
-  "description": "an coap server plugin for node-wot",
-  "main": "dist/coap-server.js",
-  "typings": "dist/coap-server.d.ts",
+  "description": "an coap client & server plugin for node-wot",
+  "main": "dist/coap.js",
+  "typings": "dist/coap.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "mocha --compilers ts:ts-node/register",

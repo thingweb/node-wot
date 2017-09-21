@@ -1,5 +1,5 @@
 const node_wot = require('node-wot')
-const CoapServer =  require('node-wot-protocols-coap-server').default
+const CoapServer =  require('node-wot-protocol-coap').default
 const HttpServer =  require('node-wot-protocols-http-server').default
 const fs = require('fs')
 

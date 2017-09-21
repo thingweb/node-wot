@@ -26,6 +26,6 @@
   "dependencies": {
     "wot-typescript-definitions": "0.2.3",
     "node-wot": "0.3.0-SNAPSHOT.2",
-    "node-wot-protocols-coap-server": "0.3.0-SNAPSHOT.2"
+    "node-wot-protocol-coap": "0.3.0-SNAPSHOT.2"
   }
 }
