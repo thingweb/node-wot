@@ -1,5 +1,5 @@
 {
-  "name": "node-wot-protocols-file-client",
+  "name": "node-wot-protocol-file",
   "version": "0.3.0-SNAPSHOT.2",
   "files": [
     "dist/"
