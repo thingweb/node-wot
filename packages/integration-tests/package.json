@@ -1,32 +1,32 @@
 {
   "name": "node-wot-integration-tests",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.3.0-SNAPSHOT.1",
   "description": "Integration tests for node-wot",
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register"
   },
   "author": "the thingweb community",
-  "license": "MIT",
+  "license": "W3C Software License",
   "devDependencies": {
-    "@types/chai": "^3.4.35",
-    "@types/request-promise": "^4.1.33",
-    "chai": "^3.5.0",
-    "coap": "^0.20.0",
-    "mocha": "^3.2.0",
-    "mocha-typescript": "^1.0.19",
-    "node-wot-protocols": "^0.1.0",
-    "node-wot-protocols-coap-client": "^0.1.0",
-    "node-wot-protocols-coap-server": "^0.1.0",
-    "node-wot-protocols-http-client": "^0.1.0",
-    "node-wot-protocols-http-server": "^0.1.0",
-    "node-wot": "^0.2.0",
-    "request": "^2.79.0",
-    "request-promise": "^4.1.1",
-    "ts-node": "^2.1.0",
-    "typescript": "2.3.2"
+    "@types/chai": "4.0.4",
+    "@types/request-promise": "4.1.37",
+    "chai": "4.1.2",
+    "coap": "0.20.0",
+    "mocha": "3.5.3",
+    "mocha-typescript": "1.1.8",
+    "node-wot-protocols": "0.3.0-SNAPSHOT.1",
+    "node-wot-protocols-coap-client": "0.3.0-SNAPSHOT.1",
+    "node-wot-protocols-coap-server": "0.3.0-SNAPSHOT.1",
+    "node-wot-protocols-http-client": "0.3.0-SNAPSHOT.1",
+    "node-wot-protocols-http-server": "0.3.0-SNAPSHOT.1",
+    "node-wot": "0.3.0-SNAPSHOT.1",
+    "request": "2.79.0",
+    "request-promise": "4.1.1",
+    "ts-node": "3.3.0",
+    "typescript": "2.5.2"
   },
   "dependencies": {
-    "coap": "^0.20.0"
+    "coap": "0.20.0"
   }
 }

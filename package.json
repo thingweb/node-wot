@@ -1,7 +1,7 @@
 {
   "name": "node-wot-root",
   "private": true,
-  "version": "0.0.2",
+  "version": "0.3.0-SNAPSHOT.1",
   "description": "Web of Things implementation based on node.js and typescript (root project)",
   "main": "dist/main.js",
   "scripts": {
@@ -15,12 +15,12 @@
     "codestyle": "lerna run codestyle"
   },
   "author": "Johannes Hund (johannes.hund@gmail.com)",
-  "license": "MIT",
+  "license": "W3C Software License",
   "devDependencies": {
-    "lerna": "^2.0.0-beta.38",
+    "lerna": "2.1.1",
     "lerna-run": "0.0.2",
     "typescript": "2.3.2",
-    "typescript-standard": "^0.3.30"
+    "typescript-standard": "0.3.30"
   },
   "dependencies": {},
   "repository": {

@@ -1,6 +1,6 @@
 {
   "name": "node-wot-protocols-http-client",
-  "version": "0.1.0",
+  "version": "0.3.0-SNAPSHOT.1",
   "files": [
     "dist/"
   ],
@@ -12,18 +12,18 @@
     "codestyle" : "standard --pretty"
   },
   "author": "the thingweb community",
-  "license": "MIT",
+  "license": "W3C Software License",
   "devDependencies": {
-    "@types/chai": "^3.4.35",
-    "@types/node": "^7.0.5",
-    "chai": "^3.5.0",
-    "mocha": "^3.2.0",
-    "mocha-typescript": "^1.0.19",
-    "ts-node": "^2.1.0",
-    "typescript": "2.3.2",
-    "typescript-standard": "^0.3.30"
+    "@types/chai": "4.0.4",
+    "@types/node": "8.0.28",
+    "chai": "4.1.2",
+    "mocha": "3.5.3",
+    "mocha-typescript": "1.1.8",
+    "ts-node": "3.3.0",
+    "typescript": "2.5.2",
+    "typescript-standard": "0.3.30"
   },
   "dependencies": {
-    "node-wot-protocols": "^0.1.0"
+    "node-wot-protocols": "0.3.0-SNAPSHOT.1"
   }
 }
