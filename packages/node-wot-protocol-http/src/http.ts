@@ -17,29 +17,9 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-"use strict"
-
-/** Exports of this module */
-
-//Servient: is also the default export
-import {default as Servient} from './servient'
-export {Servient}
-export default Servient
-
-// ResourceListener & Content
-export {ResourceListener,Content} from 'node-wot-protocols'
-
-// ResourceListener Implementations
-export * from './resource-listeners/all-resource-listeners'
-
-//ContentSerdes
-export {ContentSerdes} from 'node-wot-content-serdes'
-
-export {default as ConsumedThing} from './consumed-thing'
-export {default as ExposedThing} from './exposed-thing'
-
-//export {ThingDescription} from 'node-wot-td-tools'
-export * from 'node-wot-td-tools'
-
-export {HttpServer} from 'node-wot-protocol-http'
-export {HttpClient} from 'node-wot-protocol-http'
+export { default as HttpServer } from './http-server'
+export { default as HttpClient } from './http-client'
+export { default as HttpClientFactory } from './http-client-factory'
+export * from './http-server'
+export * from './http-client'
+export * from './http-client-factory'

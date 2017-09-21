@@ -33,7 +33,6 @@
     "node-wot-protocols": "0.3.0-SNAPSHOT.2",
     "node-wot-td-tools": "0.3.0-SNAPSHOT.2",
     "wot-typescript-definitions": "0.2.3",
-    "node-wot-protocols-http-client": "0.3.0-SNAPSHOT.2",
-    "node-wot-protocols-http-server": "0.3.0-SNAPSHOT.2"
+    "node-wot-protocol-http": "0.3.0-SNAPSHOT.2"
   }
 }
