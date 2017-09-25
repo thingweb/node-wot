@@ -17,33 +17,9 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-/**
- * HTTP client Factory
- */
-
-import { ProtocolClientFactory, ProtocolClient } from 'node-wot-protocols'
-import CoapClient from './coap-client';
-
-export default class CoapClientFactory implements ProtocolClientFactory {
-
-  public static readonly schemes: Array<string> = ['coap'];
-
-  public getClient(): ProtocolClient {
-    console.log(`CoapClientFactory creating client for '${this.getSchemes()}'`);
-    return new CoapClient();
-  }
-
-  public init(): boolean {
-    console.info(`CoapClientFactory for '${this.getSchemes()}' initializing`);
-    return true;
-  }
-
-  public destroy(): boolean {
-    console.info(`CoapClientFactory for '${this.getSchemes()}' destroyed`);
-    return true;
-  }
-
-  public getSchemes(): Array<string> {
-    return CoapClientFactory.schemes;
-  }
-}
+export { default as HttpServer } from './http-server'
+export { default as HttpClient } from './http-client'
+export { default as HttpClientFactory } from './http-client-factory'
+export * from './http-server'
+export * from './http-client'
+export * from './http-client-factory'

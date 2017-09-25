@@ -7,8 +7,8 @@ import { expect, should } from "chai";
 // should must be called to augment all variables
 should();
 
-import HttpServer from "node-wot-protocols-http-server";
-import CoapServer from "node-wot-protocols-coap-server"; 
+import {HttpServer} from "node-wot-protocol-http";
+import {CoapServer} from "node-wot-protocol-coap"; 
 import {AssetResourceListener} from "node-wot-protocols";
 
 import * as http from "http";

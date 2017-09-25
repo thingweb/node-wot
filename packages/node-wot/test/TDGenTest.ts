@@ -22,7 +22,7 @@
  */
 import Servient from '../src/servient'
 import ExposedThing from '../src/exposed-thing'
-import HttpServer from "node-wot-protocols-http-server"
+import {HttpServer} from "node-wot-protocol-http"
 import {ProtocolServer} from "node-wot-protocols"
 
 

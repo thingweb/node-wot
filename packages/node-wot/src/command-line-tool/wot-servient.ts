@@ -28,8 +28,8 @@ import _ from "wot-typescript-definitions";
 import DefaultServient from "./default-servient";
 
 // protocols used
-import HttpServer from "node-wot-protocols-http-server";
-import HttpClientFactory from "node-wot-protocols-http-client";
+import {HttpServer} from "node-wot-protocol-http";
+import {HttpClientFactory} from "node-wot-protocol-http";
 
 // tools
 import fs = require("fs");

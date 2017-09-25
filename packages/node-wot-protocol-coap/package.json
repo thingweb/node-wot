@@ -1,14 +1,15 @@
 {
-  "name": "node-wot-protocols-coap-client",
-  "version": "0.3.0-SNAPSHOT.1",
+  "name": "node-wot-protocol-coap",
+  "version": "0.3.0-SNAPSHOT.2",
   "files": [
     "dist/"
   ],
-  "description": "an coap client plugin for node-wot",
-  "main": "dist/coap-client-factory.js",
-  "typings": "dist/coap-client-factory.d.ts",
+  "description": "an coap client & server plugin for node-wot",
+  "main": "dist/coap.js",
+  "typings": "dist/coap.d.ts",
   "scripts": {
     "build": "tsc",
+    "test": "mocha --compilers ts:ts-node/register",
     "codestyle" : "standard --pretty"
   },
   "author": "the thingweb community",
@@ -25,6 +26,8 @@
   },
   "dependencies": {
     "coap": "0.20.0",
-    "node-wot-protocols": "0.3.0-SNAPSHOT.1"
+    "deasync": "0.1.9",
+    "node-wot-content-serdes": "0.3.0-SNAPSHOT.2",
+    "node-wot-protocols": "0.3.0-SNAPSHOT.2"
   }
 }

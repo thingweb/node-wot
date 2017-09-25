@@ -17,29 +17,34 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-"use strict"
 
-/** Exports of this module */
+/**
+ * CoAP client Factory
+ */
 
-//Servient: is also the default export
-import {default as Servient} from './servient'
-export {Servient}
-export default Servient
+import { ProtocolClientFactory, ProtocolClient } from 'node-wot-protocols'
+import CoapClient from './coap-client';
 
-// ResourceListener & Content
-export {ResourceListener,Content} from 'node-wot-protocols'
+export default class CoapClientFactory implements ProtocolClientFactory {
 
-// ResourceListener Implementations
-export * from './resource-listeners/all-resource-listeners'
+  public static readonly schemes: Array<string> = ['coap'];
 
-//ContentSerdes
-export {ContentSerdes} from 'node-wot-content-serdes'
+  public getClient(): ProtocolClient {
+    console.log(`CoapClientFactory creating client for '${this.getSchemes()}'`);
+    return new CoapClient();
+  }
 
-export {default as ConsumedThing} from './consumed-thing'
-export {default as ExposedThing} from './exposed-thing'
+  public init(): boolean {
+    console.info(`CoapClientFactory for '${this.getSchemes()}' initializing`);
+    return true;
+  }
 
-//export {ThingDescription} from 'node-wot-td-tools'
-export * from 'node-wot-td-tools'
+  public destroy(): boolean {
+    console.info(`CoapClientFactory for '${this.getSchemes()}' destroyed`);
+    return true;
+  }
 
-export {HttpServer} from 'node-wot-protocol-http'
-export {HttpClient} from 'node-wot-protocol-http'
+  public getSchemes(): Array<string> {
+    return CoapClientFactory.schemes;
+  }
+}

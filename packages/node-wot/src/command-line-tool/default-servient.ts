@@ -25,8 +25,8 @@ import _ from "wot-typescript-definitions";
 // node-wot implementation of W3C WoT Servient 
 import Servient from "../servient";
 // protocols used
-import HttpServer from "node-wot-protocols-http-server";
-import HttpClientFactory from "node-wot-protocols-http-client";
+import {HttpServer} from "node-wot-protocol-http";
+import {HttpClientFactory} from "node-wot-protocol-http";
 
 export default class DefaultServient extends Servient {
 

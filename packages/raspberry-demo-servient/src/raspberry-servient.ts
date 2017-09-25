@@ -26,7 +26,7 @@ import _ from 'wot-typescript-definitions';
 import {Servient,HttpServer} from 'node-wot';
 
 // exposed protocols
-import CoapServer from 'node-wot-protocols-coap-server';
+import {CoapServer} from 'node-wot-protocol-coap';
 
 // tools
 const net = require('net');
