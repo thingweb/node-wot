@@ -1,7 +1,7 @@
 'use strict'
 
-import Servient from '../../servient';
-import HttpClientFactory from '../../protocols/http/http-client-factory';
+import {Servient} from 'node-wot';
+import {HttpClientFactory} from "node-wot-protocol-http";;
 
 let serv = new Servient();
 serv.addClientFactory(new HttpClientFactory())

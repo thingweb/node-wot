@@ -17,13 +17,13 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import HttpServer from '../../protocols/http/http-server';
-import CoapServer from '../../protocols/coap/coap-server';
-import AssetResourceListener from '../../resource-listeners/asset-resource-listener';
+import {HttpServer} from "node-wot-protocol-http";
+import {CoapServer} from "node-wot-protocol-coap";
+import {AssetResourceListener} from 'node-wot';
 
 // for level only - use console for output
-import logger from '../../logger';
-logger.level = 'debug';
+// import logger from '../../logger';
+// logger.level = 'debug';
 
 let res1 = new AssetResourceListener('"Hello World"', 'application/json');
 let res2 = new AssetResourceListener('true', 'application/json');

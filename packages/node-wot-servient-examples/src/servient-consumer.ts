@@ -17,15 +17,14 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import Servient from '../servient';
-import HttpServer from '../protocols/http/http-server';
-import CoapServer from '../protocols/coap/coap-server';
-import logger from '../logger';
-import ThingDescription from '../td/thing-description'
-import HttpClientFactory from '../protocols/http/http-client-factory'
-import CoapClientFactory from '../protocols/coap/coap-client-factory'
-import * as TDParser from '../td/td-parser'
-import * as TD from '../td/thing-description'
+import {Servient} from "node-wot";
+import {HttpServer} from "node-wot-protocol-http";
+import {CoapServer} from "node-wot-protocol-coap";
+import {ThingDescription} from "node-wot-td-tools";
+import {HttpClientFactory} from "node-wot-protocol-http"
+import {CoapClientFactory} from "node-wot-protocol-coap"
+import * as TDParser from "node-wot-td-tools";
+import * as TD from "node-wot-td-tools";
 const net = require('net');
 
 
@@ -34,21 +33,21 @@ function main() {
   let srv = new Servient();
   let WoT: WoT.WoTFactory;
 
-  logger.info('created servient for a client consumer ');
+  console.info('created servient for a client consumer ');
 
   srv.addServer(new HttpServer())
   //  srv.addServer(new CoapServer());
   srv.addClientFactory(new HttpClientFactory())
   //  srv.addClientFactory(new CoapClientFactory())
 
-  logger.info('added servers and HttpClientFactory')
+  console.info('added servers and HttpClientFactory')
 
 
   WoT = srv.start();
-  logger.info('started servient')
+  console.info('started servient')
 
 
-  logger.info('Try to find a node: ');
+  console.info('Try to find a node: ');
   //  WoT.consumeDescriptionUri("http://192.168.0.152/td").then(thing => {
   //WoT.consumeDescriptionUri("http://plugfest.thingweb.io:8088/things/counter").then(thing => {
   /* panasonic TD */
@@ -58,21 +57,21 @@ function main() {
     let tdObj = thing.getDescription()
     let td: ThingDescription = TDParser.parseTDObject(tdObj)
 
-    logger.info('TD name = ' + td.name)
-    logger.info('number of interactions =' + td.interactions.length)
+    console.info('TD name = ' + td.name)
+    console.info('number of interactions =' + td.interaction.length)
 
-    for (let interaction of td.interactions) {
-      logger.info(' name of interaction = ' + interaction.name + ' --> ' + interaction.pattern)
+    for (let interaction of td.interaction) {
+      console.info(' name of interaction = ' + interaction.name + ' --> ' + interaction.pattern)
 
       if (interaction.pattern === TD.InteractionPattern.Property) {
 
-        logger.info('call  = ' + thing.getProperty(interaction.name))
+        console.info('call  = ' + thing.getProperty(interaction.name))
       }
 
 
     }
 
-  }).catch((err) => logger.error('Hier knallts ', err))
+  }).catch((err) => console.error('Hier knallts ', err))
 
 
 }

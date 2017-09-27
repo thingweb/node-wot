@@ -17,24 +17,24 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import Servient from '../../servient';
-import HttpClientFactory from '../../protocols/http/http-client-factory';
-import CoapClientFactory from '../../protocols/coap/coap-client-factory';
-import HttpServer from '../../protocols/http/http-server';
-import CoapServer from '../../protocols/coap/coap-server';
+import Servient from 'node-wot';
+import {HttpClientFactory} from "node-wot-protocol-http";
+import {CoapClientFactory} from "node-wot-protocol-coap";
+import {HttpServer} from "node-wot-protocol-http";
+import {CoapServer} from "node-wot-protocol-coap";
 
-import ThingDescription from '../../td/thing-description';
-import * as TD from '../../td/thing-description';
+import {ThingDescription} from 'node-wot-td-tools';
+import * as TD from 'node-wot-td-tools';
 
 const async = require('async');
 
 // for level only - use console for output
-import logger from '../../logger';
-logger.level = 'silly';
-
-logger.info('INFO');
-logger.debug('DEBUG');
-logger.silly('SILLY');
+// import logger from '../../logger';
+// logger.level = 'silly';
+// 
+// logger.info('INFO');
+// logger.debug('DEBUG');
+// logger.silly('SILLY');
 
 console.log(`\n# Setting up Servient with HTTP and CoAP\n`);
 
@@ -121,15 +121,15 @@ async.series([
     console.log(`\n# Exposing Thing\n`);
 
     let srv = new Servient();
-    logger.info('created servient');
+    console.info('created servient');
 
     srv.addServer(new HttpServer());
     srv.addServer(new CoapServer());
 
-    logger.info('added servers');
+    console.info('added servers');
 
     let WoT = srv.start();
-    logger.info('started servient')
+    console.info('started servient')
 
     WoT.createThing('led').then(led => {
       led
