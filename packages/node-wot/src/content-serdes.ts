@@ -34,64 +34,6 @@ export class Content {
   }
 }
 
-/** default implementation offerin Json de-/serialisation */
-class JsonCodec implements ContentCodec {
-  getMediaType(): string {
-    return 'application/json'
-  }
-
-  bytesToValue(bytes: Buffer): any {
-    console.log(`JsonCodec parsing '${bytes.toString()}'`);
-    let parsed: any;
-    try {
-      parsed = JSON.parse(bytes.toString());
-    } catch (err) {
-      if (err instanceof SyntaxError) {
-        if (bytes.byteLength == 0) {
-          // empty payload -> void/undefined
-          parsed = undefined;
-        } else {
-          // be relaxed about what is received -> string without quotes
-          parsed = bytes.toString();
-        }
-      } else {
-        throw err;
-      }
-    }
-    // remove legacy wrapping and use RFC 7159
-    if (parsed && parsed.value) {
-      console.warn(`JsonCodec removing { value: ... } wrapper`);
-      parsed = parsed.value;
-    }
-    return parsed;
-  }
-
-  valueToBytes(value: any): Buffer {
-    console.log(`JsonCodec serializing '${value}'`);
-    let body = JSON.stringify(value);
-    return new Buffer(body);
-  }
-}
-
-class TextCodec implements ContentCodec {
-  getMediaType(): string {
-    return 'text/plain'
-  }
-
-  bytesToValue(bytes: Buffer): any {
-    console.log(`TextCodec parsing '${bytes.toString()}'`);
-    let parsed: any;
-    parsed = bytes.toString();
-    return parsed;
-  }
-
-  valueToBytes(value: any): Buffer {
-    console.log(`TextCodec serializing '${value}'`);
-    let body = value;
-    return new Buffer(body);
-  }
-}
-
 /**
  * is a singleton that is used to serialize and deserialize data
  * it can accept multiple serializers and decoders
@@ -107,7 +49,7 @@ export class ContentSerdes {
     if (!this.instance) {
       this.instance = new ContentSerdes();
       this.instance.addCodec(new JsonCodec());
-      this.instance.addCodec(new TextCodec());
+       this.instance.addCodec(new TextCodec());
     }
     return this.instance;
   }
@@ -175,3 +117,64 @@ export class ContentSerdes {
 }
 
 export default ContentSerdes.get();
+
+
+
+
+/** default implementation offerin Json de-/serialisation */
+class JsonCodec implements ContentCodec {
+  getMediaType(): string {
+    return 'application/json'
+  }
+
+  bytesToValue(bytes: Buffer): any {
+    console.log(`JsonCodec parsing '${bytes.toString()}'`);
+    let parsed: any;
+    try {
+      parsed = JSON.parse(bytes.toString());
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        if (bytes.byteLength == 0) {
+          // empty payload -> void/undefined
+          parsed = undefined;
+        } else {
+          // be relaxed about what is received -> string without quotes
+          parsed = bytes.toString();
+        }
+      } else {
+        throw err;
+      }
+    }
+    // remove legacy wrapping and use RFC 7159
+    if (parsed && parsed.value) {
+      console.warn(`JsonCodec removing { value: ... } wrapper`);
+      parsed = parsed.value;
+    }
+    return parsed;
+  }
+
+  valueToBytes(value: any): Buffer {
+    console.log(`JsonCodec serializing '${value}'`);
+    let body = JSON.stringify(value);
+    return new Buffer(body);
+  }
+}
+
+class TextCodec implements ContentCodec {
+  getMediaType(): string {
+    return 'text/plain'
+  }
+
+  bytesToValue(bytes: Buffer): any {
+    console.log(`TextCodec parsing '${bytes.toString()}'`);
+    let parsed: any;
+    parsed = bytes.toString();
+    return parsed;
+  }
+
+  valueToBytes(value: any): Buffer {
+    console.log(`TextCodec serializing '${value}'`);
+    let body = value;
+    return new Buffer(body);
+  }
+}

@@ -16,7 +16,7 @@
  * publicity pertaining to the work without specific, written prior permission. Title
  * to copyright in this work will at all times remain with copyright holders.
  */
-import {ResourceListener,Content} from "node-wot-protocols"
+import {ResourceListener,Content} from "./protocol-interfaces"
 
 export default class BasicResourceListener implements ResourceListener {
 

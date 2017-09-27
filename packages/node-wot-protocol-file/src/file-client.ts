@@ -20,7 +20,7 @@
 /**
  * File protocol binding
  */
-import { ProtocolClientFactory, ProtocolClient, Content } from 'node-wot-protocols'
+import { ProtocolClientFactory, ProtocolClient, Content } from 'node-wot'
 
 import fs = require('fs');
 

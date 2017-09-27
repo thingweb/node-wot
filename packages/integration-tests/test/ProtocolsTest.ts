@@ -9,7 +9,7 @@ should();
 
 import {HttpServer} from "node-wot-protocol-http";
 import {CoapServer} from "node-wot-protocol-coap"; 
-import {AssetResourceListener} from "node-wot-protocols";
+import {AssetResourceListener} from "node-wot";
 
 import * as http from "http";
 import * as rp from "request-promise";

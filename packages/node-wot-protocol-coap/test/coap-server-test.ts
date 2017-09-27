@@ -8,7 +8,7 @@ import { expect, should } from "chai";
 should();
 
 import CoapServer from "../src/coap-server";
-import {AssetResourceListener} from "node-wot-protocols"
+import {AssetResourceListener} from "node-wot"
 
 const coap = require("coap");
 

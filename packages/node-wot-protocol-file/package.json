@@ -24,6 +24,6 @@
     "typescript-standard": "0.3.30"
   },
   "dependencies": {
-    "node-wot-protocols": "0.3.0-SNAPSHOT.2"
+    "node-wot": "0.3.0-SNAPSHOT.2"
   }
 }

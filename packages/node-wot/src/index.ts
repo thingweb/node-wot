@@ -27,22 +27,27 @@ export {Servient}
 export default Servient
 
 // ResourceListener & Content
-export {ResourceListener,Content} from 'node-wot-protocols'
+export {ResourceListener,Content} from "./resource-listeners/protocol-interfaces"
 
 // ResourceListener Implementations
 export * from './resource-listeners/all-resource-listeners'
 
 //ContentSerdes
-export {ContentSerdes} from 'node-wot-content-serdes'
+// export {ContentSerdes} from 'node-wot-content-serdes'
+export * from './content-serdes'
+
+// Protocols
+export * from './resource-listeners/protocol-interfaces'
 
 export {default as ConsumedThing} from './consumed-thing'
 export {default as ExposedThing} from './exposed-thing'
 
+
 //export {ThingDescription} from 'node-wot-td-tools'
 export * from 'node-wot-td-tools'
 
-export {HttpServer} from 'node-wot-protocol-http'
-export {HttpClient} from 'node-wot-protocol-http'
+// export {HttpServer} from 'node-wot-protocol-http'
+// export {HttpClient} from 'node-wot-protocol-http'
 
 // Helper Implementations
 export * from './helpers'

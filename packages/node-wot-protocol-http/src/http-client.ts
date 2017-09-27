@@ -20,7 +20,7 @@
 /**
  * HTTP client based on http
  */
-import { ProtocolClient, Content } from 'node-wot-protocols'
+import { ProtocolClient, Content } from 'node-wot'
 
 import * as http from 'http';
 import * as https from 'https';

@@ -23,8 +23,9 @@
 
 import * as http from 'http';
 import * as url from 'url';
-import ContentSerdes from 'node-wot-content-serdes';
-import { ProtocolServer, ResourceListener } from 'node-wot-protocols'
+// import ContentSerdes from 'node-wot-content-serdes';
+import {ContentSerdes} from 'node-wot';
+import { ProtocolServer, ResourceListener } from 'node-wot'
 
 const deasync = require('deasync');
 
@@ -130,7 +131,7 @@ export default class HttpServer implements ProtocolServer {
     let contentTypeHeader : string | string[] = req.headers["content-type"];
     let mediaType : string = Array.isArray(contentTypeHeader) ? contentTypeHeader[0] : contentTypeHeader;
     // FIXME must be rejected with 415 Unsupported Media Type, guessing not allowed -> debug/testing flag
-    if (!mediaType || mediaType.length == 0) mediaType = ContentSerdes.DEFAULT;
+    if (!mediaType || mediaType.length == 0) mediaType = 'application/json'; // ContentSerdes.DEFAULT;
 
     if (requestHandler === undefined) {
       res.writeHead(404);

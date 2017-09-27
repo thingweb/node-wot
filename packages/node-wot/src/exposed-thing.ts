@@ -17,7 +17,7 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import {ResourceListener} from "node-wot-protocols"
+import {ResourceListener} from "./resource-listeners/protocol-interfaces"
 import {ThingDescription} from "node-wot-td-tools";
 import * as TD from "node-wot-td-tools";
 import * as Rest from "./resource-listeners/all-resource-listeners"

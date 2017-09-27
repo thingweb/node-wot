@@ -27,7 +27,6 @@
   "dependencies": {
     "coap": "0.20.0",
     "deasync": "0.1.9",
-    "node-wot-content-serdes": "0.3.0-SNAPSHOT.2",
-    "node-wot-protocols": "0.3.0-SNAPSHOT.2"
+    "node-wot": "0.3.0-SNAPSHOT.2"
   }
 }

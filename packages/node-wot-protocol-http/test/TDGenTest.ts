@@ -22,11 +22,11 @@
  */
 import Servient from '../src/servient'
 import ExposedThing from '../src/exposed-thing'
-import {HttpServer} from "node-wot-protocol-http"
-import {ProtocolServer} from "node-wot-protocols"
+// import {HttpServer} from "node-wot-protocol-http"
+import {ProtocolServer} from "../src/resource-listeners/protocol-interfaces" // "node-wot-protocols"
 
 
-import {ContentCodec} from 'node-wot-content-serdes'
+import {ContentCodec} from '../src/content-serdes'
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
 // should must be called to augment all variables

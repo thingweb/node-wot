@@ -20,11 +20,11 @@
 
 import ExposedThing from "./exposed-thing";
 import WoTImpl from "./wot-impl";
-import {ProtocolClientFactory, ProtocolServer, ResourceListener, ProtocolClient} from "node-wot-protocols"
+import {ProtocolClientFactory, ProtocolServer, ResourceListener, ProtocolClient} from "./resource-listeners/protocol-interfaces"
 import {ThingDescription} from "node-wot-td-tools";
 import * as TD from "node-wot-td-tools";
 import * as Helpers from "./helpers";
-import { default as ContentSerdes, ContentCodec } from "node-wot-content-serdes"
+import { default as ContentSerdes, ContentCodec } from "./content-serdes"
 import * as vm from 'vm'
 
 export default class Servient {

@@ -21,7 +21,7 @@
  * HTTPS client Factory
  */
 
-import { ProtocolClientFactory, ProtocolClient } from 'node-wot-protocols'
+import { ProtocolClientFactory, ProtocolClient } from 'node-wot'
 import HttpClient from './http-client';
 
 export default class HttpsClientFactory implements ProtocolClientFactory {
