@@ -25,7 +25,6 @@
     "typescript-standard": "0.3.30"
   },
   "dependencies": {
-    "node-wot-helpers": "0.3.0-SNAPSHOT.2",
     "typedjson-npm": "0.1.7"
   }
 }

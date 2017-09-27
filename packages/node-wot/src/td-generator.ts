@@ -21,7 +21,7 @@ import Servient from "./servient"
 import ExposedThing from "./exposed-thing"
 import {ThingDescription} from "node-wot-td-tools"
 import * as TD from "node-wot-td-tools"
-import * as Helpers from "node-wot-helpers"
+import * as Helpers from "./helpers";
 
 
 //@h0ru5: temporarely moved here to avoid circular dependencies

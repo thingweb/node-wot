@@ -34,7 +34,7 @@ should();
 
 import * as TDTools from "node-wot-td-tools";
 import * as TDGenerator from "../src/td-generator";
-import * as Helpers from "node-wot-helpers";
+import * as Helpers from "../src/helpers";
 
 @suite("TD Generation")
 class TDGeneratorTest {

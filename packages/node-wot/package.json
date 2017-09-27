@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "node-wot-content-serdes": "0.3.0-SNAPSHOT.2",
-    "node-wot-helpers": "0.3.0-SNAPSHOT.2",
     "node-wot-protocols": "0.3.0-SNAPSHOT.2",
     "node-wot-td-tools": "0.3.0-SNAPSHOT.2",
     "wot-typescript-definitions": "0.2.3",

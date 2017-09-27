@@ -21,7 +21,7 @@ import {ProtocolClient} from "node-wot-protocols"
 import Servient from "./servient";
 import {ThingDescription} from "node-wot-td-tools"
 import * as TD from "node-wot-td-tools";
-import * as Helpers from "node-wot-helpers";
+import * as Helpers from "./helpers";
 import ContentSerdes from "node-wot-content-serdes"
 
 interface ClientAndLink {
