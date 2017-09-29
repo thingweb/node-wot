@@ -17,12 +17,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import HttpClientFactory from '../../protocols/http/http-client-factory';
-import CoapClientFactory from '../../protocols/coap/coap-client-factory';
-
-// for level only - use console for output
-import logger from '../../logger';
-logger.level = 'debug';
+ NOT UP TO DATE
+import HttpClientFactory from '../../node-wot-protocols-http-client/src/http-client-factory';
+import CoapClientFactory from '../../node-wot-protocols-coap-client';
 
 let myHttpFactory = new HttpClientFactory();
 let myCoapFactory = new CoapClientFactory();
