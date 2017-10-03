@@ -102,7 +102,7 @@ class TextCodec implements ContentCodec {
 export class ContentSerdes {
   private static instance: ContentSerdes;
 
-  public readonly DEFAULT: string = 'application/json';
+  public static readonly DEFAULT: string = 'application/json';
   private codecs: Map<string, ContentCodec> = new Map();
   private constructor() { }
 
@@ -116,11 +116,11 @@ export class ContentSerdes {
   }
 
   public addCodec(codec: ContentCodec) {
-    this.codecs.set(codec.getMediaType(), codec);
+    ContentSerdes.get().codecs.set(codec.getMediaType(), codec);
   }
 
   public getSupportedMediaTypes(): Array<string> {
-    return Array.from(this.codecs.keys())
+    return Array.from(ContentSerdes.get().codecs.keys())
   }
 
   public bytesToValue(content: Content): any {
@@ -128,7 +128,7 @@ export class ContentSerdes {
     if (content.mediaType === undefined) {
       if (content.body.byteLength > 0) {
         // default to application/json
-        content.mediaType = this.DEFAULT;
+        content.mediaType = ContentSerdes.DEFAULT;
       } else {
         // empty payload without media type -> void/undefined (note: e.g., empty payload with text/plain -> "")
         return;
@@ -159,7 +159,7 @@ export class ContentSerdes {
         }
   }
 
-  public valueToBytes(value: any, mediaType = this.DEFAULT): Content {
+  public valueToBytes(value: any, mediaType = ContentSerdes.DEFAULT): Content {
 
     if (value === undefined) console.warn("ContentSerdes valueToBytes got no value");
 

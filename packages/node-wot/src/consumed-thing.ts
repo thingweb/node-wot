@@ -17,6 +17,7 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
+import * as WoT from 'wot-typescript-definitions';
 import {ProtocolClient} from "./resource-listeners/protocol-interfaces"
 import Servient from "./servient";
 import {ThingDescription} from "node-wot-td-tools"

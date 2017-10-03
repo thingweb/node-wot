@@ -50,4 +50,7 @@ export * from 'node-wot-td-tools'
 // export {HttpClient} from 'node-wot-protocol-http'
 
 // Helper Implementations
+export * from './td-generator'
+
+// Helper Implementations
 export * from './helpers'
