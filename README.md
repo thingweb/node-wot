@@ -20,11 +20,6 @@ $ cd node-wot
 # install root dependencies (locally installs tools like typescript and lerna)
 npm install 
 
-# WORKAROUND FOR WINDOWS: build bin files (bug in Lerna/NPM)
-# cd packages/node-wot
-# tsc
-# cd ../..
-
 # bootstrap the packages (installs dependencies and links the inter-dependencies)
 # Note: This step is automatically done on building or testing
 npm run bootstrap
@@ -49,6 +44,10 @@ Run all the steps above and then run this:
 ```
 cd examples/scripts
 wot-servient
+
+
+# e.g., Windows CMD shell
+# node  packages\node-wot-servient-examples\dist\command-line-tool\wot-servient.js  examples\scripts\counter.js
 ```
 
 * go to http://localhost:8080/counter and you'll find a thing description.
