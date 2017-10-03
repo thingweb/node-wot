@@ -1,6 +1,6 @@
 {
   "name": "node-wot-servient-examples",
-  "version": "0.3.0-SNAPSHOT.2",
+  "version": "0.3.0-SNAPSHOT.3",
   "files": [
     "dist/"
   ],
@@ -25,9 +25,9 @@
   },
   "dependencies": {
     "wot-typescript-definitions": "0.2.3",
-    "node-wot": "0.3.0-SNAPSHOT.2",
-	  "node-wot-td-tools": "0.3.0-SNAPSHOT.2",
-    "node-wot-protocol-coap": "0.3.0-SNAPSHOT.2",
-	  "node-wot-protocol-http": "0.3.0-SNAPSHOT.2"
+    "node-wot": "0.3.0-SNAPSHOT.3",
+	  "node-wot-td-tools": "0.3.0-SNAPSHOT.3",
+    "node-wot-protocol-coap": "0.3.0-SNAPSHOT.3",
+	  "node-wot-protocol-http": "0.3.0-SNAPSHOT.3"
   }
 }
