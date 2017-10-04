@@ -8,7 +8,7 @@ import { expect, should } from "chai";
 should();
 
 import HttpServer from "../src/http-server";
-import {AssetResourceListener} from "node-wot-protocols"
+import {AssetResourceListener} from "node-wot"
 
 import * as http from "http";
 import * as rp from "request-promise";

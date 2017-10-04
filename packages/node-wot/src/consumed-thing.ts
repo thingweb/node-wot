@@ -17,12 +17,13 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import {ProtocolClient} from "node-wot-protocols"
+import * as WoT from 'wot-typescript-definitions';
+import {ProtocolClient} from "./resource-listeners/protocol-interfaces"
 import Servient from "./servient";
 import {ThingDescription} from "node-wot-td-tools"
 import * as TD from "node-wot-td-tools";
-import * as Helpers from "node-wot-helpers";
-import ContentSerdes from "node-wot-content-serdes"
+import * as Helpers from "./helpers";
+import ContentSerdes from "./content-serdes"
 
 interface ClientAndLink {
     client: ProtocolClient

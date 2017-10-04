@@ -17,11 +17,11 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import {Content,ResourceListener} from "node-wot-protocols"
+import {Content,ResourceListener} from "./protocol-interfaces"
 import BasicResourceListener from "./basic-resource-listener";
 import ExposedThing from "../exposed-thing";
 import * as TD from "node-wot-td-tools";
-import ContentSerdes from "node-wot-content-serdes";
+import ContentSerdes from "../content-serdes";
 /**
  * Interaction resource that provides a Property
  */

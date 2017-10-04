@@ -19,7 +19,7 @@
 
 import ThingDescription from './thing-description';
 import * as TD from './thing-description';
-import * as AddressHelper from 'node-wot-helpers';
+// import * as AddressHelper from 'node-wot-helpers';
 
 import { JsonMember, JsonObject, TypedJSON } from 'typedjson-npm';
 

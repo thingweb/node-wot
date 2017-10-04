@@ -1,6 +1,6 @@
 {
   "name": "node-wot-protocol-file",
-  "version": "0.3.0-SNAPSHOT.2",
+  "version": "0.3.0-SNAPSHOT.3",
   "files": [
     "dist/"
   ],
@@ -24,6 +24,6 @@
     "typescript-standard": "0.3.30"
   },
   "dependencies": {
-    "node-wot-protocols": "0.3.0-SNAPSHOT.2"
+    "node-wot": "0.3.0-SNAPSHOT.3"
   }
 }

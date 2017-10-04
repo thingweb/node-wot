@@ -31,7 +31,7 @@ should();
 
 import Servient from "../src/servient";
 import * as listeners from "../src/resource-listeners/all-resource-listeners";
-import {ProtocolServer,Content,ResourceListener} from "node-wot-protocols"
+import {ProtocolServer,Content,ResourceListener} from "../src/resource-listeners/protocol-interfaces"
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
     private listeners: Map<string, ResourceListener> = new Map();

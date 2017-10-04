@@ -3,13 +3,13 @@
 /// <reference path="../../protocols/protocol-client.ts" />
 
 
-import Servient from '../../servient';
-import HttpServer from '../../protocols/http/http-server';
-import CoAPClientFactory from '../../protocols/coap/coap-client-factory'
-import logger from '../../logger'
+import Servient from "node-wot";
+import {HttpServer} from "node-wot-protocol-http";
+import {CoapClientFactory} from "node-wot-protocol-coap"
+// import logger from '../../logger'
 
 let serv = new Servient();
-serv.addClientFactory(new CoAPClientFactory())
+serv.addClientFactory(new CoapClientFactory())
 serv.addServer(new HttpServer(3000))
 
 let WoT = serv.start();
@@ -22,7 +22,7 @@ let tlvl = 0;
 
 //setInterval(() => logger.info("i got ", pump, valve, level),1000)
 
-logger.level = 'silly'
+// logger.level = 'silly'
 
 WoT.consumeDescriptionUri('coap://w3cwot.sytes.net:5688/tdv2')
   .then(thing => pump = thing)
@@ -54,7 +54,7 @@ WoT.consumeDescriptionUri('coap://w3cwot.sytes.net:5688/tdv2')
         });
 
         thing.onInvokeAction('fill', () => {
-          logger.warn('invoking fill')
+          console.warn('invoking fill')
           return pump.invokeAction('on', null)
         });
 
@@ -75,10 +75,10 @@ WoT.consumeDescriptionUri('coap://w3cwot.sytes.net:5688/tdv2')
             pump.getProperty('status').then(status => thing.setProperty('pumpRunning', status)),
             lvlMeter.getProperty('level').then(level => { tlvl = level; thing.setProperty('level', level) })
           ])
-            .catch((err) => logger.error('error occured', err))
+            .catch((err) => console.error('error occured', err))
         }, 500)
 
 
       })
   })
-  .catch((err) => logger.error('error occured', err))
+  .catch((err) => console.error('error occured', err))

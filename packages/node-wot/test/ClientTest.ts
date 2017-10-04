@@ -30,7 +30,7 @@ import { expect, should } from "chai";
 should();
 
 import Servient from "../src/servient";
-import {ProtocolClient,ProtocolClientFactory,Content} from "node-wot-protocols"
+import {ProtocolClient,ProtocolClientFactory,Content} from "../src/resource-listeners/protocol-interfaces"
 
 class TrapClient implements ProtocolClient {
 

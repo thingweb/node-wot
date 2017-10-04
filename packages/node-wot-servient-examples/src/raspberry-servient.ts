@@ -23,7 +23,8 @@
 // global W3C WoT Scripting API definitions
 import _ from 'wot-typescript-definitions';
 // node-wot implementation of W3C WoT Servient 
-import {Servient,HttpServer} from 'node-wot';
+import {Servient} from 'node-wot';
+import {HttpServer} from "node-wot-protocol-http";
 
 // exposed protocols
 import {CoapServer} from 'node-wot-protocol-coap';

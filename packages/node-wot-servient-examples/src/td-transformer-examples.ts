@@ -17,7 +17,7 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import * as TDTransformer from '../../td/td-transformer';
+import * as TDTransformer from "node-wot-td-tools";
 // var prettyjson = require("prettyjson");
 
 /* sample TD json-ld string from the CP page */

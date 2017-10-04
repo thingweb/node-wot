@@ -25,8 +25,8 @@
  */
 
 import * as url from 'url';
-import ContentSerdes from 'node-wot-content-serdes';
-import { ProtocolServer, ResourceListener, Content } from 'node-wot-protocols'
+import {ContentSerdes} from 'node-wot';
+import { ProtocolServer, ResourceListener, Content } from 'node-wot'
 
 const coap = require('coap');
 const deasync = require('deasync'); // to convert async calls to blocking calls
@@ -152,7 +152,7 @@ export default class CoapServer implements ProtocolServer {
     let requestUri = url.parse(req.url);
     let requestHandler = this.resources[requestUri.pathname];
     // TODO must be rejected with 4.15 Unsupported Content-Format, guessing not allowed
-    let mediaType = req.options['Content-Format'] ? req.options['Content-Format'] : ContentSerdes.DEFAULT;
+    let mediaType = req.options['Content-Format'] ? req.options['Content-Format'] : 'application/json'; // ContentSerdes.DEFAULT;
 
     if (requestHandler === undefined) {
       res.code = '4.04';

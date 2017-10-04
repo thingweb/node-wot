@@ -18,6 +18,8 @@
  */
 
 export { default as CoapServer } from './coap-server'
-export { default as CoapClientFactory } from './coap-client'
+export { default as CoapClient } from './coap-client'
+export { default as CoapClientFactory } from './coap-client-factory'
 export * from './coap-server'
 export * from './coap-client'
+export * from './coap-client-factory'
