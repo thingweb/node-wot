@@ -250,6 +250,24 @@ export default class ExposedThing implements WoT.DynamicThing {
 
         return this; }
 
+    /*
+    sets the property to be writable or not
+    */
+    setWritable(propertyName:string, isWritable:boolean):void{
+        this.interactions.forEach(interaction => {
+            if(interaction.name == propertyName){
+                if(interaction.semanticTypes.indexOf("Property")){
+                    interaction.writable=isWritable;
+                    return;
+                }else{
+                    console.error("setWritable is only applicable to properties");
+                    return;
+                }
+            }
+        });
+        console.error("Interaction not found");
+    }
+
     /**
      * remove a property from the ExposedThing
      */
