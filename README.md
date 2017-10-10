@@ -8,14 +8,21 @@ Build:
 
 W3C Software License
 
+## Prerequisites
+
+On Windows, install the build tools
+```
+npm install --global --production windows-build-tools
+```
+
 ## How to get ready for coding
 
 ```
 # Clone the repository
-$ git clone https://github.com/thingweb/node-wot
+git clone https://github.com/thingweb/node-wot
 
 # Go into the repository
-$ cd node-wot
+cd node-wot
 
 # install root dependencies (locally installs tools like typescript and lerna)
 npm install 
