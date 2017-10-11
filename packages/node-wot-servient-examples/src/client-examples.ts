@@ -17,10 +17,10 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
- NOT UP TO DATE
+//NOT UP TO DATE
 import HttpClientFactory from '../../node-wot-protocols-http-client/src/http-client-factory';
 import CoapClientFactory from '../../node-wot-protocols-coap-client';
-
+import ProtocolClient from "node-wot";
 let myHttpFactory = new HttpClientFactory();
 let myCoapFactory = new CoapClientFactory();
 
