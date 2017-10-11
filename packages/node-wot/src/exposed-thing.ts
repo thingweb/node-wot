@@ -281,6 +281,30 @@ export default class ExposedThing implements WoT.ExposedThing {
 
     /** @inheritDoc */
     removeProperty(propertyName: string): ExposedThing {
+// =======
+//     /*
+//     sets the property to be writable or not
+//     */
+//     setWritable(propertyName:string, isWritable:boolean):void{
+//         this.interactions.forEach(interaction => {
+//             if(interaction.name == propertyName){
+//                 if(interaction.semanticTypes.indexOf("Property")){
+//                     interaction.writable=isWritable;
+//                     return;
+//                 }else{
+//                     console.error("setWritable is only applicable to properties");
+//                     return;
+//                 }
+//             }
+//         });
+//         console.error("Interaction not found");
+//     }
+
+//     /**
+//      * remove a property from the ExposedThing
+//      */
+//     removeProperty(propertyName: string): boolean {
+// >>>>>>> b8fdb1c903090bbd87eded2345f05f757364e8a0
         delete this.interactionStates[propertyName];
         this.removeResourceListener(this.name + "/properties/" + propertyName)
         return this;
