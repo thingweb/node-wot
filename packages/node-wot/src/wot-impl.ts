@@ -166,8 +166,6 @@ export default class WoTImpl implements WoT.WoTFactory {
                     }
 
                 }
-
-
                 resolve(myThing);
             } else {
                 reject(new Error("WoTImpl could not create Thing from object: " + myThing))

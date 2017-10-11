@@ -10,7 +10,7 @@
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register",
     "build": "tsc",
-    "codestyle": "standard --pretty"
+    "codestyle" : "standard --pretty"
   },
   "author": "the thingweb community",
   "license": "MIT",
