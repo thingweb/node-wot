@@ -80,7 +80,7 @@ async.series([
         {
           '@type': ['Property'],
           'name': 'coapProp',
-          'outputData': { 'valueType': { 'type': 'string' } },
+          'outputData': { 'type': 'string' },
           'writable': false,
           'links': [
             { 'href': 'coap://californium.eclipse.org:5683/path/sub1', 'mediaType': 'application/json' }
@@ -89,8 +89,8 @@ async.series([
         {
           '@type': ['Action'],
           'name': 'coapAction',
-          'outputData': { 'valueType': { 'type': 'string' } },
-          'inputData': { 'valueType': { 'type': 'string' } },
+          'outputData': { 'type': 'string' },
+          'inputData': { 'type': 'string' },
           'links': [
             { 'href': 'coap://californium.eclipse.org:5683/large-post', 'mediaType': 'application/json' }
           ]

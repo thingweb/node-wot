@@ -24,7 +24,7 @@ import * as Helpers from "./helpers";
 import * as TDParser from "node-wot-td-tools";
 
 import * as WoT from 'wot-typescript-definitions';
-import {ThingDescription} from 'node-wot-td-tools';
+import { ThingDescription } from 'node-wot-td-tools';
 
 export default class WoTImpl implements WoT.WoTFactory {
     private srv: Servient;
@@ -103,9 +103,9 @@ export default class WoTImpl implements WoT.WoTFactory {
             client.readResource(uri).then((content) => {
                 if (content.mediaType !== "application/json")
                     console.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
-                    let thingDescription :ThingDescription= TDParser.parseTDString(content.body.toString());//ThingDescription type doesnt work for some reason
-                
-                    //this.createFromDescription(thingDescription);
+                let thingDescription: ThingDescription = TDParser.parseTDString(content.body.toString());//ThingDescription type doesnt work for some reason
+
+                //this.createFromDescription(thingDescription);
             }).catch((err) => console.error("WoTImpl failed fetching TD", err));
         });
     }
@@ -119,54 +119,53 @@ export default class WoTImpl implements WoT.WoTFactory {
             if (this.srv.addThing(myThing)) {
                 //add base field
                 //add actions:
-                    //get the interactions
-                        //for each interaction, add it like event, action or property (first actions)
+                //get the interactions
+                //for each interaction, add it like event, action or property (first actions)
                 let interactions: Array<any> = thingDescription.interaction;
-                for(var i=0; i<interactions.length;i++){
-                    let currentInter = interactions[i]; 
-                    let interType= currentInter['@type'][0];
-                    if(interType==='Action'){
+                for (var i = 0; i < interactions.length; i++) {
+                    let currentInter = interactions[i];
+                    let interTypes = currentInter['semanticTypes'];
+                    if (interTypes.indexOf("Action") > -1) {
                         let actionName: string = currentInter.name;
-                        try{
-                            let inputValueType: Object = currentInter.inputData.valueType;
-                            let outputValueType: Object = currentInter.outputData.valueType;
-                            myThing.addAction(actionName,inputValueType,outputValueType);
-                        }catch(err){
+                        try {
+                            let inputType: Object = currentInter.inputData;
+                            let outputType: Object = currentInter.outputData;
+                            myThing.addAction(actionName, inputType, outputType);
+                        } catch (err) {
                             //it means that we couldn't find the input AND output, we'll try individual cases
-                            try{
-                                let inputValueType: Object = currentInter.inputData.valueType;
-                                myThing.addAction(actionName,inputValueType);
-                            } catch (err2){
-                                try{
-                                    let outputValueType: Object = currentInter.outputData.valueType;
-                                    myThing.addAction(actionName,{},outputValueType);
-                                }catch(err3){
+                            try {
+                                let inputType: Object = currentInter.inputData;
+                                myThing.addAction(actionName, inputType);
+                            } catch (err2) {
+                                try {
+                                    let outputType: Object = currentInter.outputData;
+                                    myThing.addAction(actionName, {}, outputType);
+                                } catch (err3) {
                                     //worst case, we just create with the name
-                                            //should there be the semantics case as well?
+                                    //should there be the semantics case as well?
                                     myThing.addAction(actionName);
                                 }
-                            }      
-                        } 
+                            }
+                        }
 
-                    } else if (interType==='Property'){
+                    } else if (interTypes.indexOf("Property") > -1) {
                         //maybe there should be more things added?
                         let propertyName: string = currentInter.name;
-                        let outputValueType: Object = currentInter.outputData.valueType;
-                        myThing.addProperty(propertyName, outputValueType);
-                        
-                        
-                    } else if(interType==='Event'){
+                        let outputType: Object = currentInter.outputData;
+                        myThing.addProperty(propertyName, outputType);
+                        myThing.setWritable(propertyName, currentInter.writable);
+
+
+                    } else if (interTypes.indexOf("Event") > -1) {
                         //currently there isnt much implemented that's why I add only the name and nothing else
                         let eventName: string = currentInter.name;
                         myThing.addEvent(eventName);
-                       
-                    } else {
-                        console.info("Wrong interaction type for number ", i );
-                    }
-                   
-                }
 
-               
+                    } else {
+                        console.info("Wrong interaction type for number ", i);
+                    }
+
+                }
                 resolve(myThing);
             } else {
                 reject(new Error("WoTImpl could not create Thing from object: " + myThing))

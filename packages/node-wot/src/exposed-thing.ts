@@ -178,14 +178,14 @@ export default class ExposedThing implements WoT.DynamicThing {
      * @param propertyName Name of the property
      * @param valueType type specification of the value (JSON schema)
      */
-    addProperty(propertyName: string, valueType: Object, initialValue?: any): ExposedThing {
+    addProperty(propertyName: string, outputType: Object, initialValue?: any): ExposedThing {
         // new way
         let newProp = new TD.Interaction();
         newProp.pattern = TD.InteractionPattern.Property;
         newProp.name = propertyName;
       //  newProp.inputData = { 'valueType' : valueType};
        // newProp.outputData =  { 'valueType' : valueType};
-        newProp.outputData =  valueType;
+        newProp.outputData =  outputType;
         newProp.writable = true; //we need a param for this
 
         this.interactions.push(newProp);
@@ -249,6 +249,24 @@ export default class ExposedThing implements WoT.DynamicThing {
         this.interactionStates[eventName] = eventState;
 
         return this; }
+
+    /*
+    sets the property to be writable or not
+    */
+    setWritable(propertyName:string, isWritable:boolean):void{
+        this.interactions.forEach(interaction => {
+            if(interaction.name == propertyName){
+                if(interaction.semanticTypes.indexOf("Property")){
+                    interaction.writable=isWritable;
+                    return;
+                }else{
+                    console.error("setWritable is only applicable to properties");
+                    return;
+                }
+            }
+        });
+        console.error("Interaction not found");
+    }
 
     /**
      * remove a property from the ExposedThing
