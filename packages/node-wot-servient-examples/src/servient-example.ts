@@ -18,6 +18,7 @@
  */
 
 import Servient from 'node-wot';
+import {RequestImpl} from 'node-wot';
 import {HttpClientFactory} from "node-wot-protocol-http";
 import {CoapClientFactory} from "node-wot-protocol-coap";
 import {HttpServer} from "node-wot-protocol-http";
@@ -25,6 +26,7 @@ import {CoapServer} from "node-wot-protocol-coap";
 
 import {ThingDescription} from 'node-wot-td-tools';
 import * as TD from 'node-wot-td-tools';
+import * as WoT from 'wot-typescript-definitions';
 
 const async = require('async');
 
@@ -46,12 +48,13 @@ servient.addClientFactory(new CoapClientFactory());
 console.log('Starting servient');
 let wot = servient.start();
 
+
 async.series([
   (next: Function) => {
 
     console.log(`\n# Consuming Thing over HTTP\n`);
 
-    wot.consumeDescriptionUri('http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld').then((thing) => {
+    wot.consume('http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld').then((thing) => {
       console.log(`### Thing name: ${thing.name}`);
       thing.getProperty('myProp').then((res) => {
         console.log(`### myProp value: ${res}`);
@@ -99,22 +102,22 @@ async.series([
       ]
     };
 
-    wot.consumeDescription(td).then((thing) => {
-      console.log(`### Thing name: ${thing.name}`);
-      thing.getProperty('coapProp').then((res) => {
-        console.log(`### coapProp value: ${res}`);
-        thing.setProperty('coapProp', '4711').then((res) => {
-          console.log(`### coapProp set successfully`);
-          thing.getProperty('coapProp').then((res) => {
-            console.log(`### coapProp value: ${res}`);
-            thing.invokeAction('coapAction', 'lower').then((res) => {
-              console.log(`### coapAction result: ${res}`);
-              next();
-            }).catch((err) => console.error(err));
-          }).catch((err) => console.error(err));
-        }).catch((err) => console.error(err));
-      }).catch((err) => console.error(err));
-    }).catch((err) => console.error(err));
+    // wot.consumeDescription(td).then((thing) => {
+    //   console.log(`### Thing name: ${thing.name}`);
+    //   thing.getProperty('coapProp').then((res) => {
+    //     console.log(`### coapProp value: ${res}`);
+    //     thing.setProperty('coapProp', '4711').then((res) => {
+    //       console.log(`### coapProp set successfully`);
+    //       thing.getProperty('coapProp').then((res) => {
+    //         console.log(`### coapProp value: ${res}`);
+    //         thing.invokeAction('coapAction', 'lower').then((res) => {
+    //           console.log(`### coapAction result: ${res}`);
+    //           next();
+    //         }).catch((err) => console.error(err));
+    //       }).catch((err) => console.error(err));
+    //     }).catch((err) => console.error(err));
+    //   }).catch((err) => console.error(err));
+    // }).catch((err) => console.error(err));
   },
   (next: Function) => {
 
@@ -128,31 +131,78 @@ async.series([
 
     console.info('added servers');
 
-    let WoT = srv.start();
+    let WoTs = srv.start();
     console.info('started servient')
 
-    WoT.createThing('led').then(led => {
-      led
-        .addProperty('brightness', { type: 'integer', minimum: 0, maximum: 255 })
-        .addProperty('color', {
-          type: 'object',
-          properties: {
-            r: { type: 'integer', minimum: 0, maximum: 255 },
-            g: { type: 'integer', minimum: 0, maximum: 255 },
-            b: { type: 'integer', minimum: 0, maximum: 255 }
-          }
-        })
-        .addAction('gradient');
-      led.onUpdateProperty('brightness', (nu, old) => {
-        console.log('New brightness: ' + nu);
-      });
-      led.onUpdateProperty('color', (nu, old) => {
+    let thingInit : WoT.ThingInit; //  = {"name": "d", "url" : null, "description" : null};
+    thingInit.name = "led";
+    WoTs.expose(thingInit).then(led => {
+      // property brightness
+      let tpBrightness : WoT.ThingPropertyInit;
+      tpBrightness.name = "brightness";
+      tpBrightness.value = 0;
+      // property color
+      let tpColor : WoT.ThingPropertyInit;
+      tpColor.name = "color";
+      tpColor.value = { r: 0, g: 0, b: 0 };
+      // action gradient
+      let taGradient : WoT.ThingActionInit;
+      taGradient.name = "gradient";
+
+      // requestHandler property brightness
+      let req : RequestImpl;
+      req.type = WoT.RequestType.property; //  "WoT.RequestType"";
+
+
+      let rhpBrightness : WoT.RequestHandler = req => {
+        console.log('New brightness: ' + req.data);
+      };
+      // rhpBrightness.name = "brightness";
+      // rhpBrightness.call = (nu, old) => {
+      //   console.log('New brightness: ' + nu);
+      // };
+
+      // requestHandler property color
+      let rhpColor : WoT.RequestHandler;
+      // rhpColor.name = "color";
+      rhpColor.call = (nu, old) => {
         console.log('New color: ' + nu);
-      });
-      led.setProperty('brightness', 0);
-      led.setProperty('color', { r: 0, g: 0, b: 0 });
+      };
+
+      led
+      .addProperty(tpBrightness)
+      .addProperty(tpColor)
+      .addAction(taGradient)
+      .onUpdateProperty(rhpBrightness)
+      .onUpdateProperty(rhpColor)
+      ;
 
       next();
     });
+
+
+    // WoT.createThing('led').then(led => {
+    //   led
+    //     .addProperty('brightness', { type: 'integer', minimum: 0, maximum: 255 })
+    //     .addProperty('color', {
+    //       type: 'object',
+    //       properties: {
+    //         r: { type: 'integer', minimum: 0, maximum: 255 },
+    //         g: { type: 'integer', minimum: 0, maximum: 255 },
+    //         b: { type: 'integer', minimum: 0, maximum: 255 }
+    //       }
+    //     })
+    //     .addAction('gradient');
+    //   led.onUpdateProperty('brightness', (nu, old) => {
+    //     console.log('New brightness: ' + nu);
+    //   });
+    //   led.onUpdateProperty('color', (nu, old) => {
+    //     console.log('New color: ' + nu);
+    //   });
+    //   led.setProperty('brightness', 0);
+    //   led.setProperty('color', { r: 0, g: 0, b: 0 });
+
+    //   next();
+    // });
   }
 ]);

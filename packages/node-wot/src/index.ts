@@ -26,6 +26,9 @@ import {default as Servient} from './servient'
 export {Servient}
 export default Servient
 
+import {default as RequestImpl} from './request-impl'
+export {RequestImpl}
+
 // ResourceListener & Content
 export {ResourceListener,Content} from "./resource-listeners/protocol-interfaces"
 

@@ -144,7 +144,7 @@ class WoTClientTest {
             }
         );
 
-        WoTClientTest.WoT.consumeDescription(myThingDesc)
+        WoTClientTest.WoT.consume(JSON.stringify(myThingDesc))
             .then((thing) => {
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
@@ -166,7 +166,7 @@ class WoTClientTest {
             }
         )
 
-        WoTClientTest.WoT.consumeDescription(myThingDesc)
+        WoTClientTest.WoT.consume(JSON.stringify(myThingDesc))
             .then((thing) => {
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
@@ -185,7 +185,7 @@ class WoTClientTest {
             }
         )
 
-        WoTClientTest.WoT.consumeDescription(myThingDesc)
+        WoTClientTest.WoT.consume(JSON.stringify(myThingDesc))
             .then((thing) => {
                 thing.should.not.be.null;
                 thing.name.should.equal("aThing");

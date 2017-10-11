@@ -60,34 +60,34 @@ export default class DefaultServient extends Servient {
      * start
      */
     public start() {
-        let WoT = super.start();
+        let WoTs = super.start();
         console.info("DefaultServient started");
 
-        WoT.createThing("servient").then(thing => {
+        // WoTs.createThing("servient").then(thing => {
 
-            thing
-                .addAction("log", { type: "string" })
-                .onInvokeAction("log", (msg) => {
-                    console.info(msg);
-                    return `logged '${msg}`;
-                });
+        //     thing
+        //         .addAction("log", { type: "string" })
+        //         .onInvokeAction("log", (msg) => {
+        //             console.info(msg);
+        //             return `logged '${msg}`;
+        //         });
             
-            thing
-                .addAction("shutdown")
-                .onInvokeAction("shutdown", () => {
-                    console.info("shutting down by remote");
-                    this.shutdown();
-                });
+        //     thing
+        //         .addAction("shutdown")
+        //         .onInvokeAction("shutdown", () => {
+        //             console.info("shutting down by remote");
+        //             this.shutdown();
+        //         });
 
-            if (this.config.servient.scriptAction)
-            thing
-                .addAction("runScript", { type: "string" })
-                .onInvokeAction("runScript", (script) => {
-                    console.log("runnig script", script);
-                    return this.runScript(script);
-                });
+        //     if (this.config.servient.scriptAction)
+        //     thing
+        //         .addAction("runScript", { type: "string" })
+        //         .onInvokeAction("runScript", (script) => {
+        //             console.log("runnig script", script);
+        //             return this.runScript(script);
+        //         });
 
-        });
-        return WoT;
+        // });
+        return WoTs;
     }
 }
