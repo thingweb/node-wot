@@ -18,8 +18,12 @@
  */
 
 import ProtocolClient from "node-wot";
-import {HttpClientFactory} from '../../node-wot-protocols-http-client';
-import {CoapClientFactory} from '../../node-wot-protocols-coap-client';
+import {HttpClientFactory} from "node-wot-protocol-http";
+import {CoapClientFactory} from "node-wot-protocol-coap";
+
+// for level only - use console for output
+// import logger from '../../logger';
+// logger.level = 'debug';
 
 let myHttpFactory = new HttpClientFactory();
 let myCoapFactory = new CoapClientFactory();
