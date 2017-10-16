@@ -95,7 +95,9 @@ export default class WoTImpl implements WoT.WoTFactory {
     expose(init: WoT.ThingInit): Promise<ExposedThing> {
         return new Promise<ExposedThing>((resolve, reject) => {
             console.info(`WoTImpl creating new ExposedThing '${init.name}'`);
-            let mything = new ExposedThing(this.srv, init.name);
+            let td: ThingDescription = new ThingDescription();
+            td.name = init.name;
+            let mything = new ExposedThing(this.srv, td); // init.name
             if (this.srv.addThing(mything)) {
                 resolve(mything);
             } else {
@@ -149,7 +151,9 @@ export default class WoTImpl implements WoT.WoTFactory {
             //not necessary to parse if it is already obj
             //let thingdesc = TDParser.parseTDObject(thingDescription);
             console.info(`WoTImpl creating new ExposedThing from object`);
-            let myThing = new ExposedThing(this.srv, thingDescription.name);
+            let td: ThingDescription;
+            td.name = thingDescription.name;
+            let myThing = new ExposedThing(this.srv, td); // thingDescription.name
             if (this.srv.addThing(myThing)) {
                 //add base field
                 //add actions:

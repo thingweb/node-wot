@@ -29,7 +29,7 @@ export default Servient
 import {default as RequestImpl} from './request-impl'
 export {RequestImpl}
 
-import {default as ThingInitImpl} from './thinginit-impl'
+import {default as ThingInitImpl} from './thing-init-impl'
 export {ThingInitImpl}
 
 // ResourceListener & Content

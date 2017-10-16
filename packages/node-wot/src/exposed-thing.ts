@@ -19,25 +19,31 @@
 
 import {ResourceListener} from "./resource-listeners/protocol-interfaces"
 import {ThingDescription} from "node-wot-td-tools";
+import ConsumedThing from "./consumed-thing";
 import * as TD from "node-wot-td-tools";
 import * as Rest from "./resource-listeners/all-resource-listeners"
 import Servient from "./servient";
 import * as TDGenerator from "./td-generator"
 
-export default class ExposedThing implements WoT.ExposedThing {
+export default class ExposedThing extends ConsumedThing implements WoT.ExposedThing {
     // these arrays and their contents are mutable
     private interactions: Array<TD.Interaction> = [];
     private interactionStates: { [key: string]: InteractionState } = {}; //TODO migrate to Map
     private restListeners: Map<string, ResourceListener> = new Map<string, ResourceListener>();
 
-    private readonly srv: Servient;
+    // private readonly srv: Servient;
 
     /** name of the Thing */
-    public readonly name: string
+    // public readonly name: string
 
-    constructor(servient: Servient, name: string) {
-        this.srv = servient;
-        this.name = name;
+    // readonly url: USVString;
+
+    // readonly description: WoT.ThingDescription;
+
+    constructor(servient: Servient, td: ThingDescription) { // name: string
+        super(servient, td);
+        // this.srv = servient;
+        // this.name = name;
         this.addResourceListener("/" + this.name, new Rest.TDResourceListener(this));
     }
 

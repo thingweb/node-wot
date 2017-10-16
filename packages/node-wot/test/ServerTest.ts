@@ -32,7 +32,8 @@ should();
 import Servient from "../src/servient";
 import * as listeners from "../src/resource-listeners/all-resource-listeners";
 import {ProtocolServer,Content,ResourceListener} from "../src/resource-listeners/protocol-interfaces"
-import ThingInitImpl from "../src/thinginit-impl"
+import ThingInitImpl from "../src/thing-init-impl"
+import ThingPropertyInitImpl from "../src/thing-property-init-impl"
 
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
@@ -89,46 +90,61 @@ class WoTServerTest {
         });
     }
 
-    // @test "should be able to add a property, read it and write it locally"() {
-    //     return WoTServerTest.WoT.createThing("otherthing").then(thing => {
-    //         return thing
-    //             .addProperty("number", { "type": "number" })
-    //             .setProperty("number", 5)
-    //             .then(value => {
-    //                 expect(value).to.equal(5);
-    //             })
-    //             .then(() => thing.getProperty("number"))
-    //             .then(value => {
-    //                 expect(value).to.equal(5);
-    //             });
-    //     });
-    // }
+    @test "should be able to add a property, read it and write it locally"() {
+        let init : WoT.ThingInit = new ThingInitImpl("otherthing", "", {});
+        return WoTServerTest.WoT.expose(init).then(thing => {
+            let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("number", 5);
 
-    // @test "should be able to add a property, assign it via listener and read it locally"() {
-    //     return WoTServerTest.WoT.createThing("thing3").then(thing => {
-    //         thing.addProperty("prop1", { "type": "number" });
-    //         let listener = WoTServerTest.server.getListenerFor("/thing3/properties/prop1");
-    //         expect(listener).to.exist;
-    //         listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
-    //         return listener.onWrite({mediaType: undefined, body: new Buffer("5") }).then(() => {
-    //             return thing.getProperty("prop1").then((value) => expect(value).to.equal(5));
-    //         });
-    //     });
-    // }
+            return thing.addProperty(initp);
 
-    // @test "should be able to add a property, assign it locally and read it via listener"() {
-    //     return WoTServerTest.WoT.createThing("thing4").then(thing => {
-    //         thing.addProperty("prop1", { "type": "number" });
-    //         let listener = WoTServerTest.server.getListenerFor("/thing4/properties/prop1");
-    //         expect(listener).to.exist;
-    //         listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
-    //         return thing.setProperty("prop1", 23).then((value) => {
-    //             return listener.onRead().then((content) => {
-    //                 content.should.deep.equal({ mediaType: "application/json", body: new Buffer("23") });
-    //             });
-    //         });
-    //     });
-    // }
+            // return thing
+            //     .addProperty("number", { "type": "number" })
+            //     .setProperty("number", 5)
+            //     .then(value => {
+            //         expect(value).to.equal(5);
+            //     })
+            //     .then(() => thing.getProperty("number"))
+            //     .then(value => {
+            //         expect(value).to.equal(5);
+            //     });
+        });
+    }
+
+    @test "should be able to add a property, assign it via listener and read it locally"() {
+        let init : WoT.ThingInit = new ThingInitImpl("thing3", "", {});
+        return WoTServerTest.WoT.expose(init).then(thing => {
+            let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("prop1", null);
+            // thing.addProperty("prop1", { "type": "number" });
+            thing.addProperty(initp);
+
+            let listener = WoTServerTest.server.getListenerFor("/thing3/properties/prop1");
+            expect(listener).to.exist;
+            listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
+            return listener.onWrite({mediaType: undefined, body: new Buffer("5") }).then(() => {
+                console.log("TODO getProperty")
+                // return thing.getProperty("prop1").then((value) => expect(value).to.equal(5));
+            });
+        });
+    }
+
+    @test "should be able to add a property, assign it locally and read it via listener"() {
+        let init : WoT.ThingInit = new ThingInitImpl("thing4", "", {});
+        return WoTServerTest.WoT.expose(init).then(thing => {
+            let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("prop1", null);
+            // thing.addProperty("prop1", { "type": "number" });
+            thing.addProperty(initp);
+
+            let listener = WoTServerTest.server.getListenerFor("/thing4/properties/prop1");
+            expect(listener).to.exist;
+            listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
+
+            // return thing.setProperty("prop1", 23).then((value) => {
+            //     return listener.onRead().then((content) => {
+            //         content.should.deep.equal({ mediaType: "application/json", body: new Buffer("23") });
+            //     });
+            // });
+        });
+    }
 
     // @test "should be able to add a property, assign and read it via listener"() {
     //     return WoTServerTest.WoT.createThing("thing5").then(thing => {

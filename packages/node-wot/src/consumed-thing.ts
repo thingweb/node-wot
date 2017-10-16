@@ -38,8 +38,8 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     readonly url: USVString;
     readonly description: WoT.ThingDescription;
 
-    private readonly td: ThingDescription;
-    private readonly srv: Servient;
+    protected readonly td: ThingDescription;
+    protected readonly srv: Servient;
     private clients: Map<string, ProtocolClient> = new Map();
 
     constructor(servient: Servient, td: ThingDescription) {
