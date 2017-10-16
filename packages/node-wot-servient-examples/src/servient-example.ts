@@ -154,7 +154,9 @@ async.series([
       req.type = WoT.RequestType.property; //  "WoT.RequestType"";
 
 
-      let rhpBrightness : WoT.RequestHandler = req => {
+      let rhpBrightness : WoT.RequestHandler;
+      rhpBrightness.request = req;
+      rhpBrightness.callback = () => {
         console.log('New brightness: ' + req.data);
       };
       // rhpBrightness.name = "brightness";
@@ -165,7 +167,7 @@ async.series([
       // requestHandler property color
       let rhpColor : WoT.RequestHandler;
       // rhpColor.name = "color";
-      rhpColor.call = (nu, old) => {
+      rhpColor.callback.call = (nu, old) => {
         console.log('New color: ' + nu);
       };
 

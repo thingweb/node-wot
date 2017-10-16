@@ -72,6 +72,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
             let state = this.interactionStates[actionName];
             if (state) {
                 console.log("Action state : " + state);
+
                 if (state.handlers.length) {
                     let handler = state.handlers[0];
                     resolve(handler(parameter));
@@ -166,44 +167,68 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     // }
 
     /** @inheritDoc */
-    onRetrieveProperty(handler: (request: WoT.Request) => any): ExposedThing {
+    onRetrieveProperty(handler: WoT.RequestHandler): ExposedThing {
         // TODO implement onRetrieveProperty
         return this;
     }
 
+
+    function (request: WoT.Request) {
+        request.name;
+        return 1;
+    }
+
     /** @inheritDoc */
-    onInvokeAction(handler: (request: WoT.Request) => any): ExposedThing {
+    // (request: WoT.Request) => any
+    // handler: WoT.RequestHandler
+    onInvokeAction(handler: WoT.RequestHandler): ExposedThing {
+
+        // handler(Request);
+
         // actionName: string, cb: (param?: any) => any
-        console.log("arg: " + handler.toString)
-        console.log("name: " + handler.name)
+        // handler.request.name;
+        // request.name;
+        // handler("dsa");
+        // handler.call;
+        // handler["request"].name;
+
+        // console.log("call: " + handler.call)
+        // console.log("callName: " + handler.call.name)
+        // console.log("caller: " + handler.caller)
+        // console.log("length: " + handler.length)
+        // console.log("arg0: " + handler.arguments[0])
+    
+        // console.log("arg: " + handler.toString)
+        // console.log("name: " + handler.name)
+        console.log("name: " + handler.request.name)
 
         // console.log("name: " + request.name)
-        let state = this.interactionStates[handler.name]; // actionName
+        let state = this.interactionStates[handler.request.name]; // actionName
         if (state) {
             if (state.handlers.length > 0) state.handlers.splice(0);
-            state.handlers.push(handler.call); // cb
+            state.handlers.push(handler.callback); // cb
         } else {
-            console.error("no such action " + handler.name + " on " + this.name);
+            console.error("no such action " + handler.request.name + " on " + this.name);
         }
 
         return this;
     }
 
     /** @inheritDoc */
-    onUpdateProperty(handler: (request: WoT.Request) => any): ExposedThing {
+    onUpdateProperty(handler: WoT.RequestHandler): ExposedThing {
         // propertyName: string, cb: (newValue: any, oldValue?: any) => void
-        let state = this.interactionStates[handler.name]; // propertyName
+        let state = this.interactionStates[handler.request.name]; // propertyName
         if (state) {
-            state.handlers.push(handler.call); // cb
+            state.handlers.push(handler.callback); // cb
         } else {
-            console.error("no such property " + handler.name + " on " + this.name);
+            console.error("no such property " + handler.request.name + " on " + this.name);
         }
 
         return this;
     }
 
     /** @inheritDoc */
-    onObserve(handler: (request: WoT.Request) => any): ExposedThing {
+    onObserve(handler: WoT.RequestHandler): ExposedThing {
         // TODO implement onObserve
         return this;
     }
@@ -343,6 +368,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
 
 class InteractionState {
     public value: any;
-    public handlers: Array<(param?: any) => any> = [];
+    // public handlers: Array<(param?: any) => any> = [];
+    public handlers: Array<Function> = [];
     public path: string;
 }

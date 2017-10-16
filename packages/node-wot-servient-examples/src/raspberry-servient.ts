@@ -107,7 +107,7 @@ function main() {
     // implementations
     let rhBrightness : WoT.RequestHandler;
     // rhBrightness.name = "brightness";
-    rhBrightness.call = (nu, old) => {
+    rhBrightness.callback.call = (nu, old) => {
       setBrightness(nu);}
 
     unicorn.onUpdateProperty(rhBrightness);

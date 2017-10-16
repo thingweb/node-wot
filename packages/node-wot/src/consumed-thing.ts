@@ -166,7 +166,9 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         });
     }
 
-    addListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing { return this }
+    addListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing {    
+        return this
+    }
     removeListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing { return this }
     removeAllListeners(eventName: string): ConsumedThing { return this }
 

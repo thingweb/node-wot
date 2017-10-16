@@ -36,6 +36,11 @@ import ThingInitImpl from "../src/thing-init-impl"
 import ThingPropertyInitImpl from "../src/thing-property-init-impl"
 import ThingActionInitImpl from "../src/thing-action-init-impl"
 import RequestImpl from "../src/request-impl"
+// import {RequestType} from 'wot-typescript-definitions';
+
+// import {RequestType} from 'wot-typescript-definitions';
+
+// import * as WoT from 'wot-typescript-definitions';
 
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
@@ -165,49 +170,46 @@ class WoTServerTest {
 
     @test "should be able to add an action and invoke it locally"() {
         let init : WoT.ThingInit = new ThingInitImpl("thing6", "", {});
+        
         return WoTServerTest.WoT.expose(init).then(thing => {
-            JSON.stringify
             let inita : WoT.ThingActionInit = new ThingActionInitImpl("action1", JSON.stringify({ "type": "number" }), JSON.stringify({ "type": "number" }));
-            thing
-            .addAction(inita);
+            thing.addAction(inita);
 
-            // console.log("foooooooooooooo");
+            let request : WoT.Request = new RequestImpl("action1"); // WoT.RequestType.action, 
 
-            // let request : WoT.Request = new RequestImpl("action1");
-            // thing.onInvokeAction(request => {
-            //     request.data.should.be.a("number");
-            //     request.data.should.equal(23);
-            // });
+            thing.onInvokeAction({"request" : request, "callback" : request => {
+                request.should.be.a("number");
+                request.should.equal(23);
+                return 42;
+            }});
 
-            // .onInvokeAction("action1", (param) => {
-            //     param.should.be.a("number");
-            //     param.should.equal(23);
-            //     return 42;
-            // })
-
-            // return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
+            return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
         })
     }
 
-    // @test "should be able to add an action and invoke it via listener"() {
-    //     return WoTServerTest.WoT.createThing("thing7").then(thing => {
-    //         thing
-    //         .addAction("action1", { "type": "number" }, { "type": "number" })
-    //         .onInvokeAction("action1", (param) => {
-    //             param.should.be.a("number");
-    //             param.should.equal(23);
-    //             return 42;
-    //         })
+    @test "should be able to add an action and invoke it via listener"() {
+        let init : WoT.ThingInit = new ThingInitImpl("thing7", "", {});
+
+        return WoTServerTest.WoT.expose(init).then(thing => {
+            let inita : WoT.ThingActionInit = new ThingActionInitImpl("action1", JSON.stringify({ "type": "number" }), JSON.stringify({ "type": "number" }));
+            thing.addAction(inita);
+
+            let request : WoT.Request = new RequestImpl("action1");
+            thing.onInvokeAction({"request" : request, "callback" : request => {
+                request.should.be.a("number");
+                request.should.equal(23);
+                return 42;
+            }});
             
-    //         let listener = WoTServerTest.server.getListenerFor("/thing7/actions/action1");
-    //         expect(listener).to.exist;
-    //         listener.should.be.an.instanceOf(listeners.ActionResourceListener);
+            let listener = WoTServerTest.server.getListenerFor("/thing7/actions/action1");
+            expect(listener).to.exist;
+            listener.should.be.an.instanceOf(listeners.ActionResourceListener);
             
-    //         return listener
-    //         .onInvoke({mediaType: undefined, body: new Buffer("23") })
-    //         .then((resBytes => {
-    //             resBytes.should.deep.equal({ mediaType: "application/json", body: new Buffer("42") });
-    //         }))
-    //     })
-    // }
+            return listener
+            .onInvoke({mediaType: undefined, body: new Buffer("23") })
+            .then((resBytes => {
+                resBytes.should.deep.equal({ mediaType: "application/json", body: new Buffer("42") });
+            }))
+        })
+    }
 }

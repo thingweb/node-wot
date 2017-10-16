@@ -26,7 +26,10 @@ export default class RequestImpl implements WoT.Request {
     options:  any;
     data:  any;
 
-    constructor(name: string) {
+    constructor(
+      //type: WoT.RequestType, 
+      name: string) {
+      // this.type = type;
       this.name = name;
     }
 

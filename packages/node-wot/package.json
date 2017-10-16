@@ -26,6 +26,6 @@
   },
   "dependencies": {
     "node-wot-td-tools": "0.3.0-SNAPSHOT.3",
-    "wot-typescript-definitions": "0.3.0-SNAPSHOT.4"
+    "wot-typescript-definitions": "0.3.0-SNAPSHOT.5"
   }
 }
