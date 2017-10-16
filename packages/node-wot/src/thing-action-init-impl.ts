@@ -19,24 +19,17 @@
 
 import * as WoT from 'wot-typescript-definitions';
 
-export default class RequestImpl implements WoT.Request {
-    type: WoT.RequestType;
-    from: USVString;
+export default class ThingActionInitImpl implements WoT.ThingActionInit {
     name: string;
-    options:  any;
-    data:  any;
+    inputDataDescription: WoT.ThingDescription;
+    outputDataDescription: WoT.ThingDescription;
+    semanticTypes: [WoT.SemanticType];
+    /** The action attribute provides a function that defines the Action. */
+    action: Function;
 
-    constructor(name: string) {
-      this.name = name;
-    }
-
-
-    respond(response: any): Promise<any> {
-      console.info('respond: ' + response);
-      return null;
-    }
-    respondWithError(error: Error): void {
-      console.error('Error: ' + error);
-    }
-  
+  constructor(name: string, inputDataDescription: WoT.ThingDescription, outputDataDescription: WoT.ThingDescription) {
+    this.name = name;
+    this.inputDataDescription = inputDataDescription;
+    this.outputDataDescription = outputDataDescription;
   }
+}

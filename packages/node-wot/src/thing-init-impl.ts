@@ -19,24 +19,14 @@
 
 import * as WoT from 'wot-typescript-definitions';
 
-export default class RequestImpl implements WoT.Request {
-    type: WoT.RequestType;
-    from: USVString;
-    name: string;
-    options:  any;
-    data:  any;
+export default class ThingInitImpl implements WoT.ThingInit {
+  name: string;
+  url: USVString;
+  description: object;
 
-    constructor(name: string) {
-      this.name = name;
-    }
-
-
-    respond(response: any): Promise<any> {
-      console.info('respond: ' + response);
-      return null;
-    }
-    respondWithError(error: Error): void {
-      console.error('Error: ' + error);
-    }
-  
+  constructor(name: string, url: USVString, description: object) {
+    this.name = name;
+    this.url = url;
+    this.description = description;
   }
+}

@@ -19,24 +19,24 @@
 
 import * as WoT from 'wot-typescript-definitions';
 
-export default class RequestImpl implements WoT.Request {
-    type: WoT.RequestType;
-    from: USVString;
-    name: string;
-    options:  any;
-    data:  any;
+export default class ThingPropertyInitImpl implements WoT.ThingPropertyInit {
+  name: string
+  configurable: boolean; // = false;
+  enumerable: boolean; // = true;
+  writable: boolean; // = true;
+  semanticTypes: [WoT.SemanticType];
+  description: WoT.ThingDescription;
+  value: any;
 
-    constructor(name: string) {
-      this.name = name;
-    }
-
-
-    respond(response: any): Promise<any> {
-      console.info('respond: ' + response);
-      return null;
-    }
-    respondWithError(error: Error): void {
-      console.error('Error: ' + error);
-    }
-  
+  constructor(name: string, value: any) {
+    this.name = name;
+    this.value = value;
+    this.configurable = false;
+    this.enumerable = true;
+    this.writable = true;
   }
+
+  public setWritable(writable: boolean) : void {
+    this.writable = writable;
+  }
+}

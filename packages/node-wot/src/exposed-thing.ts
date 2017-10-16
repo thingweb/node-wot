@@ -68,8 +68,10 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     */
     public invokeAction(actionName: string, parameter?: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
+            console.log("Try to find action for: " + actionName);
             let state = this.interactionStates[actionName];
             if (state) {
+                console.log("Action state : " + state);
                 if (state.handlers.length) {
                     let handler = state.handlers[0];
                     resolve(handler(parameter));
@@ -164,25 +166,31 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     // }
 
     /** @inheritDoc */
-    onRetrieveProperty(handler: WoT.RequestHandler): ExposedThing {
+    onRetrieveProperty(handler: (request: WoT.Request) => any): ExposedThing {
         // TODO implement onRetrieveProperty
         return this;
     }
 
     /** @inheritDoc */
-    onInvokeAction(handler: WoT.RequestHandler): ExposedThing {
+    onInvokeAction(handler: (request: WoT.Request) => any): ExposedThing {
         // actionName: string, cb: (param?: any) => any
+        console.log("arg: " + handler.toString)
+        console.log("name: " + handler.name)
+
+        // console.log("name: " + request.name)
         let state = this.interactionStates[handler.name]; // actionName
         if (state) {
             if (state.handlers.length > 0) state.handlers.splice(0);
             state.handlers.push(handler.call); // cb
+        } else {
+            console.error("no such action " + handler.name + " on " + this.name);
         }
 
         return this;
     }
 
     /** @inheritDoc */
-    onUpdateProperty(handler: WoT.RequestHandler): ExposedThing {
+    onUpdateProperty(handler: (request: WoT.Request) => any): ExposedThing {
         // propertyName: string, cb: (newValue: any, oldValue?: any) => void
         let state = this.interactionStates[handler.name]; // propertyName
         if (state) {
@@ -195,7 +203,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     }
 
     /** @inheritDoc */
-    onObserve(handler: WoT.RequestHandler): ExposedThing {
+    onObserve(handler: (request: WoT.Request) => any): ExposedThing {
         // TODO implement onObserve
         return this;
     }
@@ -257,7 +265,10 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         this.interactions.push(newAction);
 
         let actionState = new InteractionState();
+        // actionState.value = action.action;
         actionState.handlers = [];
+
+        console.log("Add action '" + action.name + "' to interactionStates");
 
         this.interactionStates[action.name] = actionState;
 
