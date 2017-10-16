@@ -32,6 +32,8 @@ should();
 import Servient from "../src/servient";
 import * as listeners from "../src/resource-listeners/all-resource-listeners";
 import {ProtocolServer,Content,ResourceListener} from "../src/resource-listeners/protocol-interfaces"
+import ThingInitImpl from "../src/thinginit-impl"
+
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
     private listeners: Map<string, ResourceListener> = new Map();
@@ -78,15 +80,14 @@ class WoTServerTest {
         this.servient.shutdown();
     }
 
-    // @test "should be able to add a thing"() {
-    //     let init : WoT.ThingInit;
-    //     init.name = "myThing";
+    @test "should be able to add a thing"() {
+        let init : WoT.ThingInit = new ThingInitImpl("myThing", "", {});
 
-    //     return WoTServerTest.WoT.expose(init).then(thing => {
-    //         expect(thing).to.exist;
-    //         expect(thing).to.have.property("name", "myThing");
-    //     });
-    // }
+        return WoTServerTest.WoT.expose(init).then(thing => {
+            expect(thing).to.exist;
+            expect(thing).to.have.property("name", "myThing");
+        });
+    }
 
     // @test "should be able to add a property, read it and write it locally"() {
     //     return WoTServerTest.WoT.createThing("otherthing").then(thing => {

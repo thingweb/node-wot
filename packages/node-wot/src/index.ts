@@ -29,6 +29,9 @@ export default Servient
 import {default as RequestImpl} from './request-impl'
 export {RequestImpl}
 
+import {default as ThingInitImpl} from './thinginit-impl'
+export {ThingInitImpl}
+
 // ResourceListener & Content
 export {ResourceListener,Content} from "./resource-listeners/protocol-interfaces"
 

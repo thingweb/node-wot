@@ -94,8 +94,8 @@ export default class WoTImpl implements WoT.WoTFactory {
     // createThing(name: string): Promise<WoT.DynamicThing> {
     expose(init: WoT.ThingInit): Promise<ExposedThing> {
         return new Promise<ExposedThing>((resolve, reject) => {
-            console.info(`WoTImpl creating new ExposedThing '${name}'`);
-            let mything = new ExposedThing(this.srv, name);
+            console.info(`WoTImpl creating new ExposedThing '${init.name}'`);
+            let mything = new ExposedThing(this.srv, init.name);
             if (this.srv.addThing(mything)) {
                 resolve(mything);
             } else {
