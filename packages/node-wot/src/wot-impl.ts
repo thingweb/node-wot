@@ -47,29 +47,20 @@ export default class WoTImpl implements WoT.WoTFactory {
 
     /** @inheritDoc */
     consume(url: USVString): Promise<ConsumedThing> {
-        // HACK to identify string representation vs URL
-        url = url.trim();
-
-        if(url.startsWith("{")) {
-            // JSON object
-            return this.consumeDescription(url);
-        } else {
-            // URL
-            return new Promise<ConsumedThing>((resolve, reject) => {
-                let client = this.srv.getClientFor(Helpers.extractScheme(url));
-                console.info(`WoTImpl consuming TD from ${url} with ${client}`);
-                client.readResource(url)
-                    .then((content) => {
-                        if (content.mediaType !== "application/json")
-                            console.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
-                        let td = TDParser.parseTDString(content.body.toString());
-                        let thing = new ConsumedThing(this.srv, td);
-                        client.stop();
-                        resolve(thing);
-                    })
-                    .catch((err) => { console.error(err); });
-            });
-        }
+        return new Promise<ConsumedThing>((resolve, reject) => {
+            let client = this.srv.getClientFor(Helpers.extractScheme(url));
+            console.info(`WoTImpl consuming TD from ${url} with ${client}`);
+            client.readResource(url)
+                .then((content) => {
+                    if (content.mediaType !== "application/json")
+                        console.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
+                    let td = TDParser.parseTDString(content.body.toString());
+                    let thing = new ConsumedThing(this.srv, td);
+                    client.stop();
+                    resolve(thing);
+                })
+                .catch((err) => { console.error(err); });
+        });
     }
 
     /**

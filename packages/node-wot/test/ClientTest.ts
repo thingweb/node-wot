@@ -32,6 +32,58 @@ should();
 import Servient from "../src/servient";
 import {ProtocolClient,ProtocolClientFactory,Content} from "../src/resource-listeners/protocol-interfaces"
 
+// import fs = require('fs');
+
+class TDDataClient implements ProtocolClient {
+
+        public readResource(uri : string) : Promise<Content> {
+            // Note: this is not a "real" DataClient! Instead it just reports the same TD in any case
+            let c : Content= { mediaType: "application/json", body :  new Buffer(JSON.stringify(myThingDesc)) };
+            return Promise.resolve(c);
+        }
+    
+        public writeResource(uri : string, content: Content) : Promise<void> {
+            return Promise.reject("writeResource not implemented");
+        }
+    
+        public invokeResource(uri : String, content: Content) : Promise<Content> {
+            return Promise.reject("invokeResource not implemented");
+        }
+    
+        public unlinkResource(uri : string) : Promise<void> {
+            return Promise.reject("unlinkResource not implemented");
+        }
+    
+        public start(): boolean {
+            return true;
+        }
+    
+        public stop(): boolean {
+            return true;
+        }
+    }
+
+class TDDataClientFactory implements ProtocolClientFactory {
+    client = new TDDataClient();
+
+    public getClient() : ProtocolClient {
+        return this.client;
+    }
+
+    public init() : boolean {
+        return true;
+    }
+
+    public destroy() : boolean {
+        return true;
+    }
+
+    public getSchemes() : Array<string> {
+        return ["data"];
+    }
+}
+
+
 class TrapClient implements ProtocolClient {
 
     private trap: Function
@@ -123,17 +175,35 @@ class WoTClientTest {
     static clientFactory: TrapClientFactory;
     static WoT: WoT.WoTFactory;
 
+    // static tdFileUri : string = "td.json";
+
     static before() {
         this.servient = new Servient()
         this.clientFactory = new TrapClientFactory();
         this.servient.addClientFactory(this.clientFactory);
+        this.servient.addClientFactory(new TDDataClientFactory());
         this.WoT = this.servient.start();
+
+        // // create local file to allow consuming TD based on URL
+        // fs.writeFile(this.tdFileUri, JSON.stringify(myThingDesc),  function(err) {
+        //     if (err) {
+        //         return console.error(err);
+        //     }
+        //     console.log("TD File created!");
+        // });
+
         console.log("starting test suite")
     }
 
     static after() {
         console.log("finishing test suite")
         this.servient.shutdown()
+
+        // // delete temporary file 
+        // fs.unlink(this.tdFileUri, (err) => {
+        //     if (err) throw err;
+        //     console.log('Successfully deleted TD file');
+        // });
     }
 
     @test "read a value"(done : Function) {
@@ -144,7 +214,8 @@ class WoTClientTest {
             }
         );
 
-        WoTClientTest.WoT.consume(JSON.stringify(myThingDesc))
+        // JSON.stringify(myThingDesc)
+        WoTClientTest.WoT.consume("data://" + "tdFoo")
             .then((thing) => {
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
@@ -166,7 +237,8 @@ class WoTClientTest {
             }
         )
 
-        WoTClientTest.WoT.consume(JSON.stringify(myThingDesc))
+        // JSON.stringify(myThingDesc)
+        WoTClientTest.WoT.consume("data://" + "tdFoo")
             .then((thing) => {
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
@@ -185,7 +257,8 @@ class WoTClientTest {
             }
         )
 
-        WoTClientTest.WoT.consume(JSON.stringify(myThingDesc))
+        // JSON.stringify(myThingDesc)
+        WoTClientTest.WoT.consume("data://" + "tdFoo")
             .then((thing) => {
                 thing.should.not.be.null;
                 thing.name.should.equal("aThing");
