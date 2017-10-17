@@ -31,19 +31,8 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     private interactionStates: { [key: string]: InteractionState } = {}; //TODO migrate to Map
     private restListeners: Map<string, ResourceListener> = new Map<string, ResourceListener>();
 
-    // private readonly srv: Servient;
-
-    /** name of the Thing */
-    // public readonly name: string
-
-    // readonly url: USVString;
-
-    // readonly description: WoT.ThingDescription;
-
     constructor(servient: Servient, td: ThingDescription) { // name: string
         super(servient, td);
-        // this.srv = servient;
-        // this.name = name;
         this.addResourceListener("/" + this.name, new Rest.TDResourceListener(this));
     }
 
@@ -154,18 +143,6 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         });
     }
 
-    // public addListener(eventName: string, listener: (event: Event) => void): ExposedThing {
-    //     return this;
-    // }
-
-    // public removeListener(eventName: string, listener: (event: Event) => void): ExposedThing {
-    //     return this;
-    // }
-
-    // removeAllListeners(eventName: string): ExposedThing {
-    //     return this;
-    // }
-
     /** @inheritDoc */
     onRetrieveProperty(handler: WoT.RequestHandler): ExposedThing {
         // TODO implement onRetrieveProperty
@@ -182,27 +159,6 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     // (request: WoT.Request) => any
     // handler: WoT.RequestHandler
     onInvokeAction(handler: WoT.RequestHandler): ExposedThing {
-
-        // handler(Request);
-
-        // actionName: string, cb: (param?: any) => any
-        // handler.request.name;
-        // request.name;
-        // handler("dsa");
-        // handler.call;
-        // handler["request"].name;
-
-        // console.log("call: " + handler.call)
-        // console.log("callName: " + handler.call.name)
-        // console.log("caller: " + handler.caller)
-        // console.log("length: " + handler.length)
-        // console.log("arg0: " + handler.arguments[0])
-    
-        // console.log("arg: " + handler.toString)
-        // console.log("name: " + handler.name)
-        console.log("name: " + handler.request.name)
-
-        // console.log("name: " + request.name)
         let state = this.interactionStates[handler.request.name]; // actionName
         if (state) {
             if (state.handlers.length > 0) state.handlers.splice(0);
@@ -254,8 +210,8 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         let newProp = new TD.Interaction();
         newProp.pattern = TD.InteractionPattern.Property;
         newProp.name = property.name;  //propertyName;
-      //  newProp.inputData = { 'valueType' : valueType};
-       // newProp.outputData =  { 'valueType' : valueType};
+        // newProp.inputData = { 'valueType' : valueType};
+        // newProp.outputData =  { 'valueType' : valueType};
         newProp.outputData = null; // need paramater for valueType;
         newProp.writable = property.writable;
 
@@ -278,10 +234,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         // new way
         let newAction = new TD.Interaction();
         newAction.pattern = TD.InteractionPattern.Action;
-        newAction.name = action.name; // actionName;
-        /*newAction.inputData = inputType ? { 'valueType' : inputType} : null;
-        newAction.outputData = outputType ? { 'valueType' : outputType} : null;
-*/
+        newAction.name = action.name;
         // TODO inputData & outputData
         newAction.inputData = null; // inputType ? inputType : null;
         newAction.outputData = null; //  outputType ? outputType : null;
@@ -323,30 +276,6 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
 
     /** @inheritDoc */
     removeProperty(propertyName: string): ExposedThing {
-// =======
-//     /*
-//     sets the property to be writable or not
-//     */
-//     setWritable(propertyName:string, isWritable:boolean):void{
-//         this.interactions.forEach(interaction => {
-//             if(interaction.name == propertyName){
-//                 if(interaction.semanticTypes.indexOf("Property")){
-//                     interaction.writable=isWritable;
-//                     return;
-//                 }else{
-//                     console.error("setWritable is only applicable to properties");
-//                     return;
-//                 }
-//             }
-//         });
-//         console.error("Interaction not found");
-//     }
-
-//     /**
-//      * remove a property from the ExposedThing
-//      */
-//     removeProperty(propertyName: string): boolean {
-// >>>>>>> b8fdb1c903090bbd87eded2345f05f757364e8a0
         delete this.interactionStates[propertyName];
         this.removeResourceListener(this.name + "/properties/" + propertyName)
         return this;
