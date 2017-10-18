@@ -77,6 +77,7 @@ export default class HttpServer implements ProtocolServer {
     this.server.listen(this.port, this.address);
     // converting async listen API to sync start function
     this.server.once('listening', () => { this.running = true; });
+    // XXX Somehow we wait for the first resource to be added before continuing
     while (!this.running && !this.failed) {
       deasync.runLoopOnce();
     }
