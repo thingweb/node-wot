@@ -32,7 +32,6 @@ should();
 import Servient from "../src/servient";
 import * as listeners from "../src/resource-listeners/all-resource-listeners";
 import {ProtocolServer,Content,ResourceListener} from "../src/resource-listeners/protocol-interfaces"
-import ThingInitImpl from "../src/thing-init-impl"
 import ThingPropertyInitImpl from "../src/thing-property-init-impl"
 import ThingActionInitImpl from "../src/thing-action-init-impl"
 import RequestImpl from "../src/request-impl"
@@ -89,17 +88,14 @@ class WoTServerTest {
     }
 
     @test "should be able to add a thing"() {
-        let init : WoT.ThingInit = new ThingInitImpl("myThing", "", {});
-
-        return WoTServerTest.WoT.expose(init).then(thing => {
+        return WoTServerTest.WoT.expose({name : "myThing", url : "", description : {}}).then(thing => {
             expect(thing).to.exist;
             expect(thing).to.have.property("name", "myThing");
         });
     }
 
     @test "should be able to add a property, read it and write it locally"() {
-        let init : WoT.ThingInit = new ThingInitImpl("otherthing", "", {});
-        return WoTServerTest.WoT.expose(init).then(thing => {
+        return WoTServerTest.WoT.expose({name : "otherthing", url : "", description : {}}).then(thing => {
             let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("number", null);
 
             return thing.addProperty(initp).setProperty("number", 5).then(value => {
@@ -113,8 +109,7 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign it via listener and read it locally"() {
-        let init : WoT.ThingInit = new ThingInitImpl("thing3", "", {});
-        return WoTServerTest.WoT.expose(init).then(thing => {
+        return WoTServerTest.WoT.expose({name : "thing3", url : "", description : {}}).then(thing => {
             let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("prop1", null);
             // thing.addProperty("prop1", { "type": "number" });
             thing.addProperty(initp);
@@ -129,8 +124,7 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign it locally and read it via listener"() {
-        let init : WoT.ThingInit = new ThingInitImpl("thing4", "", {});
-        return WoTServerTest.WoT.expose(init).then(thing => {
+        return WoTServerTest.WoT.expose({name : "thing4", url : "", description : {}}).then(thing => {
             let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("prop1", null);
             // thing.addProperty("prop1", { "type": "number" });
             thing.addProperty(initp);
@@ -148,8 +142,7 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign and read it via listener"() {
-        let init : WoT.ThingInit = new ThingInitImpl("thing5", "", {});
-        return WoTServerTest.WoT.expose(init).then(thing => {
+        return WoTServerTest.WoT.expose({name : "thing5", url : "", description : {}}).then(thing => {
             let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("prop1", null);
             // thing.addProperty("prop1", { "type": "number" });
             thing.addProperty(initp);
@@ -169,9 +162,7 @@ class WoTServerTest {
     }
 
     @test "should be able to add an action and invoke it locally"() {
-        let init : WoT.ThingInit = new ThingInitImpl("thing6", "", {});
-        
-        return WoTServerTest.WoT.expose(init).then(thing => {
+        return WoTServerTest.WoT.expose({name : "thing6", url : "", description : {}}).then(thing => {
             let inita : WoT.ThingActionInit = new ThingActionInitImpl("action1", JSON.stringify({ "type": "number" }), JSON.stringify({ "type": "number" }));
             thing.addAction(inita);
 
@@ -188,9 +179,7 @@ class WoTServerTest {
     }
 
     @test "should be able to add an action and invoke it via listener"() {
-        let init : WoT.ThingInit = new ThingInitImpl("thing7", "", {});
-
-        return WoTServerTest.WoT.expose(init).then(thing => {
+        return WoTServerTest.WoT.expose({name : "thing7", url : "", description : {}}).then(thing => {
             let inita : WoT.ThingActionInit = new ThingActionInitImpl("action1", JSON.stringify({ "type": "number" }), JSON.stringify({ "type": "number" }));
             thing.addAction(inita);
 
