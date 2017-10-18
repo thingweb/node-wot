@@ -70,7 +70,10 @@ class JsonCodec implements ContentCodec {
 
   valueToBytes(value: any): Buffer {
     console.log(`JsonCodec serializing '${value}'`);
-    let body = JSON.stringify(value);
+    let body = "";
+    if(value !== undefined) {
+      body = JSON.stringify(value);
+    }
     return new Buffer(body);
   }
 }
@@ -89,7 +92,11 @@ class TextCodec implements ContentCodec {
 
   valueToBytes(value: any): Buffer {
     console.log(`TextCodec serializing '${value}'`);
-    let body = value;
+    let body = "";
+    if(value !== undefined) {
+      body = value;
+    }
+
     return new Buffer(body);
   }
 }
