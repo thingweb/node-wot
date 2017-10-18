@@ -1,6 +1,6 @@
 "use strict"
 
-WoT.consumeDescriptionUri("http://127.0.0.1:8080/TestThing").then(thing => {
+WoT.consume("http://127.0.0.1:8080/TestThing").then(thing => {
         thing.getProperty("bool")
             .then( res => {
                 console.log("READ bool: " + res);
