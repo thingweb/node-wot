@@ -33,7 +33,6 @@ import Servient from "../src/servient";
 import * as listeners from "../src/resource-listeners/all-resource-listeners";
 import {ProtocolServer,Content,ResourceListener} from "../src/resource-listeners/protocol-interfaces"
 import ThingPropertyInitImpl from "../src/thing-property-init-impl"
-import ThingActionInitImpl from "../src/thing-action-init-impl"
 
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
@@ -157,7 +156,7 @@ class WoTServerTest {
 
     @test "should be able to add an action and invoke it locally"() {
         return WoTServerTest.WoT.expose({name : "thing6", url : "", description : {}}).then(thing => {
-            let inita : WoT.ThingActionInit = new ThingActionInitImpl("action1", JSON.stringify({ "type": "number" }), JSON.stringify({ "type": "number" }));
+            let inita : WoT.ThingActionInit = {name: "action1", inputDataDescription: JSON.stringify({ "type": "number" }), outputDataDescription: JSON.stringify({ "type": "number" }), semanticTypes: undefined, action: undefined};
             thing.addAction(inita);
 
             let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
@@ -174,7 +173,7 @@ class WoTServerTest {
 
     @test "should be able to add an action and invoke it via listener"() {
         return WoTServerTest.WoT.expose({name : "thing7", url : "", description : {}}).then(thing => {
-            let inita : WoT.ThingActionInit = new ThingActionInitImpl("action1", JSON.stringify({ "type": "number" }), JSON.stringify({ "type": "number" }));
+            let inita : WoT.ThingActionInit = {name: "action1", inputDataDescription: JSON.stringify({ "type": "number" }), outputDataDescription: JSON.stringify({ "type": "number" }), semanticTypes: undefined, action: undefined};
             thing.addAction(inita);
 
             let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
