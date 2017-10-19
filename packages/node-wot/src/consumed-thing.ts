@@ -24,23 +24,29 @@ import {ThingDescription} from "node-wot-td-tools"
 import * as TD from "node-wot-td-tools";
 import * as Helpers from "./helpers";
 import ContentSerdes from "./content-serdes"
+import {Observable} from 'rxjs/Observable';
 
 interface ClientAndLink {
     client: ProtocolClient
     link: TD.InteractionLink
 }
 
+
 export default class ConsumedThing implements WoT.ConsumedThing {
 
     readonly name: string;
-    private readonly td: ThingDescription;
-    private readonly srv: Servient;
+    readonly url: USVString;
+    readonly description: WoT.ThingDescription;
+
+    protected readonly td: ThingDescription;
+    protected readonly srv: Servient;
     private clients: Map<string, ProtocolClient> = new Map();
 
     constructor(servient: Servient, td: ThingDescription) {
         this.srv = servient
         this.name = td.name;
         this.td = td;
+        this.description = JSON.stringify(td);
         console.info(`ConsumedThing '${this.name}' created`);
     }
 
@@ -160,14 +166,19 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         });
     }
 
-    addListener(eventName: string, listener: (event: Event) => void): ConsumedThing { return this }
-    removeListener(eventName: string, listener: (event: Event) => void): ConsumedThing { return this }
+    addListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing {    
+        return this
+    }
+    removeListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing { return this }
     removeAllListeners(eventName: string): ConsumedThing { return this }
 
-    /**
-     * Retrive the thing description for this object
-     */
-    getDescription(): Object {
-        return this.td;
-    }
+    observe(name: string, requestType: WoT.RequestType): Observable<any> { return null }
+
+
+    // /**
+    //  * Retrive the thing description for this object
+    //  */
+    // getDescription(): Object {
+    //     return this.td;
+    // }
 }

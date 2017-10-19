@@ -32,6 +32,7 @@ should();
 import Servient from "../src/servient";
 import * as listeners from "../src/resource-listeners/all-resource-listeners";
 import {ProtocolServer,Content,ResourceListener} from "../src/resource-listeners/protocol-interfaces"
+
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
     private listeners: Map<string, ResourceListener> = new Map();
@@ -79,30 +80,31 @@ class WoTServerTest {
     }
 
     @test "should be able to add a thing"() {
-        return WoTServerTest.WoT.createThing("myThing").then(thing => {
+        return WoTServerTest.WoT.expose({name : "myThing", url : "", description : {}}).then(thing => {
             expect(thing).to.exist;
             expect(thing).to.have.property("name", "myThing");
         });
     }
 
     @test "should be able to add a property, read it and write it locally"() {
-        return WoTServerTest.WoT.createThing("otherthing").then(thing => {
-            return thing
-                .addProperty("number", { "type": "number" })
-                .setProperty("number", 5)
-                .then(value => {
-                    expect(value).to.equal(5);
-                })
-                .then(() => thing.getProperty("number"))
-                .then(value => {
-                    expect(value).to.equal(5);
-                });
+        return WoTServerTest.WoT.expose({name : "otherthing", url : "", description : {}}).then(thing => {
+            let initp : WoT.ThingPropertyInit = {name: "number", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
+            return thing.addProperty(initp).setProperty("number", 5).then(value => {
+                expect(value).to.equal(5);
+            })
+            .then(() => thing.getProperty("number"))
+            .then(value => {
+                expect(value).to.equal(5);
+            });
         });
     }
 
     @test "should be able to add a property, assign it via listener and read it locally"() {
-        return WoTServerTest.WoT.createThing("thing3").then(thing => {
-            thing.addProperty("prop1", { "type": "number" });
+        return WoTServerTest.WoT.expose({name : "thing3", url : "", description : {}}).then(thing => {
+            let initp : WoT.ThingPropertyInit = {name: "prop1", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
+            // thing.addProperty("prop1", { "type": "number" });
+            thing.addProperty(initp);
+
             let listener = WoTServerTest.server.getListenerFor("/thing3/properties/prop1");
             expect(listener).to.exist;
             listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
@@ -113,11 +115,15 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign it locally and read it via listener"() {
-        return WoTServerTest.WoT.createThing("thing4").then(thing => {
-            thing.addProperty("prop1", { "type": "number" });
+        return WoTServerTest.WoT.expose({name : "thing4", url : "", description : {}}).then(thing => {
+            let initp : WoT.ThingPropertyInit = {name: "prop1", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
+            // thing.addProperty("prop1", { "type": "number" });
+            thing.addProperty(initp);
+
             let listener = WoTServerTest.server.getListenerFor("/thing4/properties/prop1");
             expect(listener).to.exist;
             listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
+
             return thing.setProperty("prop1", 23).then((value) => {
                 return listener.onRead().then((content) => {
                     content.should.deep.equal({ mediaType: "application/json", body: new Buffer("23") });
@@ -127,8 +133,11 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign and read it via listener"() {
-        return WoTServerTest.WoT.createThing("thing5").then(thing => {
-            thing.addProperty("prop1", { "type": "number" });
+        return WoTServerTest.WoT.expose({name : "thing5", url : "", description : {}}).then(thing => {
+            let initp : WoT.ThingPropertyInit = {name: "prop1", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
+            // thing.addProperty("prop1", { "type": "number" });
+            thing.addProperty(initp);
+
             let listener = WoTServerTest.server.getListenerFor("/thing5/properties/prop1");
             expect(listener).to.exist;
             listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
@@ -144,27 +153,33 @@ class WoTServerTest {
     }
 
     @test "should be able to add an action and invoke it locally"() {
-        return WoTServerTest.WoT.createThing("thing6").then(thing => {
-            thing
-            .addAction("action1", { "type": "number" }, { "type": "number" })
-            .onInvokeAction("action1", (param) => {
-                param.should.be.a("number");
-                param.should.equal(23);
+        return WoTServerTest.WoT.expose({name : "thing6", url : "", description : {}}).then(thing => {
+            let inita : WoT.ThingActionInit = {name: "action1", inputDataDescription: JSON.stringify({ "type": "number" }), outputDataDescription: JSON.stringify({ "type": "number" }), semanticTypes: undefined, action: undefined};
+            thing.addAction(inita);
+
+            let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
+
+            thing.onInvokeAction({"request" : request, "callback" : request => {
+                request.should.be.a("number");
+                request.should.equal(23);
                 return 42;
-            })
+            }});
+
             return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
         })
     }
 
     @test "should be able to add an action and invoke it via listener"() {
-        return WoTServerTest.WoT.createThing("thing7").then(thing => {
-            thing
-            .addAction("action1", { "type": "number" }, { "type": "number" })
-            .onInvokeAction("action1", (param) => {
-                param.should.be.a("number");
-                param.should.equal(23);
+        return WoTServerTest.WoT.expose({name : "thing7", url : "", description : {}}).then(thing => {
+            let inita : WoT.ThingActionInit = {name: "action1", inputDataDescription: JSON.stringify({ "type": "number" }), outputDataDescription: JSON.stringify({ "type": "number" }), semanticTypes: undefined, action: undefined};
+            thing.addAction(inita);
+
+            let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
+            thing.onInvokeAction({"request" : request, "callback" : request => {
+                request.should.be.a("number");
+                request.should.equal(23);
                 return 42;
-            })
+            }});
             
             let listener = WoTServerTest.server.getListenerFor("/thing7/actions/action1");
             expect(listener).to.exist;

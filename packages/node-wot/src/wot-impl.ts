@@ -26,6 +26,8 @@ import * as TDParser from "node-wot-td-tools";
 import * as WoT from 'wot-typescript-definitions';
 import { ThingDescription } from 'node-wot-td-tools';
 
+import {Observable} from 'rxjs/Observable';
+
 export default class WoTImpl implements WoT.WoTFactory {
     private srv: Servient;
 
@@ -33,21 +35,22 @@ export default class WoTImpl implements WoT.WoTFactory {
         this.srv = srv;
     }
 
-    discover(discoveryType: string, filter: Object): Promise<WoT.ConsumedThing> {
-        return new Promise<WoT.ConsumedThing>((resolve, reject) => {
-
+    /** @inheritDoc */
+    discover(filter?: WoT.ThingFilter): Observable<ConsumedThing> {
+        return new Observable<ConsumedThing>(subscriber => {
+            //find things
+            //for each found thing
+            //subscriber.next(thing);
+            subscriber.complete();
         });
     }
 
-    /**
-     * consume a thing description by URI and return a client representation object
-     * @param uri URI of a thing description
-     */
-    consumeDescriptionUri(uri: string): Promise<WoT.ConsumedThing> {
-        return new Promise<WoT.ConsumedThing>((resolve, reject) => {
-            let client = this.srv.getClientFor(Helpers.extractScheme(uri));
-            console.info(`WoTImpl consuming TD from ${uri} with ${client}`);
-            client.readResource(uri)
+    /** @inheritDoc */
+    consume(url: USVString): Promise<ConsumedThing> {
+        return new Promise<ConsumedThing>((resolve, reject) => {
+            let client = this.srv.getClientFor(Helpers.extractScheme(url));
+            console.info(`WoTImpl consuming TD from ${url} with ${client}`);
+            client.readResource(url)
                 .then((content) => {
                     if (content.mediaType !== "application/json")
                         console.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
@@ -61,14 +64,14 @@ export default class WoTImpl implements WoT.WoTFactory {
     }
 
     /**
-     * consume a thing description from an object and return a client representation object
+     * consume a thing description from an string and return a client representation object
      *
      * @param thingDescription a thing description
      */
-    consumeDescription(thingDescription: Object): Promise<WoT.ConsumedThing> {
-        return new Promise<WoT.ConsumedThing>((resolve, reject) => {
+    consumeDescription(thingDescription: string): Promise<ConsumedThing> {
+        return new Promise<ConsumedThing>((resolve, reject) => {
             console.info(`WoTImpl consuming TD from object`);
-            let td = TDParser.parseTDObject(thingDescription);
+            let td = TDParser.parseTDString(thingDescription);
             let thing = new ConsumedThing(this.srv, td);
             resolve(thing);
         });
@@ -79,10 +82,12 @@ export default class WoTImpl implements WoT.WoTFactory {
      *
      * @param name name/identifier of the thing to be created
      */
-    createThing(name: string): Promise<WoT.DynamicThing> {
-        return new Promise<WoT.DynamicThing>((resolve, reject) => {
-            console.info(`WoTImpl creating new ExposedThing '${name}'`);
-            let mything = new ExposedThing(this.srv, name);
+    expose(init: WoT.ThingInit): Promise<ExposedThing> {
+        return new Promise<ExposedThing>((resolve, reject) => {
+            console.info(`WoTImpl creating new ExposedThing '${init.name}'`);
+            let td: ThingDescription = new ThingDescription();
+            td.name = init.name;
+            let mything = new ExposedThing(this.srv, td); // init.name
             if (this.srv.addThing(mything)) {
                 resolve(mything);
             } else {
@@ -91,31 +96,14 @@ export default class WoTImpl implements WoT.WoTFactory {
         });
     }
 
-    /**
-     * create a new Thing based on a thing description, given by a URI
-     *
-     * @param uri URI of a thing description to be used as "template"
-     */
-    createFromDescriptionUri(uri: string): Promise<WoT.ExposedThing> {
-        return new Promise((resolve, reject) => {
-            let client = this.srv.getClientFor(uri);
-            console.info(`WoTImpl creating new ExposedThing from TD at ${uri} with ${client}`);
-            client.readResource(uri).then((content) => {
-                if (content.mediaType !== "application/json")
-                    console.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);
-                let thingDescription: ThingDescription = TDParser.parseTDString(content.body.toString());//ThingDescription type doesnt work for some reason
-
-                //this.createFromDescription(thingDescription);
-            }).catch((err) => console.error("WoTImpl failed fetching TD", err));
-        });
-    }
-
     createFromDescription(thingDescription: ThingDescription): Promise<WoT.ExposedThing> {
         return new Promise((resolve, reject) => {
             //not necessary to parse if it is already obj
             //let thingdesc = TDParser.parseTDObject(thingDescription);
             console.info(`WoTImpl creating new ExposedThing from object`);
-            let myThing = new ExposedThing(this.srv, thingDescription.name);
+            let td: ThingDescription;
+            td.name = thingDescription.name;
+            let myThing = new ExposedThing(this.srv, td); // thingDescription.name
             if (this.srv.addThing(myThing)) {
                 //add base field
                 //add actions:
@@ -127,40 +115,44 @@ export default class WoTImpl implements WoT.WoTFactory {
                     let interTypes = currentInter['semanticTypes'];
                     if (interTypes.indexOf("Action") > -1) {
                         let actionName: string = currentInter.name;
-                        try {
-                            let inputType: Object = currentInter.inputData;
-                            let outputType: Object = currentInter.outputData;
-                            myThing.addAction(actionName, inputType, outputType);
-                        } catch (err) {
-                            //it means that we couldn't find the input AND output, we'll try individual cases
-                            try {
-                                let inputType: Object = currentInter.inputData;
-                                myThing.addAction(actionName, inputType);
-                            } catch (err2) {
-                                try {
-                                    let outputType: Object = currentInter.outputData;
-                                    myThing.addAction(actionName, {}, outputType);
-                                } catch (err3) {
-                                    //worst case, we just create with the name
-                                    //should there be the semantics case as well?
-                                    myThing.addAction(actionName);
-                                }
-                            }
-                        }
-
+                        // try{
+                            let inputValueType: Object = currentInter.inputData.valueType;
+                            let outputValueType: Object = currentInter.outputData.valueType;
+                            let init: WoT.ThingActionInit;
+                            init.name = actionName;
+                            // TODO inputValueType,outputValueType
+                            myThing.addAction(init); // actionName,inputValueType,outputValueType
+                        // }catch(err){
+                        //     //it means that we couldn't find the input AND output, we'll try individual cases
+                        //     try{
+                        //         let inputValueType: Object = currentInter.inputData.valueType;
+                        //         myThing.addAction(actionName,inputValueType);
+                        //     } catch (err2){
+                        //         try{
+                        //             let outputValueType: Object = currentInter.outputData.valueType;
+                        //             myThing.addAction(actionName,{},outputValueType);
+                        //         }catch(err3){
+                        //             //worst case, we just create with the name
+                        //                     //should there be the semantics case as well?
+                        //             myThing.addAction(actionName);
+                        //         }
+                        //     }      
+                        // } 
                     } else if (interTypes.indexOf("Property") > -1) {
                         //maybe there should be more things added?
                         let propertyName: string = currentInter.name;
-                        let outputType: Object = currentInter.outputData;
-                        myThing.addProperty(propertyName, outputType);
-                        myThing.setWritable(propertyName, currentInter.writable);
-
-
+                        let outputValueType: Object = currentInter.outputData.valueType;
+                        let init : WoT.ThingPropertyInit;
+                        init.name = propertyName;
+                        myThing.addProperty(init); // propertyName, outputValueType
+                        
+                        
                     } else if (interTypes.indexOf("Event") > -1) {
                         //currently there isnt much implemented that's why I add only the name and nothing else
                         let eventName: string = currentInter.name;
-                        myThing.addEvent(eventName);
-
+                        let init : WoT.ThingEventInit;
+                        init.name = eventName;
+                        myThing.addEvent(init); // eventName
                     } else {
                         console.info("Wrong interaction type for number ", i);
                     }

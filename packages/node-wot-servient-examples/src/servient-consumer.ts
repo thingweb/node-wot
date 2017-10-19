@@ -51,10 +51,12 @@ function main() {
   //  WoT.consumeDescriptionUri("http://192.168.0.152/td").then(thing => {
   //WoT.consumeDescriptionUri("http://plugfest.thingweb.io:8088/things/counter").then(thing => {
   /* panasonic TD */
-  WoT.consumeDescriptionUri('http://w3c-ubuntu.cloudapp.net/client/jsonld/airConditioner_p1.jsonld').then(thing => {
+  WoT.consume('http://w3c-ubuntu.cloudapp.net/client/jsonld/airConditioner_p1.jsonld').then(thing => {
     //      logger.info("Things base " + );
 
-    let tdObj = thing.getDescription()
+
+    // let tdObj = thing.getDescription()
+    let tdObj = thing.description;
     let td: ThingDescription = TDParser.parseTDObject(tdObj)
 
     console.info('TD name = ' + td.name)

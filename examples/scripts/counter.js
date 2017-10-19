@@ -1,41 +1,43 @@
- //just an example script - to be moved into other repo
+//just an example script - to be moved into other repo
+const NAME_PROPERTY_COUNT = "count";
+const NAME_ACTION_INCREMENT = "increment";
+const NAME_ACTION_DECREMENT = "decrement";
 
- WoT.createThing("counter")
+WoT.expose({name: "counter", url: "", description : {}})
     .then(function(thing) {
         console.log("created " + thing.name);
 
         thing
-        .addProperty("count", { type: "integer" })
-        .setProperty("count",0);
-        
-        thing
-        .onUpdateProperty("count",
-            function(newValue, oldValue) {
-                console.log(oldValue + " -> " + newValue);
-                var message = (oldValue < newValue)? "increased " : "decreased";
+        .addProperty( {name : NAME_PROPERTY_COUNT, value : 5})
+        .onUpdateProperty({"request" : {name : NAME_PROPERTY_COUNT},
+            "callback" : function(newValue, oldValue) {
+                console.log(NAME_PROPERTY_COUNT + ": " + oldValue + " -> " + newValue);
+                var message = (oldValue < newValue)? "increased" : "decreased";
                 console.log("counter " + message + " to " + newValue);
             }
-         );
-
-         thing
-         .addAction("increment")
-         .onInvokeAction("increment", function() {
-            console.log("incrementing counter");
-            return thing.getProperty("count").then(function(count){
-                var value = count + 1;
-                thing.setProperty("count", value);
-                return value;
-            })
-         });
+        });
 
         thing
-        .addAction("decrement")
-        .onInvokeAction("decrement", function() {
-             console.log("decrementing counter");
-             return thing.getProperty("count").then(function(count){
-                var value = count - 1;
-                thing.setProperty("count", value);
-                return value;
-            })
-        });
+        .addAction({name : NAME_ACTION_INCREMENT})
+        .onInvokeAction({"request" : {name : NAME_ACTION_INCREMENT},
+            "callback" : () => {
+                console.log("incrementing counter");
+                return thing.getProperty(NAME_PROPERTY_COUNT).then(function(count){
+                    let value = count + 1;
+                    thing.setProperty(NAME_PROPERTY_COUNT, value);
+                    return value;
+                })
+        }});
+
+        thing
+        .addAction({name : NAME_ACTION_DECREMENT})
+        .onInvokeAction({"request" : {name : NAME_ACTION_DECREMENT},
+            "callback" : () => {
+                console.log("incrementing counter");
+                return thing.getProperty(NAME_PROPERTY_COUNT).then(function(count){
+                    let value = count - 1;
+                    thing.setProperty(NAME_PROPERTY_COUNT, value);
+                    return value;
+                })
+        }});
     });
