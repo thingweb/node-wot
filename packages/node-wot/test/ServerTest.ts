@@ -32,7 +32,6 @@ should();
 import Servient from "../src/servient";
 import * as listeners from "../src/resource-listeners/all-resource-listeners";
 import {ProtocolServer,Content,ResourceListener} from "../src/resource-listeners/protocol-interfaces"
-import ThingPropertyInitImpl from "../src/thing-property-init-impl"
 
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
@@ -89,8 +88,7 @@ class WoTServerTest {
 
     @test "should be able to add a property, read it and write it locally"() {
         return WoTServerTest.WoT.expose({name : "otherthing", url : "", description : {}}).then(thing => {
-            let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("number", null);
-
+            let initp : WoT.ThingPropertyInit = {name: "number", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
             return thing.addProperty(initp).setProperty("number", 5).then(value => {
                 expect(value).to.equal(5);
             })
@@ -103,7 +101,7 @@ class WoTServerTest {
 
     @test "should be able to add a property, assign it via listener and read it locally"() {
         return WoTServerTest.WoT.expose({name : "thing3", url : "", description : {}}).then(thing => {
-            let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("prop1", null);
+            let initp : WoT.ThingPropertyInit = {name: "prop1", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
             // thing.addProperty("prop1", { "type": "number" });
             thing.addProperty(initp);
 
@@ -118,7 +116,7 @@ class WoTServerTest {
 
     @test "should be able to add a property, assign it locally and read it via listener"() {
         return WoTServerTest.WoT.expose({name : "thing4", url : "", description : {}}).then(thing => {
-            let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("prop1", null);
+            let initp : WoT.ThingPropertyInit = {name: "prop1", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
             // thing.addProperty("prop1", { "type": "number" });
             thing.addProperty(initp);
 
@@ -136,7 +134,7 @@ class WoTServerTest {
 
     @test "should be able to add a property, assign and read it via listener"() {
         return WoTServerTest.WoT.expose({name : "thing5", url : "", description : {}}).then(thing => {
-            let initp : WoT.ThingPropertyInit = new ThingPropertyInitImpl("prop1", null);
+            let initp : WoT.ThingPropertyInit = {name: "prop1", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
             // thing.addProperty("prop1", { "type": "number" });
             thing.addProperty(initp);
 
