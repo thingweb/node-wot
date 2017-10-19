@@ -18,7 +18,6 @@
  */
 
 import Servient from 'node-wot';
-import {RequestImpl} from 'node-wot';
 import {HttpClientFactory} from "node-wot-protocol-http";
 import {CoapClientFactory} from "node-wot-protocol-coap";
 import {HttpServer} from "node-wot-protocol-http";
@@ -150,9 +149,7 @@ async.series([
       taGradient.name = "gradient";
 
       // requestHandler property brightness
-      let req : RequestImpl;
-      req.type = WoT.RequestType.property; //  "WoT.RequestType"";
-
+      let req : WoT.Request = {type: WoT.RequestType.property, from: null, name: null, options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
 
       let rhpBrightness : WoT.RequestHandler;
       rhpBrightness.request = req;

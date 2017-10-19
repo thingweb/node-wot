@@ -34,12 +34,6 @@ import * as listeners from "../src/resource-listeners/all-resource-listeners";
 import {ProtocolServer,Content,ResourceListener} from "../src/resource-listeners/protocol-interfaces"
 import ThingPropertyInitImpl from "../src/thing-property-init-impl"
 import ThingActionInitImpl from "../src/thing-action-init-impl"
-import RequestImpl from "../src/request-impl"
-// import {RequestType} from 'wot-typescript-definitions';
-
-// import {RequestType} from 'wot-typescript-definitions';
-
-// import * as WoT from 'wot-typescript-definitions';
 
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
@@ -166,7 +160,7 @@ class WoTServerTest {
             let inita : WoT.ThingActionInit = new ThingActionInitImpl("action1", JSON.stringify({ "type": "number" }), JSON.stringify({ "type": "number" }));
             thing.addAction(inita);
 
-            let request : WoT.Request = new RequestImpl("action1"); // WoT.RequestType.action, 
+            let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
 
             thing.onInvokeAction({"request" : request, "callback" : request => {
                 request.should.be.a("number");
@@ -183,7 +177,7 @@ class WoTServerTest {
             let inita : WoT.ThingActionInit = new ThingActionInitImpl("action1", JSON.stringify({ "type": "number" }), JSON.stringify({ "type": "number" }));
             thing.addAction(inita);
 
-            let request : WoT.Request = new RequestImpl("action1");
+            let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
             thing.onInvokeAction({"request" : request, "callback" : request => {
                 request.should.be.a("number");
                 request.should.equal(23);
