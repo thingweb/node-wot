@@ -92,6 +92,8 @@ export function serializeTD(td: ThingDescription): string {
     if (interaction.inputData === null) { delete interaction.inputData; }
     if (interaction.outputData === null) { delete interaction.outputData; }
     if (interaction.writable === null) { delete interaction.writable; }
+    if (interaction.observable === null) { delete interaction.observable; }
+
     // FIXME TypedJSON also converts Array to Object with number keys
     if (interaction.outputData && interaction.outputData.required !== undefined) {
       console.log("### HOTFIX for TypedJSON ###");

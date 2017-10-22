@@ -84,6 +84,7 @@ async.series([
           'name': 'coapProp',
           'outputData': { 'type': 'string' },
           'writable': false,
+          'observable': false,
           'links': [
             { 'href': 'coap://californium.eclipse.org:5683/path/sub1', 'mediaType': 'application/json' }
           ]

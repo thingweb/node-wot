@@ -151,6 +151,7 @@ let myThingDesc = {
             "name": "aProperty",
             "outputData": { "type": "number" },
             "writable": false,
+            "observable": false,
             "link": [
                 { "href": "test://host/athing/properties/aproperty", "mediaType": "application/json" }
             ]
