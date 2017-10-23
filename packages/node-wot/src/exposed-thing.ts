@@ -150,10 +150,10 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     }
 
 
-    function (request: WoT.Request) {
-        request.name;
-        return 1;
-    }
+    // function (request: WoT.Request) {
+    //     request.name;
+    //     return 1;
+    // }
 
     /** @inheritDoc */
     // (request: WoT.Request) => any
