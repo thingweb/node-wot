@@ -40,4 +40,6 @@ WoT.expose({name: "counter", url: "", description : {}})
                     return value;
                 })
         }});
+		
+		thing.start();
     });
