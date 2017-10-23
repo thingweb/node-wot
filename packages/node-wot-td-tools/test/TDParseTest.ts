@@ -41,7 +41,6 @@ let tdSample1 = `{
       "name": "temperature",
       "outputData":  { "type": "number" },
       "writable": false,
-      "observable": false,
       "link": [{
         "href" : "coap://mytemp.example.com:5683/temp",
         "mediaType": "application/json"
@@ -60,7 +59,6 @@ let tdSample2 = `{
       "name": "temperature",
       "outputData":  { "type": "number" },
       "writable": true,
-      "observable": false,
       "link": [{
         "href" : "coap://mytemp.example.com:5683/temp",
         "mediaType": "application/json"
@@ -80,7 +78,6 @@ let tdSample3 = `{
       "name": "temperature",
       "outputData":  { "type": "number" },
       "writable": true,
-      "observable": true,      
       "link": [{
         "href" : "temp",
         "mediaType": "application/json"
@@ -91,7 +88,6 @@ let tdSample3 = `{
       "name": "temperature2",
       "outputData": { "type": "number" },
       "writable": false,
-      "observable": true,
       "link": [{
         "href" : "./temp",
         "mediaType": "application/json"
@@ -102,7 +98,6 @@ let tdSample3 = `{
       "name": "humidity",
       "outputData": { "type": "number" },
       "writable": false,
-      "observable": false,
       "link": [{
         "href" : "/humid",
         "mediaType": "application/json"
@@ -128,7 +123,6 @@ class TDParserTest {
         expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
         expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
         expect(td.interaction[0]).to.have.property("writable").that.equals(false);
-        expect(td.interaction[0]).to.have.property("observable").that.equals(false);
 
         expect(td.interaction[0].link).to.have.lengthOf(1);
         expect(td.interaction[0].link[0]).to.have.property("mediaType").that.equals("application/json");
@@ -148,8 +142,6 @@ class TDParserTest {
         expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
         expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
         expect(td.interaction[0]).to.have.property("writable").that.equals(true);
-        expect(td.interaction[0]).to.have.property("observable").that.equals(false);
-       
 
         expect(td.interaction[0].link).to.have.lengthOf(1);
         expect(td.interaction[0].link[0]).to.have.property("mediaType").that.equals("application/json");
@@ -169,8 +161,6 @@ class TDParserTest {
         expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
         expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
         expect(td.interaction[0]).to.have.property("writable").that.equals(true);
-        expect(td.interaction[0]).to.have.property("observable").that.equals(true);
-
 
         expect(td.interaction[0].link).to.have.lengthOf(1);
         expect(td.interaction[0].link[0]).to.have.property("mediaType").that.equals("application/json");
@@ -179,8 +169,6 @@ class TDParserTest {
         expect(td.interaction[1]).to.have.property("name").that.equals("temperature2");
         expect(td.interaction[1]).to.have.property("pattern").that.equals("Property");
         expect(td.interaction[1]).to.have.property("writable").that.equals(false);
-        expect(td.interaction[1]).to.have.property("observable").that.equals(true);
-
 
         expect(td.interaction[1].link).to.have.lengthOf(1);
         expect(td.interaction[1].link[0]).to.have.property("mediaType").that.equals("application/json");
@@ -189,8 +177,6 @@ class TDParserTest {
         expect(td.interaction[2]).to.have.property("name").that.equals("humidity");
         expect(td.interaction[2]).to.have.property("pattern").that.equals("Property");
         expect(td.interaction[2]).to.have.property("writable").that.equals(false);
-        expect(td.interaction[2]).to.have.property("observable").that.equals(false);
-
 
         expect(td.interaction[2].link).to.have.lengthOf(1);
         expect(td.interaction[2].link[0]).to.have.property("mediaType").that.equals("application/json");

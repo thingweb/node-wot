@@ -75,10 +75,6 @@ export class Interaction {
   @JsonMember({ type: Boolean })
   public writable: boolean;
 
-  /** observable flag for the Property */
-  @JsonMember({ type: Boolean })
-  public observable: boolean;
-
   // TODO: how to handle types internally?
   /** JSON Schema for input */
   @JsonMember({ type: Object })

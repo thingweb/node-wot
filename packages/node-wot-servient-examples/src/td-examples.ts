@@ -21,7 +21,7 @@ import {ThingDescription} from "node-wot-td-tools";;
 import * as TDParser from "node-wot-td-tools";
 
 /* sample TD json-ld string from the CP page*/
-let td_jsonld = '{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": "Thing","name": "MyTemperatureThing","interactions": [{"@type": ["Property"],"name": "temperature","outputData":  { "type": "number" },"writable": true,"observable": false,"links": [{"href" : "coap://mytemp.example.com:5683/temp","mediaType": "application/json"}]}]}';
+let td_jsonld = '{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": "Thing","name": "MyTemperatureThing","interactions": [{"@type": ["Property"],"name": "temperature","outputData":  { "type": "number" },"writable": true,"links": [{"href" : "coap://mytemp.example.com:5683/temp","mediaType": "application/json"}]}]}';
 
 let td1: ThingDescription = TDParser.parseTDString(td_jsonld)
 
@@ -30,8 +30,6 @@ console.log(' Thing name: ' + td1.name)
 console.log(' Interaction name: ' + td1.interaction[0].name);
 console.log(' Interaction link: ' + td1.interaction[0].link[0].href);
 console.log(' Is writable: ' + td1.interaction[0].writable);
-console.log(' Is observable: ' + td1.interaction[0].observable);
-
 /* ... */
 
 console.log('\nTD as JSON Sting:')
@@ -39,7 +37,7 @@ console.log('\nTD as JSON Sting:')
 console.log(TDParser.serializeTD(td1))
 
 /* test uri composition with base and local relativ path */
-td_jsonld = '{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": "Thing","name": "MyTemperatureThing","base":"coap://mytemp.example.com:5683","interactions": [{"@type": ["Property"],"name": "temperature","outputData": { "type": "number" },"writable": false,"observable": true,"links": [{"href" : "temp","mediaType": "application/json"}]}]}';
+td_jsonld = '{"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],"@type": "Thing","name": "MyTemperatureThing","base":"coap://mytemp.example.com:5683","interactions": [{"@type": ["Property"],"name": "temperature","outputData": { "type": "number" },"writable": false,"links": [{"href" : "temp","mediaType": "application/json"}]}]}';
 
 let td2: ThingDescription = TDParser.parseTDString(td_jsonld)
 
@@ -48,6 +46,4 @@ console.log(' Thing name: ' + td2.name)
 console.log(' Interaction name: ' + td2.interaction[0].name);
 console.log(' Interaction link: ' + td2.interaction[0].link[0].href)
 console.log(' Is writable: ' + td2.interaction[0].writable);
-console.log(' Is observable: ' + td2.interaction[0].observable);
-
 /* ... */

@@ -214,8 +214,6 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         // newProp.outputData =  { 'valueType' : valueType};
         newProp.outputData = null; // need paramater for valueType;
         newProp.writable = property.writable;
-        newProp.observable = property.observable;
-        
 
         this.interactions.push(newProp);
 
