@@ -67,11 +67,68 @@ wot-servient
 
 ## How to use the library
 
-This library implements the Scripting API defined in the [WoT Current Practices](https://w3c.github.io/wot/current-practices/wot-practices.html#scripting-api) document. 
+This library implements the WoT Scripting API (defined in the [First Public Working Draft](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/) document). 
 
 You can also see _examples/scripts_ to have a feeling of how to script a Thing.
 
-Not everything has been succesfully implemented.
+Not everything has been succesfully implemented yet.
+
+### Known differences between node-wot and FPWD
+
+* the FPWD defines four `RequestHandler`s in the [`ExposedThing`](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/#the-exposedthing-interface) for each request type onRetrieveProperty, onUpdateProperty, onInvokeAction, and onObserve) while node-wot uses individual `RequestHandler`s per  request type and interaction (see [Issue72](https://github.com/w3c/wot-scripting-api/issues/72)).
+
+### Not implemented/supported yet
+
+* [`WoT`](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/#the-wot-object) object
+  * `discover` :heavy_multiplication_x:
+  * `consume` :heavy_check_mark:
+  * `expose` :heavy_check_mark:
+  
+* [`ConsumedThing`](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/#the-consumedthing-interface) interface
+  * `invokeAction` :heavy_check_mark:
+  * `setProperty` :heavy_check_mark:
+  * `getProperty` :heavy_check_mark:
+  
+  * `addListener` :heavy_multiplication_x:
+  * `removeListener` :heavy_multiplication_x:
+  * `removeAllListeners` :heavy_multiplication_x:
+  * `observe` :heavy_multiplication_x:
+
+* [`ExposedThing`](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/#the-exposedthing-interface) interface
+  * `addProperty` :heavy_check_mark:
+  * `removeProperty` :heavy_check_mark:
+  * `addAction` :heavy_check_mark:
+  * `removeAction` :heavy_check_mark:
+  * `addEvent` :heavy_check_mark:
+  * `removeEvent` :heavy_check_mark:
+  
+  * `onRetrieveProperty` :heavy_check_mark:
+  * `onUpdateProperty` :heavy_check_mark:
+  * `onInvokeAction` :heavy_check_mark:
+  * `onObserve` :heavy_multiplication_x:
+  
+  * `register` :heavy_multiplication_x:
+  * `unregister` :heavy_multiplication_x:
+  * `start` :heavy_multiplication_x:
+  * `stop` :heavy_multiplication_x:
+  * `emitEvent` :heavy_multiplication_x:
+
+#### Protocol Support
+
+* HTTP :heavy_check_mark:
+* CoAP :heavy_check_mark:
+* HTTPS :heavy_multiplication_x: ?fix needed?
+* CoAPS :heavy_multiplication_x:
+* Websocket :heavy_multiplication_x:
+
+Note: More protocols can be easily added by implementing `ProtocolClient`, `ProtocolClientFactory` and `ProtocolServer` interface.
+
+#### MediaType Support
+
+* JSON  :heavy_check_mark:
+* plainText :heavy_check_mark:
+
+Note: More mediaTyes can be easily added by implementing `ContentCodec` interface.
 
 ## Logging
 
