@@ -75,9 +75,9 @@ Not everything has been succesfully implemented yet.
 
 ### Known differences between node-wot and FPWD
 
-* the FPWD defines four `RequestHandler`s in the [`ExposedThing`](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/#the-exposedthing-interface) for each request type onRetrieveProperty, onUpdateProperty, onInvokeAction, and onObserve) while node-wot uses individual `RequestHandler`s per  request type and interaction (see [Issue72](https://github.com/w3c/wot-scripting-api/issues/72)).
+* the FPWD defines four `RequestHandler`s in the [`ExposedThing`](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/#the-exposedthing-interface) for each request type (onRetrieveProperty, onUpdateProperty, onInvokeAction, and onObserve) while node-wot uses individual `RequestHandler`s per  request type and interaction (see [Issue72](https://github.com/w3c/wot-scripting-api/issues/72)).
 
-### Not implemented/supported yet
+### Implemented/supported
 
 * [`WoT`](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/#the-wot-object) object
   * `discover` :heavy_multiplication_x:
@@ -116,8 +116,8 @@ Not everything has been succesfully implemented yet.
 #### Protocol Support
 
 * HTTP :heavy_check_mark:
+* HTTPS :question: ?fix needed?
 * CoAP :heavy_check_mark:
-* HTTPS :heavy_multiplication_x: ?fix needed?
 * CoAPS :heavy_multiplication_x:
 * Websocket :heavy_multiplication_x:
 
