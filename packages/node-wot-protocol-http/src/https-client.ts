@@ -23,19 +23,20 @@
 import { ProtocolClient, Content } from 'node-wot'
 
 import * as http from 'http';
+import * as https from 'https';
 import * as url from 'url';
 
-export default class HttpClient implements ProtocolClient {
+export default class HttpsClient implements ProtocolClient {
 
-  private readonly agent: http.Agent;
-  private proxyOptions : http.RequestOptions = null;
+  private readonly agent: https.Agent;
+  private proxyOptions : https.RequestOptions = null;
 
   constructor(proxy : string = null) {
     if (proxy!==null) {
       this.proxyOptions = this.uriToOptions(proxy);
-      console.info(`HttpClient using proxy ${this.proxyOptions.hostname}:${this.proxyOptions.port}`);
+      console.info(`HttpsClient using secure proxy ${this.proxyOptions.hostname}:${this.proxyOptions.port}`);
     }
-    this.agent = new http.Agent({ keepAlive: true });
+    this.agent = new https.Agent({ keepAlive: true });
   }
 
   private getContentType(res : http.ClientResponse) : string {
@@ -49,21 +50,21 @@ export default class HttpClient implements ProtocolClient {
   }
 
   public toString(): string {
-    return `[HttpClient]`;
+    return `[HttpsClient]`;
   }
 
   public readResource(uri: string): Promise<Content> {
     return new Promise<Content>((resolve, reject) => {
-      let options: http.RequestOptions = this.uriToOptions(uri);
+      let options: https.RequestOptions = this.uriToOptions(uri);
 
       // TODO get explicit binding from TD
       options.method = 'GET';
-      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
-      let req = http.request(options, (res) => {
-        console.log(`HttpClient received ${res.statusCode} from ${options.path}`);
+      console.log(`HttpsClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
+      let req = https.request(options, (res) => {
+        console.log(`HttpsClient received ${res.statusCode} from ${options.path}`);
         let mediaType: string = this.getContentType(res);
-        console.log(`HttpClient received Content-Type: ${mediaType}`);
-        console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+        console.log(`HttpsClient received Content-Type: ${mediaType}`);
+        console.log(`HttpsClient received headers: ${JSON.stringify(res.headers)}`);
         let body: Array<any> = [];
         res.on('data', (data) => { body.push(data) });
         res.on('end', () => {
@@ -78,16 +79,16 @@ export default class HttpClient implements ProtocolClient {
   public writeResource(uri: string, content: Content): Promise<any> {
     return new Promise<void>((resolve, reject) => {
 
-      let options: http.RequestOptions = this.uriToOptions(uri);
+      let options: https.RequestOptions = this.uriToOptions(uri);
 
       // TODO get explicit binding from TD
       options.method = 'PUT';
       options.headers = { 'Content-Type': content.mediaType, 'Content-Length': content.body.byteLength };
 
-      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
-      let req = http.request(options, (res) => {
-        console.log(`HttpClient received ${res.statusCode} from ${uri}`);
-        console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+      console.log(`HttpsClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
+      let req = https.request(options, (res) => {
+        console.log(`HttpsClient received ${res.statusCode} from ${uri}`);
+        console.log(`HttpsClient received headers: ${JSON.stringify(res.headers)}`);
         // Although 204 without payload is expected, data must be read 
         // to complete request (http blocks socket otherwise)
         // TODO might have response on write for future HATEOAS concept
@@ -106,19 +107,19 @@ export default class HttpClient implements ProtocolClient {
   public invokeResource(uri: string, content?: Content): Promise<Content> {
     return new Promise<Content>((resolve, reject) => {
 
-      let options: http.RequestOptions = this.uriToOptions(uri);
+      let options: https.RequestOptions = this.uriToOptions(uri);
 
       // TODO get explicit binding from TD
       options.method = 'POST';
       if (content) {
         options.headers = { 'Content-Type': content.mediaType, 'Content-Length': content.body.byteLength };
       }
-      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
-      let req = http.request(options, (res) => {
-        console.log(`HttpClient received ${res.statusCode} from ${uri}`);
+      console.log(`HttpsClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
+      let req = https.request(options, (res) => {
+        console.log(`HttpsClient received ${res.statusCode} from ${uri}`);
         let mediaType: string = this.getContentType(res);        
-        console.log(`HttpClient received Content-Type: ${mediaType}`);
-        console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+        console.log(`HttpsClient received Content-Type: ${mediaType}`);
+        console.log(`HttpsClient received headers: ${JSON.stringify(res.headers)}`);
         let body: Array<any> = [];
         res.on('data', (data) => { body.push(data) });
         res.on('end', () => {
@@ -135,15 +136,15 @@ export default class HttpClient implements ProtocolClient {
 
   public unlinkResource(uri: string): Promise<any> {
     return new Promise<void>((resolve, reject) => {
-      let options: http.RequestOptions = this.uriToOptions(uri);
+      let options: https.RequestOptions = this.uriToOptions(uri);
 
       // TODO get explicit binding from TD
       options.method = 'DELETE';
 
-      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
-      let req = http.request(options, (res) => {
-        console.log(`HttpClient received ${res.statusCode} from ${uri}`);
-        console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+      console.log(`HttpsClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
+      let req = https.request(options, (res) => {
+        console.log(`HttpsClient received ${res.statusCode} from ${uri}`);
+        console.log(`HttpsClient received headers: ${JSON.stringify(res.headers)}`);
         // Although 204 without payload is expected, data must be read
         //  to complete request (http blocks socket otherwise)
         // TODO might have response on unlink for future HATEOAS concept
@@ -167,9 +168,9 @@ export default class HttpClient implements ProtocolClient {
     return true;
   }
 
-  private uriToOptions(uri: string): http.RequestOptions {
+  private uriToOptions(uri: string): https.RequestOptions {
     let requestUri = url.parse(uri);
-    let options: http.RequestOptions = {};
+    let options: https.RequestOptions = {};
     options.agent = this.agent;
 
     if (this.proxyOptions!=null) {

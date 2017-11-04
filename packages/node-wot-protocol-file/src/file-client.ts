@@ -27,6 +27,8 @@ import fs = require('fs');
 export class FileClientFactory implements ProtocolClientFactory {
   public static readonly schemes: Array<string> = ['file'];
 
+  constructor(proxy? : string) { }
+
   public getClient(): ProtocolClient {
     return new FileClient();
   }
@@ -45,6 +47,7 @@ export class FileClientFactory implements ProtocolClientFactory {
 }
 
 class FileClient implements ProtocolClient {
+
   constructor() {
     // console.log("File: new client created");
   }

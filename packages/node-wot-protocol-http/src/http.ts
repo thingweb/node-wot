@@ -19,7 +19,11 @@
 
 export { default as HttpServer } from './http-server'
 export { default as HttpClient } from './http-client'
+export { default as HttpsClient } from './https-client'
 export { default as HttpClientFactory } from './http-client-factory'
+export { default as HttpsClientFactory } from './https-client-factory'
 export * from './http-server'
 export * from './http-client'
+export * from './https-client'
 export * from './http-client-factory'
+export * from './https-client-factory'

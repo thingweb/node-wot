@@ -100,13 +100,14 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
-                    console.info(`ConsumedThing '${this.name}' getting ${link.href}`);
+                    console.info(`ConsumedThing '${this.name}' reading ${link.href}`);
                     client.readResource(link.href).then( (content) => {
                         if (!content.mediaType) content.mediaType = link.mediaType;
                         console.log(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
                         let value = ContentSerdes.bytesToValue(content);
                         resolve(value);
-                    });
+                    })
+                    .catch(err => { console.log("Failed to read because " + err); });
                 }
             }
         });
@@ -127,7 +128,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
-                    console.info(`ConsumedThing '${this.name}' setting ${link.href} to '${newValue}'`);
+                    console.info(`ConsumedThing '${this.name}' writing ${link.href} with '${newValue}'`);
                     let payload = ContentSerdes.valueToBytes(newValue,link.mediaType)
                     resolve(client.writeResource(link.href, payload));
                 }

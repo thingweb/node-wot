@@ -27,6 +27,8 @@ import Servient from "node-wot";
 // protocols used
 import {HttpServer} from "node-wot-protocol-http";
 import {HttpClientFactory} from "node-wot-protocol-http";
+import {HttpsClientFactory} from "node-wot-protocol-http";
+import {CoapClientFactory} from "node-wot-protocol-coap";
 
 export default class DefaultServient extends Servient {
 
@@ -53,7 +55,9 @@ export default class DefaultServient extends Servient {
 
         let httpServer = (typeof this.config.http.port === "number") ? new HttpServer(this.config.http.port) : new HttpServer();
         this.addServer(httpServer);
-        this.addClientFactory(new HttpClientFactory());
+        this.addClientFactory(new HttpClientFactory(this.config.http.proxy));
+        this.addClientFactory(new HttpsClientFactory(this.config.http.proxy));
+        this.addClientFactory(new CoapClientFactory());
     }
 
     /**
