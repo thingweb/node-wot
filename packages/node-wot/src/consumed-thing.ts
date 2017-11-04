@@ -68,7 +68,6 @@ export default class ConsumedThing implements WoT.ConsumedThing {
             console.log(`ConsumedThing '${this.name}' has no client in cache (${cacheIdx})`);
             let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme));
             if (srvIdx === -1) throw new Error(`ConsumedThing '${this.name}' missing ClientFactory for '${schemes}'`);
-            console.log(`ConsumedThing '${this.name}' chose protocol '${schemes[srvIdx]}'`);
             let client = this.srv.getClientFor(schemes[srvIdx]);
             if (client) {
                 console.log(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
@@ -103,7 +102,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     console.info(`ConsumedThing '${this.name}' reading ${link.href}`);
                     client.readResource(link.href).then( (content) => {
                         if (!content.mediaType) content.mediaType = link.mediaType;
-                        console.log(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
+                        //console.log(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
                         let value = ContentSerdes.bytesToValue(content);
                         resolve(value);
                     })
@@ -158,7 +157,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
 
                     client.invokeResource(link.href, input).then( (output) => {
                         if (!output.mediaType) output.mediaType = link.mediaType;
-                        console.log(`ConsumedThing decoding '${output.mediaType}' in invokeAction`);
+                        //console.log(`ConsumedThing decoding '${output.mediaType}' in invokeAction`);
                         let value = ContentSerdes.bytesToValue(output);
                         resolve(value);
                     });

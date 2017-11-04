@@ -23,25 +23,24 @@
 
 import { ProtocolClientFactory, ProtocolClient } from 'node-wot'
 import HttpClient from './http-client';
-import HttpsClient from './https-client';
 
 export default class HttpsClientFactory implements ProtocolClientFactory {
 
   public static readonly schemes: Array<string> = ['https'];
-  private proxy: string = null;
+  private proxy: any = null;
 
-  constructor(proxy : string = null) {
+  constructor(proxy : any = null) {
     this.proxy = proxy;
   }
 
   public getClient(): ProtocolClient {
     // HTTPS over HTTP proxy requires HttpClient
-    if (this.proxy && this.proxy.startsWith("http:")) {
+    if (this.proxy && this.proxy.href && this.proxy.href.startsWith("http:")) {
       console.warn(`HttpsClientFactory creating client for 'http' due to insecure proxy configuration`);
       return new HttpClient(this.proxy);
     } else {
       console.log(`HttpsClientFactory creating client for '${this.getSchemes()}'`);
-      return new HttpsClient(this.proxy);
+      return new HttpClient(this.proxy, true);
     }
   }
 
