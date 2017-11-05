@@ -61,6 +61,8 @@ class TDDataClient implements ProtocolClient {
         public stop(): boolean {
             return true;
         }
+
+        public setSecurity = (metadata : any) => false;
     }
 
 class TDDataClientFactory implements ProtocolClientFactory {
@@ -115,6 +117,8 @@ class TrapClient implements ProtocolClient {
     public stop(): boolean {
         return true;
     }
+    
+    public setSecurity = (metadata : any) => false;
 }
 
 class TrapClientFactory implements ProtocolClientFactory {

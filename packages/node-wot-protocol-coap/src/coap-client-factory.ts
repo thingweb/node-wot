@@ -29,6 +29,8 @@ export default class CoapClientFactory implements ProtocolClientFactory {
 
   public static readonly schemes: Array<string> = ['coap'];
 
+  constructor(proxy? : string) { }
+
   public getClient(): ProtocolClient {
     console.log(`CoapClientFactory creating client for '${this.getSchemes()}'`);
     return new CoapClient();

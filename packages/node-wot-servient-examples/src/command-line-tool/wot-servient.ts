@@ -27,10 +27,6 @@ import _ from "wot-typescript-definitions";
 // node-wot implementation of W3C WoT Servient 
 import DefaultServient from "./default-servient";
 
-// protocols used
-import {HttpServer} from "node-wot-protocol-http";
-import {HttpClientFactory} from "node-wot-protocol-http";
-
 // tools
 import fs = require("fs");
 import * as path from "path";

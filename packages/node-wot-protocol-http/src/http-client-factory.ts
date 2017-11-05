@@ -21,16 +21,21 @@
  * HTTP client Factory
  */
 
-import { ProtocolClientFactory, ProtocolClient } from 'node-wot'
+import { ProtocolClientFactory, ProtocolClient } from 'node-wot';
 import HttpClient from './http-client';
 
 export default class HttpClientFactory implements ProtocolClientFactory {
 
-  public static readonly schemes: Array<string> = ['http'];
+  public static readonly schemes: Array<string> = ["http"];
+  private proxy : any = null;
+
+  constructor(proxy : any = null) {
+    this.proxy = proxy;
+  }
 
   public getClient(): ProtocolClient {
     console.log(`HttpClientFactory creating client for '${this.getSchemes()}'`);
-    return new HttpClient();
+    return new HttpClient(this.proxy);
   }
 
   public init(): boolean {

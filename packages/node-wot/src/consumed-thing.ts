@@ -60,18 +60,24 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         let cacheIdx = schemes.findIndex(scheme => this.clients.has(scheme))
 
         if (cacheIdx !== -1) {
+            // from cache
             console.log(`ConsumedThing '${this.name}' chose cached client for '${schemes[cacheIdx]}'`);
             let client = this.clients.get(schemes[cacheIdx]);
             let link = links[cacheIdx];
             return { client: client, link: link };
         } else {
+            // new client
             console.log(`ConsumedThing '${this.name}' has no client in cache (${cacheIdx})`);
             let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme));
             if (srvIdx === -1) throw new Error(`ConsumedThing '${this.name}' missing ClientFactory for '${schemes}'`);
-            console.log(`ConsumedThing '${this.name}' chose protocol '${schemes[srvIdx]}'`);
             let client = this.srv.getClientFor(schemes[srvIdx]);
             if (client) {
                 console.log(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
+                if (this.td.security) {
+                    console.warn("ConsumedThing applying security metadata");
+                    console.dir(this.td.security);
+                    client.setSecurity(this.td.security);
+                }
                 this.clients.set(schemes[srvIdx], client);
                 let link = links[srvIdx];
                 return { client: client, link: link }
@@ -100,13 +106,14 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
-                    console.info(`ConsumedThing '${this.name}' getting ${link.href}`);
+                    console.info(`ConsumedThing '${this.name}' reading ${link.href}`);
                     client.readResource(link.href).then( (content) => {
                         if (!content.mediaType) content.mediaType = link.mediaType;
-                        console.log(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
+                        //console.log(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
                         let value = ContentSerdes.bytesToValue(content);
                         resolve(value);
-                    });
+                    })
+                    .catch(err => { console.log("Failed to read because " + err); });
                 }
             }
         });
@@ -127,7 +134,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${link.href}`));
                 } else {
-                    console.info(`ConsumedThing '${this.name}' setting ${link.href} to '${newValue}'`);
+                    console.info(`ConsumedThing '${this.name}' writing ${link.href} with '${newValue}'`);
                     let payload = ContentSerdes.valueToBytes(newValue,link.mediaType)
                     resolve(client.writeResource(link.href, payload));
                 }
@@ -157,7 +164,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
 
                     client.invokeResource(link.href, input).then( (output) => {
                         if (!output.mediaType) output.mediaType = link.mediaType;
-                        console.log(`ConsumedThing decoding '${output.mediaType}' in invokeAction`);
+                        //console.log(`ConsumedThing decoding '${output.mediaType}' in invokeAction`);
                         let value = ContentSerdes.bytesToValue(output);
                         resolve(value);
                     });

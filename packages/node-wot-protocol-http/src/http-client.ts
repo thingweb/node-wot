@@ -20,28 +20,45 @@
 /**
  * HTTP client based on http
  */
-import { ProtocolClient, Content } from 'node-wot'
+import { ProtocolClient, Content } from "node-wot";
 
-import * as http from 'http';
-import * as https from 'https';
-import * as url from 'url';
+import * as http from "http";
+import * as https from "https";
+import * as url from "url";
 
 export default class HttpClient implements ProtocolClient {
 
   private readonly agent: http.Agent;
+  private readonly provider : any;
+  private proxyOptions : http.RequestOptions = null;
 
-  constructor(secure = false) {
+  constructor(proxy : any = null, secure = false) {
+    if (proxy!==null && proxy.href!==null) {
+      this.proxyOptions = this.uriToOptions(proxy.href);
+      if (proxy.authorization == "Basic") {
+        this.proxyOptions.headers = { };
+        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(proxy.user+":"+proxy.password).toString('base64');
+      }
+      if (this.proxyOptions.protocol === "https") {
+        secure = true;
+      } else {
+        secure = false;
+      }
+      console.info(`HttpClient using ${secure ? "secure " : ""}proxy ${this.proxyOptions.hostname}:${this.proxyOptions.port}`);
+    }
     this.agent = secure ? new https.Agent({ keepAlive: true }) : new http.Agent({ keepAlive: true });
+    this.provider = secure ? https : http;
   }
 
-  private getContentType(res : http.ClientResponse) : string {
+  private getContentType(res : http.IncomingMessage) : string {
     let header : string | string[] = res.headers['content-type']; // note: node http uses lower case here
     if(Array.isArray(header)) {
       // this should never be the case as only cookie headers are returned as array
       // but anyways...
       return (header.length > 0) ? header[0] : ""; 
-    } else
-    return header;
+    } else {
+      return header;
+    }
   }
 
   public toString(): string {
@@ -54,20 +71,19 @@ export default class HttpClient implements ProtocolClient {
 
       // TODO get explicit binding from TD
       options.method = 'GET';
-
-      console.log(`HttpClient sending GET to ${uri}`);
-      let req = http.request(options, (res) => {
-        console.log(`HttpClient received ${res.statusCode} from ${uri}`);
+      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
+      let req = this.provider.request(options, (res : https.IncomingMessage) => {
+        console.log(`HttpClient received ${res.statusCode} from ${options.path}`);
         let mediaType: string = this.getContentType(res);
-        console.log(`HttpClient received Content-Type: ${mediaType}`);
-        console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+        //console.log(`HttpClient received Content-Type: ${mediaType}`);
+        //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         let body: Array<any> = [];
         res.on('data', (data) => { body.push(data) });
         res.on('end', () => {
           resolve({ mediaType: mediaType, body: Buffer.concat(body) });
         });
       });
-      req.on('error', err => reject(err));
+      req.on('error', (err : any) => reject(err));
       req.end();
     });
   }
@@ -81,10 +97,10 @@ export default class HttpClient implements ProtocolClient {
       options.method = 'PUT';
       options.headers = { 'Content-Type': content.mediaType, 'Content-Length': content.body.byteLength };
 
-      console.log(`HttpClient sending PUT to ${uri}`);
-      let req = http.request(options, (res) => {
+      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
+      let req = this.provider.request(options, (res : https.IncomingMessage) => {
         console.log(`HttpClient received ${res.statusCode} from ${uri}`);
-        console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+        //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         // Although 204 without payload is expected, data must be read 
         // to complete request (http blocks socket otherwise)
         // TODO might have response on write for future HATEOAS concept
@@ -94,7 +110,7 @@ export default class HttpClient implements ProtocolClient {
           resolve();
         });
       });
-      req.on('error', err => reject(err));
+      req.on('error', (err : any) => reject(err));
       req.write(content.body);
       req.end();
     });
@@ -110,19 +126,19 @@ export default class HttpClient implements ProtocolClient {
       if (content) {
         options.headers = { 'Content-Type': content.mediaType, 'Content-Length': content.body.byteLength };
       }
-      console.log(`HttpClient sending POST to ${uri}`);
-      let req = http.request(options, (res) => {
+      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
+      let req = this.provider.request(options, (res : https.IncomingMessage) => {
         console.log(`HttpClient received ${res.statusCode} from ${uri}`);
         let mediaType: string = this.getContentType(res);        
-        console.log(`HttpClient received Content-Type: ${mediaType}`);
-        console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+        //console.log(`HttpClient received Content-Type: ${mediaType}`);
+        //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         let body: Array<any> = [];
         res.on('data', (data) => { body.push(data) });
         res.on('end', () => {
           resolve({ mediaType: mediaType, body: Buffer.concat(body) });
         });
       });
-      req.on('error', err => reject(err));
+      req.on('error', (err : any) => reject(err));
       if (content) {
         req.write(content.body);
       }
@@ -137,10 +153,10 @@ export default class HttpClient implements ProtocolClient {
       // TODO get explicit binding from TD
       options.method = 'DELETE';
 
-      console.log(`HttpClient sending DELETE to ${uri}`);
-      let req = http.request(options, (res) => {
+      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
+      let req = this.provider.request(options, (res : https.IncomingMessage) => {
         console.log(`HttpClient received ${res.statusCode} from ${uri}`);
-        console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
+        //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         // Although 204 without payload is expected, data must be read
         //  to complete request (http blocks socket otherwise)
         // TODO might have response on unlink for future HATEOAS concept
@@ -150,7 +166,7 @@ export default class HttpClient implements ProtocolClient {
           resolve();
         });
       });
-      req.on('error', err => reject(err));
+      req.on('error', (err : any) => reject(err));
       req.end();
     });
   }
@@ -164,14 +180,37 @@ export default class HttpClient implements ProtocolClient {
     return true;
   }
 
+  public setSecurity(metadata: any): boolean {
+    if (metadata.cat!==null && metadata.cat==="proxy" && metadata.href!==null) {
+      this.proxyOptions = this.uriToOptions(metadata.href);
+      if (metadata.authorization == "Basic") {
+        this.proxyOptions.headers = { };
+        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(metadata.user+":"+metadata.password).toString('base64');
+      }
+      console.info(`HttpClient using security metadata ${metadata.cat}`);
+      return true;
+    }
+    return false;
+  }
+
   private uriToOptions(uri: string): http.RequestOptions {
     let requestUri = url.parse(uri);
     let options: http.RequestOptions = {};
     options.agent = this.agent;
-    options.hostname = requestUri.hostname;
-    options.port = parseInt(requestUri.port, 10);
-    options.path = requestUri.path
 
+    if (this.proxyOptions!=null) {
+      options.hostname = this.proxyOptions.hostname;
+      options.port = this.proxyOptions.port;
+      options.path = uri;
+      options.headers = { };
+      // copy header fields for Proxy-Auth etc.
+      for (let hf in this.proxyOptions.headers) options.headers[hf] = this.proxyOptions.headers[hf];
+      options.headers["Host"] = requestUri.hostname;
+    } else {
+      options.hostname = requestUri.hostname;
+      options.port = parseInt(requestUri.port, 10);
+      options.path = requestUri.path;
+    }
     // TODO auth and headers
 
     return options;

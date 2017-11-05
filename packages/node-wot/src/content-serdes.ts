@@ -43,7 +43,7 @@ class JsonCodec implements ContentCodec {
   }
 
   bytesToValue(bytes: Buffer): any {
-    console.log(`JsonCodec parsing '${bytes.toString()}'`);
+    //console.log(`JsonCodec parsing '${bytes.toString()}'`);
     let parsed: any;
     try {
       parsed = JSON.parse(bytes.toString());
@@ -61,7 +61,7 @@ class JsonCodec implements ContentCodec {
       }
     }
     // remove legacy wrapping and use RFC 7159
-    if (parsed && parsed.value) {
+    if (parsed && parsed.value!==undefined) {
       console.warn(`JsonCodec removing { value: ... } wrapper`);
       parsed = parsed.value;
     }
@@ -127,7 +127,7 @@ export class ContentSerdes {
   }
 
   public getSupportedMediaTypes(): Array<string> {
-    return Array.from(ContentSerdes.get().codecs.keys())
+    return Array.from(ContentSerdes.get().codecs.keys());
   }
 
   public bytesToValue(content: Content): any {
@@ -142,13 +142,14 @@ export class ContentSerdes {
       }
     }
 
-    console.log(`ContentSerdes deserializing from ${content.mediaType}`);
+    //console.log(`ContentSerdes deserializing from ${content.mediaType}`);
+
     // choose codec based on mediaType
-    let isolMediaType: string=this.isolateMediaType(content.mediaType)
+    let isolMediaType: string = this.isolateMediaType(content.mediaType);
 
     if (!this.codecs.has(isolMediaType)) {
       
-      throw new Error(`Unsupported serialisation format: ${content.mediaType}`)
+      throw new Error(`Unsupported serialisation format: ${content.mediaType}`);
     }
     let codec = this.codecs.get(isolMediaType)
 
@@ -158,8 +159,8 @@ export class ContentSerdes {
     return res;
   }
   public isolateMediaType(mediaTypeValue:string):string {
-        let semiColumnIndex=mediaTypeValue.indexOf(';');
-        if (semiColumnIndex>0){
+        let semiColumnIndex = mediaTypeValue.indexOf(';');
+        if (semiColumnIndex > 0) {
             return mediaTypeValue.substring(0,semiColumnIndex);    
         } else {
             return mediaTypeValue;
@@ -175,7 +176,7 @@ export class ContentSerdes {
     if (!this.codecs.has(mediaType)) {
       throw new Error(`Unsupported serialization format: ${mediaType}`)
     }
-    let codec = this.codecs.get(mediaType)
+    let codec = this.codecs.get(mediaType);
 
     // use codec to serialize
     let bytes = codec.valueToBytes(value);
@@ -185,5 +186,3 @@ export class ContentSerdes {
 }
 
 export default ContentSerdes.get();
-
-
