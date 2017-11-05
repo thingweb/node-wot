@@ -56,7 +56,7 @@ wot-servient
 # e.g., Windows CMD shell (Counter Example)
 # expose
 # node packages\node-wot-servient-examples\dist\command-line-tool\wot-servient.js  examples\scripts\counter.js
-# consume (may need a second try due to "start" bug)
+# consume
 # node packages\node-wot-servient-examples\dist\command-line-tool\wot-servient.js  examples\scripts\counterClient.js
 ```
 

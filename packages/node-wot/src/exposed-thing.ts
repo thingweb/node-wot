@@ -209,10 +209,8 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         // new way
         let newProp = new TD.Interaction();
         newProp.pattern = TD.InteractionPattern.Property;
-        newProp.name = property.name;  //propertyName;
-        // newProp.inputData = { 'valueType' : valueType};
-        // newProp.outputData =  { 'valueType' : valueType};
-        newProp.outputData = null; // need paramater for valueType;
+        newProp.name = property.name;
+        newProp.outputData = property.description; // need to be properly specified in FPWD
         newProp.writable = property.writable;
 
         this.interactions.push(newProp);
@@ -225,6 +223,11 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
 
         this.addResourceListener("/" + this.name + "/properties/" + property.name, new Rest.PropertyResourceListener(this, newProp));
 
+        if(property.onWrite) {
+            console.info("set onWrite handler for " + property.name);
+            propState.handlers.push(property.onWrite);
+        }
+
         return this;
     }
 
@@ -235,11 +238,10 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         let newAction = new TD.Interaction();
         newAction.pattern = TD.InteractionPattern.Action;
         newAction.name = action.name;
-        // TODO inputData & outputData
-        newAction.inputData = null; // inputType ? inputType : null;
-        newAction.outputData = null; //  outputType ? outputType : null;
+        // inputData & outputData
+        newAction.inputData = action.inputDataDescription ? action.inputDataDescription : null;
+        newAction.outputData = action.outputDataDescription ? action.outputDataDescription : null;
 
-     
         this.interactions.push(newAction);
 
         let actionState = new InteractionState();
@@ -251,6 +253,11 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         this.interactionStates[action.name] = actionState;
 
         this.addResourceListener("/" + this.name + "/actions/" + action.name, new Rest.ActionResourceListener(this, newAction));
+
+        if(action.action) {
+            console.info("set action handler for " + action.name);
+            actionState.handlers.push(action.action);
+        }
 
         return this;
     }

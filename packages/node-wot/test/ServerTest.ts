@@ -88,7 +88,12 @@ class WoTServerTest {
 
     @test "should be able to add a property, read it and write it locally"() {
         return WoTServerTest.WoT.expose({name : "otherthing", url : "", description : {}}).then(thing => {
-            let initp : WoT.ThingPropertyInit = {name: "number", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
+            let initp : WoT.ThingPropertyInit = {
+                name: "number", 
+                writable: true, 
+                description: JSON.stringify({ "type": "number" }),
+                value:  10
+            };
             return thing.addProperty(initp).setProperty("number", 5).then(value => {
                 expect(value).to.equal(5);
             })
@@ -101,8 +106,12 @@ class WoTServerTest {
 
     @test "should be able to add a property, assign it via listener and read it locally"() {
         return WoTServerTest.WoT.expose({name : "thing3", url : "", description : {}}).then(thing => {
-            let initp : WoT.ThingPropertyInit = {name: "prop1", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
-            // thing.addProperty("prop1", { "type": "number" });
+            let initp : WoT.ThingPropertyInit = {
+                name: "prop1",
+                writable: true,
+                description: JSON.stringify({ "type": "number" }),
+                value: 10
+            };
             thing.addProperty(initp);
 
             let listener = WoTServerTest.server.getListenerFor("/thing3/properties/prop1");
@@ -116,8 +125,12 @@ class WoTServerTest {
 
     @test "should be able to add a property, assign it locally and read it via listener"() {
         return WoTServerTest.WoT.expose({name : "thing4", url : "", description : {}}).then(thing => {
-            let initp : WoT.ThingPropertyInit = {name: "prop1", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
-            // thing.addProperty("prop1", { "type": "number" });
+            let initp : WoT.ThingPropertyInit = {
+                name: "prop1", 
+                writable: true,
+                description: JSON.stringify({ "type": "number" }), 
+                value:  10
+            };
             thing.addProperty(initp);
 
             let listener = WoTServerTest.server.getListenerFor("/thing4/properties/prop1");
@@ -134,8 +147,12 @@ class WoTServerTest {
 
     @test "should be able to add a property, assign and read it via listener"() {
         return WoTServerTest.WoT.expose({name : "thing5", url : "", description : {}}).then(thing => {
-            let initp : WoT.ThingPropertyInit = {name: "prop1", configurable: false, enumerable: true, writable: true, semanticTypes: undefined, description: undefined, value:  null};
-            // thing.addProperty("prop1", { "type": "number" });
+            let initp : WoT.ThingPropertyInit = {
+                name: "prop1",
+                writable: true, 
+                description: JSON.stringify({ "type": "number" }), 
+                value: 10
+            };
             thing.addProperty(initp);
 
             let listener = WoTServerTest.server.getListenerFor("/thing5/properties/prop1");
@@ -165,6 +182,25 @@ class WoTServerTest {
                 return 42;
             }});
 
+            return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
+        })
+    }
+
+    @test "should be able to add an action and invoke it locally in ActionInit"() {
+        return WoTServerTest.WoT.expose({name : "thing6b", url : "", description : {}}).then(thing => {
+            let inita : WoT.ThingActionInit = {
+                name: "action1", 
+                inputDataDescription: JSON.stringify({ "type": "number" }), 
+                outputDataDescription: JSON.stringify({ "type": "number" }), 
+                semanticTypes: undefined, 
+                action: (newValue: any, oldValue: any) => {
+                    newValue.should.be.a("number");
+                    newValue.should.equal(23);
+                    return 42;
+                }
+            };
+            thing.addAction(inita);
+            
             return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
         })
     }
