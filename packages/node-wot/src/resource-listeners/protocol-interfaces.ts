@@ -36,6 +36,8 @@ export interface ProtocolClient {
   /** stop the client */
   stop(): boolean;
 
+  /** apply TD security metadata */
+  setSecurity(metadata: Object): boolean;
 }
 
 export interface ProtocolClientFactory {

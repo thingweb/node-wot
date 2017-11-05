@@ -60,17 +60,24 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         let cacheIdx = schemes.findIndex(scheme => this.clients.has(scheme))
 
         if (cacheIdx !== -1) {
+            // from cache
             console.log(`ConsumedThing '${this.name}' chose cached client for '${schemes[cacheIdx]}'`);
             let client = this.clients.get(schemes[cacheIdx]);
             let link = links[cacheIdx];
             return { client: client, link: link };
         } else {
+            // new client
             console.log(`ConsumedThing '${this.name}' has no client in cache (${cacheIdx})`);
             let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme));
             if (srvIdx === -1) throw new Error(`ConsumedThing '${this.name}' missing ClientFactory for '${schemes}'`);
             let client = this.srv.getClientFor(schemes[srvIdx]);
             if (client) {
                 console.log(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
+                if (this.td.security) {
+                    console.warn("ConsumedThing applying security metadata");
+                    console.dir(this.td.security);
+                    client.setSecurity(this.td.security);
+                }
                 this.clients.set(schemes[srvIdx], client);
                 let link = links[srvIdx];
                 return { client: client, link: link }

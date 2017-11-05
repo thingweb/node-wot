@@ -180,6 +180,19 @@ export default class HttpClient implements ProtocolClient {
     return true;
   }
 
+  public setSecurity(metadata: any): boolean {
+    if (metadata.cat!==null && metadata.cat==="proxy" && metadata.href!==null) {
+      this.proxyOptions = this.uriToOptions(metadata.href);
+      if (metadata.authorization == "Basic") {
+        this.proxyOptions.headers = { };
+        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(metadata.user+":"+metadata.password).toString('base64');
+      }
+      console.info(`HttpClient using security metadata ${metadata.cat}`);
+      return true;
+    }
+    return false;
+  }
+
   private uriToOptions(uri: string): http.RequestOptions {
     let requestUri = url.parse(uri);
     let options: http.RequestOptions = {};

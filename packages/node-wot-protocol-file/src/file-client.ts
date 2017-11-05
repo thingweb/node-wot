@@ -83,4 +83,6 @@ class FileClient implements ProtocolClient {
   public stop(): boolean {
     return true;
   }
+
+  public setSecurity = (metadata : any) => true;
 }

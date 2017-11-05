@@ -34,6 +34,8 @@ export function parseTDString(json: string): ThingDescription {
   console.log(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
   let td: ThingDescription = TypedJSON.parse(json, ThingDescription);
 
+  if (td.security) console.log(`parseTDString() found security metadata`);
+
   console.log(`parseTDString() found ${td.interaction.length} Interaction${td.interaction.length === 1 ? '' : 's'}`);
   // for each interaction assign the Interaction type (Property, Action, Event)
   // and, if "base" is given, normalize each Interaction link
@@ -102,7 +104,6 @@ export function serializeTD(td: ThingDescription): string {
   }
   json = JSON.stringify(raw);
   // End of workaround
-
 
   console.log(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
 

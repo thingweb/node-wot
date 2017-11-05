@@ -39,6 +39,19 @@ export enum InteractionPattern {
  * NOTE must be declared before Interaction for TypedJSON
  */
 @JsonObject()
+export class ThingSecurity {
+  @JsonMember({ isRequired: true, type: String })
+  public mode: string;
+
+  @JsonMember({ type: String })
+  public proxy: string;
+}
+
+/**
+ * Internal links information of an Interaction
+ * NOTE must be declared before Interaction for TypedJSON
+ */
+@JsonObject()
 export class InteractionLink {
 
   /** relativ or absulut URI path of the Interaction resource */
@@ -104,6 +117,10 @@ export default class ThingDescription {
   /** human-readable name of the Thing */
   @JsonMember({ isRequired: true, type: String })
   public name: string;
+
+  /** security metadata */
+  @JsonMember({ type: Object })
+  public security: Object;
 
   /** base URI of the Interaction resources */
   @JsonMember({ type: String })
