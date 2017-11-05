@@ -87,8 +87,11 @@ export function serializeTD(td: ThingDescription): string {
 
   // FIXME TypedJSON also stringifies undefined/null optional members
   let raw = JSON.parse(json)
+  if (td.security === null || td.security === undefined) {
+    delete raw.security;
+  }
   if (td.base === null || td.base === undefined) {
-    delete raw.base
+    delete raw.base;
   }
   for (let interaction of raw.interaction) {
     if (interaction.inputData === null) { delete interaction.inputData; }
