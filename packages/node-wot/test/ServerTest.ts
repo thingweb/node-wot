@@ -80,14 +80,80 @@ class WoTServerTest {
     }
 
     @test "should be able to add a thing"() {
-        return WoTServerTest.WoT.expose({name : "myThing", url : "", description : {}}).then(thing => {
+        return WoTServerTest.WoT.expose({
+            name : "myThing", 
+            url : "", 
+            description : undefined
+        }).then(thing => {
             expect(thing).to.exist;
             expect(thing).to.have.property("name", "myThing");
         });
     }
 
+    
+    @test "should be able to add a thing based on a given description"() {
+        let desc = `{
+            "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+            "@type": ["Thing"],
+            "name": "myThingX",
+            "interaction": []
+        }`;
+
+        return WoTServerTest.WoT.expose({
+            name : "undefined", 
+            url : "", 
+            description : JSON.parse(desc)
+        }).then(thing => {
+            expect(thing).to.exist;
+            expect(thing).to.have.property("name", "myThingX");
+        });
+    }    
+
+
+    @test "should be able to add a thing based on a given description with property&action"() {
+        let desc = `{
+            "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+            "@type": ["Thing"],
+            "name": "myThingY",
+            "interaction": [
+                {
+                    "@type": ["Property"],
+                    "name": "humidity",
+                    "outputData": { "type": "number" },
+                    "writable": false,
+                    "link": [{
+                      "href" : "/humid",
+                      "mediaType": "application/json"
+                      }]
+                }
+                ,
+                {
+                    "@type": ["Action"],
+                    "name": "toggle",
+                    "link": [{
+                        "href": "coaps://mylamp.example.com:5683/toggle",
+                        "mediaType": "application/json"
+                    }]
+                }
+            ]
+        }`;
+
+        return WoTServerTest.WoT.expose({
+            name : "undefined", 
+            url : "", 
+            description : JSON.parse(desc)
+        }).then(thing => {
+            expect(thing).to.exist;
+            expect(thing).to.have.property("name", "myThingY");
+        });
+    } 
+
     @test "should be able to add a property, read it and write it locally"() {
-        return WoTServerTest.WoT.expose({name : "otherthing", url : "", description : {}}).then(thing => {
+        return WoTServerTest.WoT.expose({
+            name : "otherthing", 
+            url : "", 
+            description : undefined
+        }).then(thing => {
             let initp : WoT.ThingPropertyInit = {
                 name: "number", 
                 writable: true, 
@@ -105,7 +171,11 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign it via listener and read it locally"() {
-        return WoTServerTest.WoT.expose({name : "thing3", url : "", description : {}}).then(thing => {
+        return WoTServerTest.WoT.expose({
+            name : "thing3", 
+            url : "", 
+            description : undefined
+        }).then(thing => {
             let initp : WoT.ThingPropertyInit = {
                 name: "prop1",
                 writable: true,
@@ -124,7 +194,11 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign it locally and read it via listener"() {
-        return WoTServerTest.WoT.expose({name : "thing4", url : "", description : {}}).then(thing => {
+        return WoTServerTest.WoT.expose({
+            name : "thing4",
+            url : "",
+            description : undefined
+        }).then(thing => {
             let initp : WoT.ThingPropertyInit = {
                 name: "prop1", 
                 writable: true,
@@ -146,7 +220,11 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign and read it via listener"() {
-        return WoTServerTest.WoT.expose({name : "thing5", url : "", description : {}}).then(thing => {
+        return WoTServerTest.WoT.expose({
+            name : "thing5",
+            url : "",
+            description : undefined
+        }).then(thing => {
             let initp : WoT.ThingPropertyInit = {
                 name: "prop1",
                 writable: true, 
@@ -170,7 +248,11 @@ class WoTServerTest {
     }
 
     @test "should be able to add an action and invoke it locally"() {
-        return WoTServerTest.WoT.expose({name : "thing6", url : "", description : {}}).then(thing => {
+        return WoTServerTest.WoT.expose({
+            name : "thing6",
+            url : "",
+            description : undefined
+        }).then(thing => {
             let inita : WoT.ThingActionInit = {name: "action1", inputDataDescription: JSON.stringify({ "type": "number" }), outputDataDescription: JSON.stringify({ "type": "number" }), semanticTypes: undefined, action: undefined};
             thing.addAction(inita);
 
@@ -187,7 +269,11 @@ class WoTServerTest {
     }
 
     @test "should be able to add an action and invoke it locally in ActionInit"() {
-        return WoTServerTest.WoT.expose({name : "thing6b", url : "", description : {}}).then(thing => {
+        return WoTServerTest.WoT.expose({
+            name : "thing6b",
+            url : "",
+            description : undefined
+        }).then(thing => {
             let inita : WoT.ThingActionInit = {
                 name: "action1", 
                 inputDataDescription: JSON.stringify({ "type": "number" }), 
@@ -206,7 +292,11 @@ class WoTServerTest {
     }
 
     @test "should be able to add an action and invoke it via listener"() {
-        return WoTServerTest.WoT.expose({name : "thing7", url : "", description : {}}).then(thing => {
+        return WoTServerTest.WoT.expose({
+            name : "thing7",
+            url : "",
+            description : undefined
+        }).then(thing => {
             let inita : WoT.ThingActionInit = {name: "action1", inputDataDescription: JSON.stringify({ "type": "number" }), outputDataDescription: JSON.stringify({ "type": "number" }), semanticTypes: undefined, action: undefined};
             thing.addAction(inita);
 
