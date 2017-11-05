@@ -35,29 +35,40 @@ export default class Servient {
 
     /** runs the script in a new sandbox */
     public runScript(code : string, filename = 'script') {
-        let script = new vm.Script(code)
-        let context = vm.createContext({ 'WoT' : new WoTImpl(this) , 'console' : console })
+        let script = new vm.Script(code);
+        let context = vm.createContext({
+            'WoT': new WoTImpl(this),
+            'console': console,
+            'setInterval': setInterval,
+            'setTimeout': setTimeout
+        });
         let options = {
             "filename" : filename,
             "displayErrors" : true
         };
-        script.runInContext(context,options)
+        script.runInContext(context,options);
     }
 
     /** runs the script in priviledged context (dangerous) - means here: scripts can require */
     public runPriviledgedScript(code : string, filename = 'script') {
-        let script = new vm.Script(code)
-        let context = vm.createContext({ 'WoT' : new WoTImpl(this) , 'console' : console, 'require' : require })
+        let script = new vm.Script(code);
+        let context = vm.createContext({
+            'WoT': new WoTImpl(this),
+            'console': console,
+            'setInterval': setInterval,
+            'setTimeout': setTimeout,
+            'require' : require
+        });
         let options = {
             "filename" : filename,
             "displayErrors" : true
         };
-        script.runInContext(context, options)
+        script.runInContext(context, options);
     }
 
     /** add a new codec to support a mediatype */
     public addMediaType(codec : ContentCodec) : void {
-        ContentSerdes.addCodec(codec)
+        ContentSerdes.addCodec(codec);
     }
 
     /** retun all media types that this servient supports */
@@ -74,13 +85,13 @@ export default class Servient {
     public addResourceListener(path : string, resourceListener : ResourceListener) {
         console.log(`Servient adding ResourceListener '${path}' of type ${resourceListener.constructor.name}`);
         this.listeners.set(path,resourceListener);
-        this.servers.forEach(srv => srv.addResource(path,resourceListener))
+        this.servers.forEach(srv => srv.addResource(path,resourceListener));
     }
 
     public removeResourceListener(path : string) {
         console.log(`Servient removing ResourceListener '${path}'`);
         this.listeners.delete(path);
-        this.servers.forEach(srv => srv.removeResource(path))
+        this.servers.forEach(srv => srv.removeResource(path));
     }
 
     public addServer(server: ProtocolServer): boolean {
@@ -90,7 +101,7 @@ export default class Servient {
     }
 
     public getServers() : Array<ProtocolServer> {
-        return this.servers.slice(0)
+        return this.servers.slice(0);
     }
 
     public addClientFactory(clientFactory: ProtocolClientFactory): void {
@@ -126,9 +137,10 @@ export default class Servient {
     public addThing(thing: ExposedThing): boolean {
         if (!this.things.has(thing.name)) {
             this.things.set(thing.name, thing);
-            return true
-        } else
-            return false
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public getThing(name: string): ExposedThing {
