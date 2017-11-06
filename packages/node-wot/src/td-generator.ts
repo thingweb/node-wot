@@ -35,12 +35,8 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
     console.log(`generateTD() \n\`\`\`\n${thing}\n\`\`\``);
 
-
-
     /* new td model instance */
     let genTD:ThingDescription = new ThingDescription()
-
-
 
     console.log(`generateTD() assign name ${thing.name}`);
     genTD.name = thing.name
@@ -53,22 +49,19 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
       /* empty semantic type array*/
       interaction.semanticTypes = []
       /* assign interaction pattern to the rdf @type*/
-      if(interaction.pattern === TD.InteractionPattern.Property) {
-
-            interaction.semanticTypes.push("Property")
+      /* now done in td-parser.ts after split in pattern and semanticTypes
+      if (interaction.pattern === TD.InteractionPattern.Property) {
+        interaction.semanticTypes.push("Property");
+      } else if(interaction.pattern === TD.InteractionPattern.Action) {
+        interaction.semanticTypes.push("Action");
+      } else if (interaction.pattern === TD.InteractionPattern.Event) {
+        interaction.semanticTypes.push("Event");
       }
-      else if(interaction.pattern === TD.InteractionPattern.Action) {
-            interaction.semanticTypes.push("Action")
-
-      }
-      if(interaction.pattern === TD.InteractionPattern.Event) {
-          interaction.semanticTypes.push("Event")
-      }
-
+      */
 
       let l = 0
       /* for each address, supported protocol, and media type an intreaction resouce is generated */
-      for (let add of   Helpers.getAddresses()) {
+      for (let add of Helpers.getAddresses()) {
         for(let ser of servient.getServers()) {
           for(let med of servient.getSupportedMediaTypes()) {
 
@@ -102,11 +95,7 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
       }
       l=0 /* reset for next interactions */
-
-
     }
-
-
 
     return genTD;
 }

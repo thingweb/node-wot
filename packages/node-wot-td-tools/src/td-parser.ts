@@ -41,16 +41,22 @@ export function parseTDString(json: string): ThingDescription {
   // and, if "base" is given, normalize each Interaction link
   for (let interaction of td.interaction) {
 
-    // FIXME @mkovatsc Why does array.includes() not work?
-    if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString()) !== -1) {
+    // moving Interaction Pattern information to 'pattern' field
+    let indexProperty = interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString());
+    let indexAction = interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString());
+    let indexEvent = interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString());
+    if (indexProperty !== -1) {
       console.log(` * Property '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Property;
-    } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString()) !== -1) {
+      interaction.semanticTypes.splice(indexProperty, 1);
+    } else if (indexAction !== -1) {
       console.log(` * Action '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Action;
-    } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString()) !== -1) {
+      interaction.semanticTypes.splice(indexAction, 1);
+    } else if (indexEvent !== -1) {
       console.log(` * Event '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Event;
+      interaction.semanticTypes.splice(indexEvent, 1);
     } else {
       console.error(`parseTDString() found unknown Interaction pattern '${interaction.semanticTypes}'`);
     }
@@ -81,9 +87,14 @@ export function serializeTD(td: ThingDescription): string {
 
 //for (let i of td.interaction) console.log("######", i.outputData);
 
-// avoid enableTypeHints
- TypedJSON.config({"enableTypeHints": false});
- let json = TypedJSON.stringify(td);
+  // merging Interaction Pattern with semantic annotations
+  for (let interaction of td.interaction) {
+    interaction.semanticTypes.unshift(interaction.pattern.toString());
+  }
+
+  // avoid enableTypeHints
+  TypedJSON.config({"enableTypeHints": false});
+  let json = TypedJSON.stringify(td);
 
   // FIXME TypedJSON also stringifies undefined/null optional members
   let raw = JSON.parse(json)
@@ -94,6 +105,7 @@ export function serializeTD(td: ThingDescription): string {
     delete raw.base;
   }
   for (let interaction of raw.interaction) {
+    // cleaning empty fields
     if (interaction.inputData === null) { delete interaction.inputData; }
     if (interaction.outputData === null) { delete interaction.outputData; }
     if (interaction.writable === null) { delete interaction.writable; }
