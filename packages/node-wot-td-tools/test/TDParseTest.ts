@@ -106,6 +106,29 @@ let tdSample3 = `{
   ]
 }`;
 
+/** sample TD to check https://github.com/thingweb/node-wot/issues/58 */
+let tdSample4 = `{
+  "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+    "https://w3c.github.io/wot/w3c-wot-common-context.jsonld"
+    ,{"BACnet": "http://bacowl.sourceforge.net/2012/bacnet.ttl#/"}
+  ],
+  "@type": ["Thing"],
+  "name": "MyTemperatureThing2",
+  "interaction": [
+    {
+      "@type": ["Property", "BACnet:foo"],
+      "name": "temperature",
+      "outputData":  { "type": "number" },
+      "writable": true,
+      "link": [{
+        "href" : "coap://mytemp.example.com:5683/temp",
+        "mediaType": "application/json"
+        }]
+    }
+  ]
+}`;
+
+
 @suite("TD parsing/serialising")
 class TDParserTest {
 
@@ -209,5 +232,26 @@ class TDParserTest {
         expect(jsonActual).to.deep.equal(jsonExpected);
     }
 
+
+
+    @test "should parse TD Property with semantic annotation"() {
+      let td : ThingDescription = TDParser.parseTDString(tdSample4);
+
+      console.log("FOOO")
+      expect(td).to.have.property("context").that.has.lengthOf(3);
+      expect(td).to.have.property("semanticType").to.have.lengthOf(1);
+      expect(td.semanticType[0]).equals("Thing");
+      expect(td).to.have.property("name").that.equals("MyTemperatureThing2");
+      expect(td).to.not.have.property("base");
+
+      expect(td.interaction).to.have.lengthOf(1);
+      expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
+      expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
+      expect(td.interaction[0]).to.have.property("writable").that.equals(true);
+
+      expect(td.interaction[0].link).to.have.lengthOf(1);
+      expect(td.interaction[0].link[0]).to.have.property("mediaType").that.equals("application/json");
+      expect(td.interaction[0].link[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
+  }
    
 }

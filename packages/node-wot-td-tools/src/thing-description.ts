@@ -17,7 +17,7 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import { JsonMember, JsonObject } from 'typedjson-npm';
+import { JsonMember, JsonObject, JsonMemberOptions } from 'typedjson-npm';
 
 /** Internet Media Types */
 /*export enum MediaType {
@@ -131,8 +131,8 @@ export default class ThingDescription {
   public interaction: Array<Interaction>;
 
   /** @context information of the TD */
-  @JsonMember({ name: '@context', elements: String })
-  private context: Array<string>;
+  @JsonMember({ name: '@context', elements: Object })
+  private context: Array<any>;
 
   constructor() {
     this.context = ['http://w3c.github.io/wot/w3c-wot-td-context.jsonld'];
