@@ -19,20 +19,20 @@
 
 import ThingDescription from './thing-description';
 import * as TD from './thing-description';
-// import * as AddressHelper from 'node-wot-helpers';
 
-import { JsonMember, JsonObject, TypedJSON } from 'typedjson-npm';
+import {plainToClass, classToPlain} from "class-transformer";
+import "reflect-metadata";
 
 export function parseTDObject(td: Object): ThingDescription {
-  // FIXME Is this the best way to verify?
-  // disable TypeHints, otherwise __type member is added
-  return parseTDString(TypedJSON.stringify(td, { enableTypeHints: false }));
+  return plainToClass(ThingDescription, td);
 }
 
-export function parseTDString(json: string): ThingDescription {
 
+export function parseTDString(json: string, normalize?: boolean): ThingDescription {
   console.log(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
-  let td: ThingDescription = TypedJSON.parse(json, ThingDescription);
+  // declare type as single instance because plainToClass has multiple signatures
+  // see https://github.com/typestack/class-transformer/issues/97
+  let td: ThingDescription = plainToClass(ThingDescription, JSON.parse(json) as ThingDescription);
 
   if (td.security) console.log(`parseTDString() found security metadata`);
 
@@ -41,37 +41,43 @@ export function parseTDString(json: string): ThingDescription {
   // and, if "base" is given, normalize each Interaction link
   for (let interaction of td.interaction) {
 
-    // FIXME @mkovatsc Why does array.includes() not work?
-    if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString()) !== -1) {
-      console.log(` * Property '${interaction.name}'`);
-      interaction.pattern = TD.InteractionPattern.Property;
-    } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString()) !== -1) {
-      console.log(` * Action '${interaction.name}'`);
-      interaction.pattern = TD.InteractionPattern.Action;
-    } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString()) !== -1) {
-      console.log(` * Event '${interaction.name}'`);
-      interaction.pattern = TD.InteractionPattern.Event;
+    if(interaction.semanticTypes && interaction.semanticTypes.length > 0) {
+      if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString()) !== -1) {
+        console.log(` * Property '${interaction.name}'`);
+        interaction.pattern = TD.InteractionPattern.Property;
+      } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString()) !== -1) {
+        console.log(` * Action '${interaction.name}'`);
+        interaction.pattern = TD.InteractionPattern.Action;
+      } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString()) !== -1) {
+        console.log(` * Event '${interaction.name}'`);
+        interaction.pattern = TD.InteractionPattern.Event;
+      } else {
+        console.error(`parseTDString() found unknown Interaction pattern '${interaction.semanticTypes}'`);
+      }
     } else {
-      console.error(`parseTDString() found unknown Interaction pattern '${interaction.semanticTypes}'`);
+      console.error(`parseTDString() found no Interaction pattern`);
     }
 
-    /* if a base uri is used normalize all relative hrefs in links */
-    if (td.base !== undefined) {
-      console.log(`parseTDString() applying base '${td.base}' to href '${interaction.link[0].href}'`);
+    if(normalize == null || normalize) {
+      /* if a base uri is used normalize all relative hrefs in links */
+      if (td.base !== undefined) {
+        console.log(`parseTDString() applying base '${td.base}' to href '${interaction.link[0].href}'`);
 
-      let href: string = interaction.link[0].href;
+        let href: string = interaction.link[0].href;
 
-      let url = require('url');
+        let url = require('url');
 
-      /* url modul works only for http --> so replace any protocol to
-      http and after resolving replace orign protocol back*/
-      let n: number = td.base.indexOf(':');
-      let pr: string = td.base.substr(0, n + 1); // save origin protocol
-      let uriTemp: string = td.base.replace(pr, 'http:'); // replace protocol
-      uriTemp = url.resolve(uriTemp, href) // URL resolving
-      uriTemp = uriTemp.replace('http:', pr); // replace protocol back to origin
-      interaction.link[0].href = uriTemp;
+        /* url modul works only for http --> so replace any protocol to
+        http and after resolving replace orign protocol back*/
+        let n: number = td.base.indexOf(':');
+        let pr: string = td.base.substr(0, n + 1); // save origin protocol
+        let uriTemp: string = td.base.replace(pr, 'http:'); // replace protocol
+        uriTemp = url.resolve(uriTemp, href) // URL resolving
+        uriTemp = uriTemp.replace('http:', pr); // replace protocol back to origin
+        interaction.link[0].href = uriTemp;
+      }
     }
+
   }
 
   return td;
@@ -79,34 +85,8 @@ export function parseTDString(json: string): ThingDescription {
 
 export function serializeTD(td: ThingDescription): string {
 
-//for (let i of td.interaction) console.log("######", i.outputData);
-
-// avoid enableTypeHints
- TypedJSON.config({"enableTypeHints": false});
- let json = TypedJSON.stringify(td);
-
-  // FIXME TypedJSON also stringifies undefined/null optional members
-  let raw = JSON.parse(json)
-  if (td.security === null || td.security === undefined) {
-    delete raw.security;
-  }
-  if (td.base === null || td.base === undefined) {
-    delete raw.base;
-  }
-  for (let interaction of raw.interaction) {
-    if (interaction.inputData === null) { delete interaction.inputData; }
-    if (interaction.outputData === null) { delete interaction.outputData; }
-    if (interaction.writable === null) { delete interaction.writable; }
-    // FIXME TypedJSON also converts Array to Object with number keys
-    if (interaction.outputData && interaction.outputData.required !== undefined) {
-      console.log("### HOTFIX for TypedJSON ###");
-      let reqs = [];
-      for (let req in interaction.outputData.required) reqs.push(interaction.outputData.required[req]);
-      interaction.outputData.required = reqs;
-    }
-  }
-  json = JSON.stringify(raw);
-  // End of workaround
+  let jsonc = classToPlain(td);
+  let json = JSON.stringify(jsonc);
 
   console.log(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
 
