@@ -17,7 +17,9 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import { JsonMember, JsonObject } from 'typedjson-npm';
+// import { JsonMember, JsonObject } from 'typedjson-npm';
+import {Type, Expose, Exclude} from "class-transformer";
+import "reflect-metadata";
 
 /** Internet Media Types */
 /*export enum MediaType {
@@ -38,12 +40,9 @@ export enum InteractionPattern {
  * Internal links information of an Interaction
  * NOTE must be declared before Interaction for TypedJSON
  */
-@JsonObject()
 export class ThingSecurity {
-  @JsonMember({ isRequired: true, type: String })
   public mode: string;
 
-  @JsonMember({ type: String })
   public proxy: string;
 }
 
@@ -51,15 +50,12 @@ export class ThingSecurity {
  * Internal links information of an Interaction
  * NOTE must be declared before Interaction for TypedJSON
  */
-@JsonObject()
 export class InteractionLink {
 
   /** relativ or absulut URI path of the Interaction resource */
-  @JsonMember({ isRequired: true, type: String })
   public href: string;
 
   /** used mediaType of the interacion resources */
-  @JsonMember({ isRequired: true, type: String })
   public mediaType: string;
 }
 
@@ -67,34 +63,29 @@ export class InteractionLink {
  * Internal data structure for an Interaction
  * NOTE must be declared before ThingDescription for TypedJSON
  */
-@JsonObject({ knownTypes: [InteractionLink] })
 export class Interaction {
   /** @ type information of the Interaction */
-  @JsonMember({ name: '@type', isRequired: true, elements: String })
+  @Expose({ name: "@type" })
   public semanticTypes: Array<string>;
 
   /** name/identifier of the Interaction */
-  @JsonMember({ isRequired: true, type: String })
   public name: string;
 
   /** type of the Interaction (action, property, event) */
+  @Exclude()
   public pattern: InteractionPattern;
 
   /** link information of the Interaction resources */
-  @JsonMember({ isRequired: true, elements: InteractionLink })
   public link: Array<InteractionLink>;
 
   /** writable flag for the Property */
-  @JsonMember({ type: Boolean })
   public writable: boolean;
 
   // TODO: how to handle types internally?
   /** JSON Schema for input */
-  @JsonMember({ type: Object })
   public inputData: any;
 
   /** JSON Schema for output */
-  @JsonMember({ type: Object })
   public outputData: any;
 
   constructor() {
@@ -103,36 +94,75 @@ export class Interaction {
   }
 }
 
+export class PrefixedContext {
+  public prefix: string;
+  public context: string;
+
+  constructor(prefix: string, context: string) {
+    this.prefix = prefix;
+    this.context = context;
+  }
+
+}
+
 /**
  * structured type representing a TD for internal usage
  * NOTE must be defined after Interaction and InteractionLink
  */
-@JsonObject({ knownTypes: [Interaction] })
 export default class ThingDescription {
 
   /** @ type information, usually 'Thing' */
-  @JsonMember({ name: '@type', elements: String })
+  @Expose({ name: "@type" })
   public semanticType: Array<string>;
 
   /** human-readable name of the Thing */
-  @JsonMember({ isRequired: true, type: String })
   public name: string;
 
   /** security metadata */
-  @JsonMember({ type: Object })
   public security: Object;
 
   /** base URI of the Interaction resources */
-  @JsonMember({ type: String })
   public base: string;
 
   /** Interactions of this Thing */
-  @JsonMember({ isRequired: true, elements: Interaction })
+  @Type(() => Interaction)
   public interaction: Array<Interaction>;
 
   /** @context information of the TD */
-  @JsonMember({ name: '@context', elements: String })
-  private context: Array<string>;
+  @Expose({ name: "@context" })
+  private context: Array<string | object>;
+
+  public getSimpleContexts() :  Array<string> {
+    // @DAPE: Shall we cache created list?
+    let contexts : Array<string> = [];
+    if(this.context != null) {
+      for(let cnt of this.context) {
+        if(typeof cnt == "string") {
+          let c : string = cnt as string;
+          contexts.push(c);
+        }
+      }
+    }
+    return contexts;
+  } 
+
+  public getPrefixedContexts() :  Array<PrefixedContext> {
+    // @DAPE: Shall we cache created list?
+    let contexts : Array<PrefixedContext> = [];
+    if(this.context != null) {
+      for(let cnt of this.context) {
+        if(typeof cnt == "object") {
+          let c : any = cnt as any;
+          let keys = Object.keys(c);
+          for(let pfx of keys) {
+            let v = c[pfx];
+            contexts.push(new PrefixedContext(pfx, v));
+          }
+        }
+      }
+    }
+    return contexts;
+  } 
 
   constructor() {
     this.context = ['http://w3c.github.io/wot/w3c-wot-td-context.jsonld'];

@@ -83,27 +83,30 @@ export default class WoTImpl implements WoT.WoTFactory {
      * @param name name/identifier of the thing to be created
      */
     expose(init: WoT.ThingInit): Promise<ExposedThing> {
-        return new Promise<ExposedThing>((resolve, reject) => {
-            console.info(`WoTImpl creating new ExposedThing '${init.name}'`);
-            let td: ThingDescription = new ThingDescription();
-            td.name = init.name;
-            let mything = new ExposedThing(this.srv, td); // init.name
-            if (this.srv.addThing(mything)) {
-                resolve(mything);
-            } else {
-                reject(new Error("WoTImpl could not create Thing: " + mything))
-            }
-        });
+        if(init.description) {
+            console.info(`WoTImpl creating new ExposedThing based on a given description`);
+            let td: ThingDescription = TDParser.parseTDObject(init.description);
+            return this.createFromDescription(td);
+        } else {
+            return new Promise<ExposedThing>((resolve, reject) => {
+                console.info(`WoTImpl creating new ExposedThing '${init.name}'`);
+                let td: ThingDescription = new ThingDescription();
+                td.name = init.name;
+                let mything = new ExposedThing(this.srv, td); // init.name
+                if (this.srv.addThing(mything)) {
+                    resolve(mything);
+                } else {
+                    reject(new Error("WoTImpl could not create Thing: " + mything))
+                }
+            });
+        }
     }
 
-    createFromDescription(thingDescription: ThingDescription): Promise<WoT.ExposedThing> {
+    createFromDescription(thingDescription: ThingDescription): Promise<ExposedThing> {
         return new Promise((resolve, reject) => {
             //not necessary to parse if it is already obj
-            //let thingdesc = TDParser.parseTDObject(thingDescription);
             console.info(`WoTImpl creating new ExposedThing from object`);
-            let td: ThingDescription;
-            td.name = thingDescription.name;
-            let myThing = new ExposedThing(this.srv, td); // thingDescription.name
+            let myThing = new ExposedThing(this.srv, thingDescription); // thingDescription.name
             if (this.srv.addThing(myThing)) {
                 //add base field
                 //add actions:
@@ -115,48 +118,41 @@ export default class WoTImpl implements WoT.WoTFactory {
                     let interTypes = currentInter['semanticTypes'];
                     if (interTypes.indexOf("Action") > -1) {
                         let actionName: string = currentInter.name;
-                        // try{
-                            let inputValueType: Object = currentInter.inputData.valueType;
-                            let outputValueType: Object = currentInter.outputData.valueType;
-                            let init: WoT.ThingActionInit;
-                            init.name = actionName;
-                            // TODO inputValueType,outputValueType
-                            myThing.addAction(init); // actionName,inputValueType,outputValueType
-                        // }catch(err){
-                        //     //it means that we couldn't find the input AND output, we'll try individual cases
-                        //     try{
-                        //         let inputValueType: Object = currentInter.inputData.valueType;
-                        //         myThing.addAction(actionName,inputValueType);
-                        //     } catch (err2){
-                        //         try{
-                        //             let outputValueType: Object = currentInter.outputData.valueType;
-                        //             myThing.addAction(actionName,{},outputValueType);
-                        //         }catch(err3){
-                        //             //worst case, we just create with the name
-                        //                     //should there be the semantics case as well?
-                        //             myThing.addAction(actionName);
-                        //         }
-                        //     }      
-                        // } 
+                        let inputValueType: Object = null;
+                        if(currentInter.inputData) {
+                            inputValueType = currentInter.inputData.valueType;
+                        }
+                        let outputValueType: Object = null;
+                        if( currentInter.outputData) {
+                            outputValueType = currentInter.outputData.valueType; 
+                        }
+                        let init: WoT.ThingActionInit = {
+                            name : actionName,
+                            inputDataDescription : JSON.stringify(inputValueType),
+                            outputDataDescription : JSON.stringify(outputValueType),
+                            action : undefined
+                        };
+                        myThing.addAction(init);
                     } else if (interTypes.indexOf("Property") > -1) {
                         //maybe there should be more things added?
                         let propertyName: string = currentInter.name;
                         let outputValueType: Object = currentInter.outputData.valueType;
-                        let init : WoT.ThingPropertyInit;
-                        init.name = propertyName;
-                        myThing.addProperty(init); // propertyName, outputValueType
-                        
-                        
+                        let init : WoT.ThingPropertyInit = {
+                            name : propertyName,
+                            description : JSON.stringify(outputValueType),
+                            value : undefined
+                        };
+                        myThing.addProperty(init);
                     } else if (interTypes.indexOf("Event") > -1) {
                         //currently there isnt much implemented that's why I add only the name and nothing else
                         let eventName: string = currentInter.name;
-                        let init : WoT.ThingEventInit;
-                        init.name = eventName;
-                        myThing.addEvent(init); // eventName
+                        let init : WoT.ThingEventInit = {
+                            name : eventName
+                        };
+                        myThing.addEvent(init);
                     } else {
                         console.info("Wrong interaction type for number ", i);
                     }
-
                 }
                 resolve(myThing);
             } else {

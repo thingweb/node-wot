@@ -106,6 +106,86 @@ let tdSample3 = `{
   ]
 }`;
 
+/** sample TD json-ld string from the CP page*/
+let tdSampleLemonbeatBurlingame = `{
+	"@context": [
+		"http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+		{
+			"actuator": "http://example.org/actuator#",
+			"sensor": "http://example.org/sensors#"
+		}
+	],
+	"@type": ["Thing"],
+	"name": "LemonbeatThings",
+	"base": "http://192.168.1.176:8080/",
+	"interaction": [
+		{
+			"@type": ["Property","sensor:luminance"],
+			"name": "luminance",
+			"sensor:unit": "sensor:Candela",
+			"outputData": { "type": "number" },
+			"writable": false,
+			"observable": true,
+			"link": [{
+				"href" : "sensors/luminance", 
+				"mediaType": "application/json"
+			}]
+		},
+		{
+			"@type": ["Property","sensor:humidity"],
+			"name": "humidity",
+			"sensor:unit": "sensor:Percent",
+			"outputData": { "type": "number" },
+			"writable": false,
+			"observable": true,
+			"link": [{
+				"href" : "sensors/humidity", 
+				"mediaType": "application/json"
+			}]
+		},
+		{
+			"@type": ["Property","sensor:temperature"],
+			"name": "temperature",
+			"sensor:unit": "sensor:Celsius",
+			"outputData": { "type": "number" },
+			"writable": false,
+			"observable": true,
+			"link": [{
+				"href" : "sensors/temperature", 
+				"mediaType": "application/json"
+			}]
+		},
+		{
+			"@type": ["Property","actuator:onOffStatus"],
+			"name": "status",
+			"outputData": { "type": "boolean" },
+			"writable": false,
+			"observable": true,
+			"link": [{
+				"href" : "fan/status",
+				"mediaType": "application/json"
+			}]
+		},
+		{
+			"@type": ["Action","actuator:turnOn"],
+			"name": "turnOn",
+			"link": [{
+				"href" : "fan/turnon",
+				"mediaType": "application/json"
+			}]									
+		},
+		{
+			"@type": ["Action","actuator:turnOff"],
+			"name": "turnOff",
+			"link": [{
+				"href" : "fan/turnoff",
+				"mediaType": "application/json"
+			}]									
+		}
+	]
+}`;
+
+
 @suite("TD parsing/serialising")
 class TDParserTest {
 
@@ -184,6 +264,7 @@ class TDParserTest {
     }
 
     @test "should return same TD in round-trips"() {
+        // sample1
         let td1 : ThingDescription = TDParser.parseTDString(tdSample1)
         let newJson1 = TDParser.serializeTD(td1);
 
@@ -192,22 +273,48 @@ class TDParserTest {
 
         expect(jsonActual).to.deep.equal(jsonExpected);
 
+        // sample2
         let td2 : ThingDescription = TDParser.parseTDString(tdSample2)
         let newJson2 = TDParser.serializeTD(td2);
 
-        jsonExpected = JSON.parse(tdSample1);
-        jsonActual = JSON.parse(newJson1);
+        jsonExpected = JSON.parse(tdSample2);
+        jsonActual = JSON.parse(newJson2);
 
         expect(jsonActual).to.deep.equal(jsonExpected);
 
-        let td3 : ThingDescription = TDParser.parseTDString(tdSample3)
+        // sample3
+        // Note: avoid href normalization in this test-case
+        // "href": "coap://mytemp.example.com:5683/interactions/temp" vs "href": "temp"
+        let td3 : ThingDescription = TDParser.parseTDString(tdSample3, false)
         let newJson3 = TDParser.serializeTD(td3);
 
-        jsonExpected = JSON.parse(tdSample1);
-        jsonActual = JSON.parse(newJson1);
+        jsonExpected = JSON.parse(tdSample3);
+        jsonActual = JSON.parse(newJson3);
 
         expect(jsonActual).to.deep.equal(jsonExpected);
-    }
 
+        // sampleLemonbeatBurlingame
+        // Note: avoid href normalization in this test-case
+        let tdLemonbeatBurlingame : ThingDescription = TDParser.parseTDString(tdSampleLemonbeatBurlingame, false)
+        // simple contexts
+        let scs = tdLemonbeatBurlingame.getSimpleContexts();
+        expect(scs).to.have.lengthOf(1);
+        expect(scs[0]).that.equals("http://w3c.github.io/wot/w3c-wot-td-context.jsonld");
+        // prefixed contexts
+        let pcs = tdLemonbeatBurlingame.getPrefixedContexts();
+        expect(pcs).to.have.lengthOf(2);
+        expect(pcs[0].prefix).that.equals("actuator");
+        expect(pcs[0].context).that.equals("http://example.org/actuator#");
+        expect(pcs[1].prefix).that.equals("sensor");
+        expect(pcs[1].context).that.equals("http://example.org/sensors#");
+
+        let newJsonLemonbeatBurlingame = TDParser.serializeTD(tdLemonbeatBurlingame);
+
+        jsonExpected = JSON.parse(tdSampleLemonbeatBurlingame);
+        jsonActual = JSON.parse(newJsonLemonbeatBurlingame);
+
+        expect(jsonActual).to.deep.equal(jsonExpected);
+        
+    }
    
 }

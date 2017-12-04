@@ -3,7 +3,7 @@ const NAME_PROPERTY_COUNT = "count";
 const NAME_ACTION_INCREMENT = "increment";
 const NAME_ACTION_DECREMENT = "decrement";
 
-WoT.expose({name: "counter", url: "", description : {}})
+WoT.expose({name: "counter", url: "", description : undefined})
     .then(function(thing) {
         console.log("created " + thing.name);
 
