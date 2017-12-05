@@ -68,7 +68,8 @@ function main() {
   let thingInit : WoT.ThingInit;
   thingInit.name = 'unicorn'; 
 
-  wot.expose(thingInit).then(thing => {
+  let thing = wot.expose(thingInit);
+  //wot.expose(thingInit).then(thing => {
     unicorn = thing;
     let thingPropertyInitBrightness : WoT.ThingPropertyInit;
     thingPropertyInitBrightness.name = 'brightness';
@@ -155,7 +156,7 @@ function main() {
     // unicorn.setProperty('color', { r: 0, g: 0, b: 0 });
   // };
 
-  });
+  //});
 }
 
 // helper

@@ -51,7 +51,8 @@ function main() {
   //  WoT.consumeDescriptionUri("http://192.168.0.152/td").then(thing => {
   //WoT.consumeDescriptionUri("http://plugfest.thingweb.io:8088/things/counter").then(thing => {
   /* panasonic TD */
-  WoT.consume('http://w3c-ubuntu.cloudapp.net/client/jsonld/airConditioner_p1.jsonld').then(thing => {
+  WoT.fetchTD('http://w3c-ubuntu.cloudapp.net/client/jsonld/airConditioner_p1.jsonld').then(tds => {
+    let thing = WoT.consume(tds);
     //      logger.info("Things base " + );
 
 

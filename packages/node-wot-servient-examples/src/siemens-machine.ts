@@ -24,8 +24,8 @@ let tlvl = 0;
 
 // logger.level = 'silly'
 
-WoT.consume('coap://w3cwot.sytes.net:5688/tdv2')
-  .then(thing => pump = thing)
+WoT.fetchTD('coap://w3cwot.sytes.net:5688/tdv2')
+  .then(td => pump = WoT.consume(td))
   .then(() => WoT.consume('coap://w3cwot.sytes.net:5689/tdv2'))
   .then(thing => valve = thing)
   .then(() => WoT.consume('coap://w3cwot.sytes.net:5686/tdv2'))

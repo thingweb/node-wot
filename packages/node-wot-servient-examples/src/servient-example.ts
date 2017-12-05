@@ -53,7 +53,8 @@ async.series([
 
     console.log(`\n# Consuming Thing over HTTP\n`);
 
-    wot.consume('http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld').then((thing) => {
+    wot.fetchTD('http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld').then((td) => {
+      let thing = wot.consume(td);
       console.log(`### Thing name: ${thing.name}`);
       thing.getProperty('myProp').then((res) => {
         console.log(`### myProp value: ${res}`);
@@ -135,7 +136,8 @@ async.series([
 
     let thingInit : WoT.ThingInit; //  = {"name": "d", "url" : null, "description" : null};
     thingInit.name = "led";
-    WoTs.expose(thingInit).then(led => {
+    let led = WoTs.expose(thingInit);
+    //WoTs.expose(thingInit).then(led => {
       // property brightness
       let tpBrightness : WoT.ThingPropertyInit;
       tpBrightness.name = "brightness";
@@ -177,7 +179,7 @@ async.series([
       ;
 
       next();
-    });
+    //});
 
 
     // WoT.createThing('led').then(led => {

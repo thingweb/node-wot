@@ -219,8 +219,9 @@ class WoTClientTest {
         );
 
         // JSON.stringify(myThingDesc)
-        WoTClientTest.WoT.consume("data://" + "tdFoo")
-            .then((thing) => {
+        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+            .then((td) => {
+                let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
                 return thing.getProperty("aProperty");
@@ -242,8 +243,9 @@ class WoTClientTest {
         )
 
         // JSON.stringify(myThingDesc)
-        WoTClientTest.WoT.consume("data://" + "tdFoo")
-            .then((thing) => {
+        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+            .then((td) => {
+                let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
                 return thing.setProperty("aProperty", 23);
@@ -262,8 +264,9 @@ class WoTClientTest {
         )
 
         // JSON.stringify(myThingDesc)
-        WoTClientTest.WoT.consume("data://" + "tdFoo")
-            .then((thing) => {
+        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+            .then((td) => {
+                let thing = WoTClientTest.WoT.consume(td);
                 thing.should.not.be.null;
                 thing.name.should.equal("aThing");
                 return thing.invokeAction("anAction", 23);
