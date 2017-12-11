@@ -162,10 +162,10 @@ class WoTServerTest {
                 description: JSON.stringify({ "type": "number" }),
                 value:  10
             };
-            return thing.addProperty(initp).setProperty("number", 5).then(value => {
+            return thing.addProperty(initp).writeProperty("number", 5).then(value => {
                 expect(value).to.equal(5);
             })
-            .then(() => thing.getProperty("number"))
+            .then(() => thing.readProperty("number"))
             .then(value => {
                 expect(value).to.equal(5);
             });
@@ -189,7 +189,7 @@ class WoTServerTest {
             expect(listener).to.exist;
             listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
             return listener.onWrite({mediaType: undefined, body: new Buffer("5") }).then(() => {
-                return thing.getProperty("prop1").then((value) => expect(value).to.equal(5));
+                return thing.readProperty("prop1").then((value) => expect(value).to.equal(5));
             });
         // });
     }
@@ -211,7 +211,7 @@ class WoTServerTest {
             expect(listener).to.exist;
             listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
 
-            return thing.setProperty("prop1", 23).then((value) => {
+            return thing.writeProperty("prop1", 23).then((value) => {
                 return listener.onRead().then((content) => {
                     content.should.deep.equal({ mediaType: "application/json", body: new Buffer("23") });
                 });
@@ -236,7 +236,7 @@ class WoTServerTest {
             expect(listener).to.exist;
             listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
             return listener.onWrite({mediaType: undefined, body: new Buffer("42") }).then(() => {
-                return thing.getProperty("prop1").then((value) => {
+                return thing.readProperty("prop1").then((value) => {
                     value.should.equal(42);
                     return listener.onRead().then((content) => {
                         content.body.should.deep.equal(new Buffer("42"));
