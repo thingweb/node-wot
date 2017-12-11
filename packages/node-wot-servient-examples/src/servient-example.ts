@@ -56,11 +56,11 @@ async.series([
     wot.fetchTD('http://people.inf.ethz.ch/mkovatsc/test/thing/td.jsonld').then((td) => {
       let thing = wot.consume(td);
       console.log(`### Thing name: ${thing.name}`);
-      thing.getProperty('myProp').then((res) => {
+      thing.readProperty('myProp').then((res) => {
         console.log(`### myProp value: ${res}`);
-        thing.setProperty('myProp', '4711').then((res) => {
+        thing.writeProperty('myProp', '4711').then((res) => {
           console.log(`### myProp set successfully`);
-          thing.getProperty('myProp').then((res) => {
+          thing.readProperty('myProp').then((res) => {
             console.log(`### myProp value: ${res}`);
             thing.invokeAction('myAction', '').then((res) => {
               console.log(`### myAction result: ${res}`);

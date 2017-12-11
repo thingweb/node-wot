@@ -57,7 +57,7 @@ function main() {
 
 
     // let tdObj = thing.getDescription()
-    let tdObj = thing.description;
+    let tdObj = thing.td;
     let td: ThingDescription = TDParser.parseTDObject(tdObj)
 
     console.info('TD name = ' + td.name)
@@ -68,7 +68,7 @@ function main() {
 
       if (interaction.pattern === TD.InteractionPattern.Property) {
 
-        console.info('call  = ' + thing.getProperty(interaction.name))
+        console.info('call  = ' + thing.readProperty(interaction.name))
       }
 
 

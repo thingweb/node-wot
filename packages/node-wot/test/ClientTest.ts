@@ -224,7 +224,7 @@ class WoTClientTest {
                 let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
-                return thing.getProperty("aProperty");
+                return thing.readProperty("aProperty");
             })
             .then((value) => {
                 expect(value).not.to.be.null;
@@ -248,7 +248,7 @@ class WoTClientTest {
                 let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
-                return thing.setProperty("aProperty", 23);
+                return thing.writeProperty("aProperty", 23);
             })
             .then(() => done())
             .catch(err => { throw err })

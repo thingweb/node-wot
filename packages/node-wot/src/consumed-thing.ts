@@ -35,18 +35,17 @@ interface ClientAndLink {
 export default class ConsumedThing implements WoT.ConsumedThing {
 
     readonly name: string;
-    readonly url: USVString;
-    readonly description: WoT.ThingDescription;
+    readonly td: WoT.ThingDescription;
 
-    protected readonly td: ThingDescription;
+    protected readonly _td: ThingDescription;
     protected readonly srv: Servient;
     private clients: Map<string, ProtocolClient> = new Map();
 
-    constructor(servient: Servient, td: ThingDescription) {
+    constructor(servient: Servient, _td: ThingDescription) {
         this.srv = servient
-        this.name = td.name;
-        this.td = td;
-        this.description = JSON.stringify(td);
+        this.name = _td.name;
+        this._td = _td;
+        this.td = JSON.stringify(_td);
         console.info(`ConsumedThing '${this.name}' created`);
     }
 
@@ -73,10 +72,10 @@ export default class ConsumedThing implements WoT.ConsumedThing {
             let client = this.srv.getClientFor(schemes[srvIdx]);
             if (client) {
                 console.log(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
-                if (this.td.security) {
+                if (this._td.security) {
                     console.warn("ConsumedThing applying security metadata");
-                    console.dir(this.td.security);
-                    client.setSecurity(this.td.security);
+                    console.dir(this._td.security);
+                    client.setSecurity(this._td.security);
                 }
                 this.clients.set(schemes[srvIdx], client);
                 let link = links[srvIdx];
@@ -88,7 +87,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     }
 
     private findInteraction(name: string, type: TD.InteractionPattern) {
-        let res = this.td.interaction.filter((ia) => ia.pattern === type && ia.name === name)
+        let res = this._td.interaction.filter((ia) => ia.pattern === type && ia.name === name)
         return (res.length > 0) ? res[0] : null;
     }
 
@@ -96,7 +95,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
      * Read a given property
      * @param propertyName Name of the property
      */
-    getProperty(propertyName: string): Promise<any> {
+    readProperty(propertyName: string): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.InteractionPattern.Property);
             if (!property) {
@@ -120,11 +119,11 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     }
 
     /**
-     * Set a given property
+     * Write a given property
      * @param Name of the property
      * @param newValue value to be set
      */
-    setProperty(propertyName: string, newValue: any): Promise<any> {
+    writeProperty(propertyName: string, newValue: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.InteractionPattern.Property);
             if (!property) {
@@ -173,19 +172,12 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         });
     }
 
-    addListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing {    
-        return this
-    }
-    removeListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing { return this }
-    removeAllListeners(eventName: string): ConsumedThing { return this }
-
-    observe(name: string, requestType: WoT.RequestType): Observable<any> { return null }
-
-
-    // /**
-    //  * Retrive the thing description for this object
-    //  */
-    // getDescription(): Object {
-    //     return this.td;
+    // addListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing {    
+    //     return this
     // }
+    // removeListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing { return this }
+    // removeAllListeners(eventName: string): ConsumedThing { return this }
+
+    getObservable(name: string): Observable<any> { return null }
+
 }

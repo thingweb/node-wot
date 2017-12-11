@@ -14,6 +14,6 @@ WoTs.fetchTD('http://192.168.0.23:8080/unicorn').then(td => {
   setInterval(() => {
     bright += 10;
     if (bright >= 255) bright = 0;
-    thing.setProperty('brightness', bright)
+    thing.writeProperty('brightness', bright)
   }, 1000)
 })
