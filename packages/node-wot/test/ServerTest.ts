@@ -82,9 +82,7 @@ class WoTServerTest {
 
     @test "should be able to add a thing"() {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
-            name : "myThing", 
-            url : "", 
-            description : undefined
+            name : "myThing"
         });
         
         //.then(thing => {
@@ -94,70 +92,68 @@ class WoTServerTest {
     }
 
     
-    @test "should be able to add a thing based on a given description"() {
-        let desc = `{
-            "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
-            "@type": ["Thing"],
-            "name": "myThingX",
-            "interaction": []
-        }`;
+    // @test "should be able to add a thing based on a given description"() {
+    //     let desc = `{
+    //         "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+    //         "@type": ["Thing"],
+    //         "name": "myThingX",
+    //         "interaction": []
+    //     }`;
 
-        let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
-            name : "undefined", 
-            url : "", 
-            description : JSON.parse(desc)
-        });
-        // .then(thing => {
-            expect(thing).to.exist;
-            expect(thing).to.have.property("name", "myThingX");
-        //});
-    }    
+    //     let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
+    //         name : "undefined", 
+    //         url : "", 
+    //         description : JSON.parse(desc)
+    //     });
+    //     // .then(thing => {
+    //         expect(thing).to.exist;
+    //         expect(thing).to.have.property("name", "myThingX");
+    //     //});
+    // }    
 
 
-    @test "should be able to add a thing based on a given description with property&action"() {
-        let desc = `{
-            "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
-            "@type": ["Thing"],
-            "name": "myThingY",
-            "interaction": [
-                {
-                    "@type": ["Property"],
-                    "name": "humidity",
-                    "outputData": { "type": "number" },
-                    "writable": false,
-                    "link": [{
-                      "href" : "/humid",
-                      "mediaType": "application/json"
-                      }]
-                }
-                ,
-                {
-                    "@type": ["Action"],
-                    "name": "toggle",
-                    "link": [{
-                        "href": "coaps://mylamp.example.com:5683/toggle",
-                        "mediaType": "application/json"
-                    }]
-                }
-            ]
-        }`;
+    // @test "should be able to add a thing based on a given description with property&action"() {
+    //     let desc = `{
+    //         "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+    //         "@type": ["Thing"],
+    //         "name": "myThingY",
+    //         "interaction": [
+    //             {
+    //                 "@type": ["Property"],
+    //                 "name": "humidity",
+    //                 "outputData": { "type": "number" },
+    //                 "writable": false,
+    //                 "link": [{
+    //                   "href" : "/humid",
+    //                   "mediaType": "application/json"
+    //                   }]
+    //             }
+    //             ,
+    //             {
+    //                 "@type": ["Action"],
+    //                 "name": "toggle",
+    //                 "link": [{
+    //                     "href": "coaps://mylamp.example.com:5683/toggle",
+    //                     "mediaType": "application/json"
+    //                 }]
+    //             }
+    //         ]
+    //     }`;
 
-        let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
-            name : "undefined", 
-            url : "", 
-            description : JSON.parse(desc)
-        });
-        //.then(thing => {
-            expect(thing).to.exist;
-            expect(thing).to.have.property("name", "myThingY");
-        // });
-    } 
+    //     let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
+    //         name : "undefined", 
+    //         url : "", 
+    //         description : JSON.parse(desc)
+    //     });
+    //     //.then(thing => {
+    //         expect(thing).to.exist;
+    //         expect(thing).to.have.property("name", "myThingY");
+    //     // });
+    // } 
 
     @test "should be able to add a property, read it and write it locally"() {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
-            name : "otherthing", 
-            url : "", 
-            description : undefined
+            name : "otherthing"
         });
         // .then(thing => {
             let initp : WoT.ThingPropertyInit = {
@@ -178,9 +174,7 @@ class WoTServerTest {
 
     @test "should be able to add a property, assign it via listener and read it locally"() {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
-            name : "thing3", 
-            url : "", 
-            description : undefined
+            name : "thing3"
         });
         // .then(thing => {
             let initp : WoT.ThingPropertyInit = {
@@ -202,9 +196,7 @@ class WoTServerTest {
 
     @test "should be able to add a property, assign it locally and read it via listener"() {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
-            name : "thing4",
-            url : "",
-            description : undefined
+            name : "thing4"
         });
         // .then(thing => {
             let initp : WoT.ThingPropertyInit = {
@@ -229,9 +221,7 @@ class WoTServerTest {
 
     @test "should be able to add a property, assign and read it via listener"() {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
-            name : "thing5",
-            url : "",
-            description : undefined
+            name : "thing5"
         });
         //.then(thing => {
             let initp : WoT.ThingPropertyInit = {
@@ -258,9 +248,7 @@ class WoTServerTest {
 
     @test "should be able to add an action and invoke it locally"() {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
-            name : "thing6",
-            url : "",
-            description : undefined
+            name : "thing6"
         });
         //.then(thing => {
             let inita : WoT.ThingActionInit = {name: "action1", inputDataDescription: JSON.stringify({ "type": "number" }), outputDataDescription: JSON.stringify({ "type": "number" }), semanticTypes: undefined, action: undefined};
@@ -280,9 +268,7 @@ class WoTServerTest {
 
     @test "should be able to add an action and invoke it locally in ActionInit"() {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
-            name : "thing6b",
-            url : "",
-            description : undefined
+            name : "thing6b"
         });
         // .then(thing => {
             let inita : WoT.ThingActionInit = {
@@ -304,9 +290,7 @@ class WoTServerTest {
 
     @test "should be able to add an action and invoke it via listener"() {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
-            name : "thing7",
-            url : "",
-            description : undefined
+            name : "thing7"
         });
         // .then(thing => {
             let inita : WoT.ThingActionInit = {name: "action1", inputDataDescription: JSON.stringify({ "type": "number" }), outputDataDescription: JSON.stringify({ "type": "number" }), semanticTypes: undefined, action: undefined};

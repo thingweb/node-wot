@@ -134,7 +134,7 @@ async.series([
     let WoTs = srv.start();
     console.info('started servient')
 
-    let thingInit : WoT.ThingInit; //  = {"name": "d", "url" : null, "description" : null};
+    let thingInit : WoT.ThingTemplate; //  = {"name": "d", "url" : null, "description" : null};
     thingInit.name = "led";
     let led = WoTs.expose(thingInit);
     //WoTs.expose(thingInit).then(led => {

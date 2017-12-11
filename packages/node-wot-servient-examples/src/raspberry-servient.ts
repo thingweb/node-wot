@@ -65,7 +65,7 @@ function main() {
   let wot = servient.start();
   console.info('RaspberryServient started');
 
-  let thingInit : WoT.ThingInit;
+  let thingInit : WoT.ThingTemplate;
   thingInit.name = 'unicorn'; 
 
   let thing = wot.expose(thingInit);
