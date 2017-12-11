@@ -75,11 +75,11 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     }
 
     /**
-     * Set a given property
+     * Write a given property
      * @param Name of the property
      * @param newValue value to be set
      */
-    public setProperty(propertyName: string, newValue: any): Promise<any> {
+    public writeProperty(propertyName: string, newValue: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             let state = this.interactionStates[propertyName];
             if (state) {
@@ -100,7 +100,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
      * Read a given property
      * @param propertyName Name of the property
      */
-    public getProperty(propertyName: string): Promise<any> {
+    public readProperty(propertyName: string): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             let state = this.interactionStates[propertyName];
             if (state) {
