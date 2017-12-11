@@ -141,41 +141,47 @@ async.series([
       // property brightness
       let tpBrightness : WoT.ThingPropertyInit;
       tpBrightness.name = "brightness";
-      tpBrightness.value = 0;
+      tpBrightness.initValue = 0;
+      tpBrightness.onWrite = (old, nu) => {
+        console.log('New brightness: ' + nu);
+      };
       // property color
       let tpColor : WoT.ThingPropertyInit;
       tpColor.name = "color";
-      tpColor.value = { r: 0, g: 0, b: 0 };
+      tpColor.initValue = { r: 0, g: 0, b: 0 };
+      tpColor.onWrite = (old, nu) => {
+        console.log('New color: ' + nu);
+      };
       // action gradient
       let taGradient : WoT.ThingActionInit;
       taGradient.name = "gradient";
 
-      // requestHandler property brightness
-      let req : WoT.Request = {type: WoT.RequestType.property, from: null, name: null, options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
+      // // requestHandler property brightness
+      // let req : WoT.Request = {type: WoT.RequestType.property, from: null, name: null, options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
 
-      let rhpBrightness : WoT.RequestHandler;
-      rhpBrightness.request = req;
-      rhpBrightness.callback = () => {
-        console.log('New brightness: ' + req.data);
-      };
+      // let rhpBrightness : WoT.RequestHandler;
+      // rhpBrightness.request = req;
+      // rhpBrightness.callback = () => {
+      //   console.log('New brightness: ' + req.data);
+      // };
       // rhpBrightness.name = "brightness";
       // rhpBrightness.call = (nu, old) => {
       //   console.log('New brightness: ' + nu);
       // };
 
-      // requestHandler property color
-      let rhpColor : WoT.RequestHandler;
-      // rhpColor.name = "color";
-      rhpColor.callback.call = (nu, old) => {
-        console.log('New color: ' + nu);
-      };
+      // // requestHandler property color
+      // let rhpColor : WoT.RequestHandler;
+      // // rhpColor.name = "color";
+      // rhpColor.callback.call = (nu, old) => {
+      //   console.log('New color: ' + nu);
+      // };
 
       led
       .addProperty(tpBrightness)
       .addProperty(tpColor)
       .addAction(taGradient)
-      .onUpdateProperty(rhpBrightness)
-      .onUpdateProperty(rhpColor)
+      // .onUpdateProperty(rhpBrightness)
+      // .onUpdateProperty(rhpColor)
       ;
 
       next();

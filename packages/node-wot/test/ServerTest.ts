@@ -159,8 +159,8 @@ class WoTServerTest {
             let initp : WoT.ThingPropertyInit = {
                 name: "number", 
                 writable: true, 
-                description: JSON.stringify({ "type": "number" }),
-                value:  10
+                type: JSON.stringify({ "type": "number" }),
+                initValue:  10
             };
             return thing.addProperty(initp).writeProperty("number", 5).then(value => {
                 expect(value).to.equal(5);
@@ -180,8 +180,8 @@ class WoTServerTest {
             let initp : WoT.ThingPropertyInit = {
                 name: "prop1",
                 writable: true,
-                description: JSON.stringify({ "type": "number" }),
-                value: 10
+                type: JSON.stringify({ "type": "number" }),
+                initValue: 10
             };
             thing.addProperty(initp);
 
@@ -202,8 +202,8 @@ class WoTServerTest {
             let initp : WoT.ThingPropertyInit = {
                 name: "prop1", 
                 writable: true,
-                description: JSON.stringify({ "type": "number" }), 
-                value:  10
+                type: JSON.stringify({ "type": "number" }), 
+                initValue:  10
             };
             thing.addProperty(initp);
 
@@ -227,8 +227,8 @@ class WoTServerTest {
             let initp : WoT.ThingPropertyInit = {
                 name: "prop1",
                 writable: true, 
-                description: JSON.stringify({ "type": "number" }), 
-                value: 10
+                type: JSON.stringify({ "type": "number" }), 
+                initValue: 10
             };
             thing.addProperty(initp);
 
@@ -251,16 +251,31 @@ class WoTServerTest {
             name : "thing6"
         });
         //.then(thing => {
-            let inita : WoT.ThingActionInit = {name: "action1", inputDataDescription: JSON.stringify({ "type": "number" }), outputDataDescription: JSON.stringify({ "type": "number" }), semanticTypes: undefined, action: undefined};
+            let inita : WoT.ThingActionInit = {
+                name: "action1",
+                inputTypes: [JSON.stringify({ "type": "number" })],
+                outputType: JSON.stringify({ "type": "number" }),
+                semanticTypes: undefined,
+                action : function(request : any) : number {
+                    request.should.be.a("number");
+                    request.should.equal(23);
+                    return 42;
+                }
+                // action: function(request : any) : any {
+                //     request.should.be.a("number");
+                //     request.should.equal(23);
+                //     return 42;
+                // }
+            };
             thing.addAction(inita);
 
-            let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
+            // let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
 
-            thing.onInvokeAction({"request" : request, "callback" : request => {
-                request.should.be.a("number");
-                request.should.equal(23);
-                return 42;
-            }});
+            // thing.onInvokeAction({"request" : request, "callback" : request => {
+            //     request.should.be.a("number");
+            //     request.should.equal(23);
+            //     return 42;
+            // }});
 
             return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
         // })
@@ -273,10 +288,10 @@ class WoTServerTest {
         // .then(thing => {
             let inita : WoT.ThingActionInit = {
                 name: "action1", 
-                inputDataDescription: JSON.stringify({ "type": "number" }), 
-                outputDataDescription: JSON.stringify({ "type": "number" }), 
+                inputTypes: [JSON.stringify({ "type": "number" })], 
+                outputType: JSON.stringify({ "type": "number" }), 
                 semanticTypes: undefined, 
-                action: (newValue: any, oldValue: any) => {
+                action: function(newValue: any, oldValue: any) : number {
                     newValue.should.be.a("number");
                     newValue.should.equal(23);
                     return 42;
@@ -293,15 +308,25 @@ class WoTServerTest {
             name : "thing7"
         });
         // .then(thing => {
-            let inita : WoT.ThingActionInit = {name: "action1", inputDataDescription: JSON.stringify({ "type": "number" }), outputDataDescription: JSON.stringify({ "type": "number" }), semanticTypes: undefined, action: undefined};
+            let inita : WoT.ThingActionInit = {
+                name: "action1",
+                inputTypes: [JSON.stringify({ "type": "number" })],
+                outputType: JSON.stringify({ "type": "number" }),
+                semanticTypes: undefined,
+                action: function(request: any) : number {
+                    request.should.be.a("number");
+                    request.should.equal(23);
+                    return 42;
+                }
+            };
             thing.addAction(inita);
 
-            let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
-            thing.onInvokeAction({"request" : request, "callback" : request => {
-                request.should.be.a("number");
-                request.should.equal(23);
-                return 42;
-            }});
+            // let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
+            // thing.onInvokeAction({"request" : request, "callback" : request => {
+            //     request.should.be.a("number");
+            //     request.should.equal(23);
+            //     return 42;
+            // }});
             
             let listener = WoTServerTest.server.getListenerFor("/thing7/actions/action1");
             expect(listener).to.exist;

@@ -73,11 +73,14 @@ function main() {
     unicorn = thing;
     let thingPropertyInitBrightness : WoT.ThingPropertyInit;
     thingPropertyInitBrightness.name = 'brightness';
-    thingPropertyInitBrightness.value = 50;
+    thingPropertyInitBrightness.initValue = 50;
     // TODO valueType: { type: 'integer', minimum: 0, maximum: 255 }
     let thingPropertyInitColor : WoT.ThingPropertyInit;
     thingPropertyInitColor.name = 'color';
-    thingPropertyInitColor.value = { r: 0, g: 0, b: 0 };
+    thingPropertyInitColor.initValue = { r: 0, g: 0, b: 0 };
+    thingPropertyInitColor.onWrite = (old, nu) => {
+      setBrightness(nu);
+    }
   // TODO valueType: type: 'object',
         // properties: {
         //   r: { type: 'integer', minimum: 0, maximum: 255 },
@@ -105,13 +108,14 @@ function main() {
       .addProperty(thingPropertyInitColor)
       .addAction(thingActionInitGradient)
       .addAction(thingActionInitCancel);
-    // implementations
-    let rhBrightness : WoT.RequestHandler;
-    // rhBrightness.name = "brightness";
-    rhBrightness.callback.call = (nu, old) => {
-      setBrightness(nu);}
+    // // implementations
+    // let rhBrightness : WoT.RequestHandler;
+    // // rhBrightness.name = "brightness";
+    // rhBrightness.callback.call = (nu, old) => {
+    //   setBrightness(nu);
+    // }
 
-    unicorn.onUpdateProperty(rhBrightness);
+    // unicorn.onUpdateProperty(rhBrightness);
 
     // unicorn
     //   .onUpdateProperty('brightness', (nu, old) => {
