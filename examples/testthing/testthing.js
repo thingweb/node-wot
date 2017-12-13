@@ -79,105 +79,71 @@ WoT.expose({name: "TestThing" })
 
         // Actions
         thing
-            .addAction({name : "void-void"})
-            .onInvokeAction({"request" : {name : "void-void"},
-                "callback" : (param) => {
-                    checkActionInvocation("void-void", "undefined", typeof param);
-            }});
-
-        thing
-            .addAction({name : "void-int", "outputDataDescription": { type: "integer" } } )
-            .onInvokeAction({"request" : {name : "void-int"},
-                "callback" : function (param) {
-                    checkActionInvocation("void-int", "undefined", typeof param);
-                    return 0;
-            }});
-
-        thing
-            .addAction({name : "int-void", "inputDataDescription": { type: "integer" } })
-            .onInvokeAction({"request" : {name : "int-void"},
-                "callback" :  function (param) {
-                    let inputtype = typeof param;
-                    if (param === Math.floor(param)) inputtype = "integer";
-                    checkActionInvocation("int-void", "integer", inputtype);
-            }});
-
-        thing
-            .addAction({name : "int-int", "inputDataDescription": { type: "integer" }, "outputDataDescription": { type: "integer" } })
-            .onInvokeAction({"request" : {name : "int-int"},
-                "callback" : function (param) {
-                    let inputtype = typeof param;
-                    if (param === Math.floor(param)) inputtype = "integer";
-                    checkActionInvocation("int-int", "integer", inputtype);
-                    return param+1;
-            }});
-
-        thing
-            .addAction({name : "int-string", "inputDataDescription": { type: "integer" }, "outputDataDescription": { type: "string" } })
-            .onInvokeAction({"request" : {name : "int-string"},
-                "callback" : function (param) {
-                    let inputtype = typeof param;
-                    if (param === Math.floor(param)) inputtype = "integer";
-                    checkActionInvocation("int-string", "integer", inputtype);
-                    if (inputtype=="integer") {
-                        return new String(param)
-                                        .replace(/0/g,"zero-")
-                                        .replace(/1/g,"one-")
-                                        .replace(/2/g,"two-")
-                                        .replace(/3/g,"three-")
-                                        .replace(/4/g,"four-")
-                                        .replace(/5/g,"five-")
-                                        .replace(/6/g,"six-")
-                                        .replace(/7/g,"seven-")
-                                        .replace(/8/g,"eight-")
-                                        .replace(/9/g,"nine-")
-                    } else {
-                        return "ERROR";
-                    }
-            }});
-        
-        thing
-        .addAction({name : "void-complex",
-                    outputDataDescription: {
-                        type: "object",
-                        field: [
-                            {
-                                name: "prop1",
-                                value: { type: "integer" }
-                            },
-                            {
-                                name: "prop2",
-                                value: { type: "string" }
+            .addAction({ name: "void-void",
+                         action: (param) => {
+                            checkActionInvocation("void-void", "undefined", typeof param);
+                         }
+                       })
+            .addAction({ name: "void-int",
+                         outputDataDescription: '{ type: "integer" }',
+                         action: (param) => {
+                             checkActionInvocation("void-int", "undefined", typeof param);
+                             return 0;
+                         }
+                       })
+            .addAction({ name: "int-void",
+                         inputDataDescription: '{ type: "integer" }',
+                         action: (param) => {
+                             let inputtype = typeof param;
+                             if (param === Math.floor(param)) inputtype = "integer";
+                             checkActionInvocation("int-void", "integer", inputtype);
+                         }
+                       })
+            .addAction({ name: "int-int",
+                         inputDataDescription: '{ type: "integer" }',
+                         outputDataDescription: '{ type: "integer" }',
+                         action: (param) => {
+                             let inputtype = typeof param;
+                             if (param === Math.floor(param)) inputtype = "integer";
+                             checkActionInvocation("int-int", "integer", inputtype);
+                             return param+1;
+                         }
+                       })
+            .addAction({ name: "int-string",
+                         inputDataDescription: '{ type: "integer" }',
+                         outputDataDescription: '{ type: "string" }',
+                         action: (param) => {
+                            let inputtype = typeof param;
+                            if (param === Math.floor(param)) inputtype = "integer";
+                            checkActionInvocation("int-string", "integer", inputtype);
+                            if (inputtype=="integer") {
+                                return new String(param)
+                                                .replace(/0/g,"zero-")
+                                                .replace(/1/g,"one-")
+                                                .replace(/2/g,"two-")
+                                                .replace(/3/g,"three-")
+                                                .replace(/4/g,"four-")
+                                                .replace(/5/g,"five-")
+                                                .replace(/6/g,"six-")
+                                                .replace(/7/g,"seven-")
+                                                .replace(/8/g,"eight-")
+                                                .replace(/9/g,"nine-")
+                            } else {
+                                return "ERROR";
                             }
-                        ],
-                        required: [ "prop1", "prop2" ]
-                    }
-                })
-        .onInvokeAction({"request" : {name : "void-complex"},
-            "callback" : function (param) {
-                checkActionInvocation("void-complex", "undefined", typeof param);
-                return {"prop1": 123, "prop2" : "abc"};
-        }});
-
-        thing
-            .addAction({name : "complex-void",
-                        inputDataDescription: {
-                            type: "object",
-                            field: [
-                                {
-                                    name: "prop1",
-                                    value: { type: "integer" }
-                                },
-                                {
-                                    name: "prop2",
-                                    value: { type: "string" }
-                                }
-                            ],
-                            required: [ "prop1", "prop2" ]
-                        }
-                    })
-            .onInvokeAction({"request" : {name : "complex-void"},
-                "callback" : function (param) {
-                    checkActionInvocation("complex-void", "object", typeof param);
-            }});
+                         }
+                       })
+            .addAction({ name : "void-complex",
+                         outputDataDescription: '{ type: "object", field: [ { name: "prop1", value: { type: "integer" } }, { name: "prop2", value: { type: "string" } } ], required: [ "prop1", "prop2" ] }',
+                         action: (param) => {
+                            checkActionInvocation("void-complex", "undefined", typeof param);
+                            return {"prop1": 123, "prop2" : "abc"};
+                         }
+                       })
+            .addAction({ name : "complex-void",
+                         inputDataDescription: '{ type: "object", field: [ { name: "prop1", value: { type: "integer" } }, { name: "prop2", value: { type: "string" } } ], required: [ "prop1", "prop2" ] }',
+                         action: (param) => {
+                             checkActionInvocation("complex-void", "object", typeof param);
+                         }
+                       });
     });
