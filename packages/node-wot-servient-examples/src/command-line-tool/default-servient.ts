@@ -60,6 +60,8 @@ export default class DefaultServient extends Servient {
         this.addClientFactory(new HttpClientFactory(this.config.http.proxy));
         this.addClientFactory(new HttpsClientFactory(this.config.http.proxy));
         this.addClientFactory(new CoapClientFactory());
+        
+        this.addCredentials(this.config.credentials);
     }
 
     /**

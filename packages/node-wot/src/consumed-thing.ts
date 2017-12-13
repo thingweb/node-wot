@@ -76,7 +76,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                 if (this.td.security) {
                     console.warn("ConsumedThing applying security metadata");
                     console.dir(this.td.security);
-                    client.setSecurity(this.td.security);
+                    client.setSecurity(this.td.security, this.srv.getCredentials(this.td.id));
                 }
                 this.clients.set(schemes[srvIdx], client);
                 let link = links[srvIdx];

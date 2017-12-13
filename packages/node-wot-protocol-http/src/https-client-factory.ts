@@ -27,20 +27,20 @@ import HttpClient from './http-client';
 export default class HttpsClientFactory implements ProtocolClientFactory {
 
   public static readonly schemes: Array<string> = ['https'];
-  private proxy: any = null;
+  private clientSideProxy: any = null;
 
   constructor(proxy : any = null) {
-    this.proxy = proxy;
+    this.clientSideProxy = proxy;
   }
 
   public getClient(): ProtocolClient {
     // HTTPS over HTTP proxy requires HttpClient
-    if (this.proxy && this.proxy.href && this.proxy.href.startsWith("http:")) {
+    if (this.clientSideProxy && this.clientSideProxy.href && this.clientSideProxy.href.startsWith("http:")) {
       console.warn(`HttpsClientFactory creating client for 'http' due to insecure proxy configuration`);
-      return new HttpClient(this.proxy);
+      return new HttpClient(this.clientSideProxy);
     } else {
       console.log(`HttpsClientFactory creating client for '${this.getSchemes()}'`);
-      return new HttpClient(this.proxy, true);
+      return new HttpClient(this.clientSideProxy, true);
     }
   }
 
