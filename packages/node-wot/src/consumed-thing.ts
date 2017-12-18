@@ -25,6 +25,7 @@ import * as TD from "node-wot-td-tools";
 import * as Helpers from "./helpers";
 import ContentSerdes from "./content-serdes"
 import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
 interface ClientAndLink {
     client: ProtocolClient
@@ -40,6 +41,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     protected readonly _td: ThingDescription;
     protected readonly srv: Servient;
     private clients: Map<string, ProtocolClient> = new Map();
+    private observables: Map<string, Subject<any>> = new Map();
 
     constructor(servient: Servient, _td: ThingDescription) {
         this.srv = servient
@@ -136,6 +138,10 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     console.info(`ConsumedThing '${this.name}' writing ${link.href} with '${newValue}'`);
                     let payload = ContentSerdes.valueToBytes(newValue,link.mediaType)
                     resolve(client.writeResource(link.href, payload));
+                    
+                    if(this.observables.get(propertyName)) {
+                        this.observables.get(propertyName).next(newValue);
+                    };
                 }
             }
         });
@@ -178,6 +184,13 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     // removeListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing { return this }
     // removeAllListeners(eventName: string): ConsumedThing { return this }
 
-    getObservable(name: string): Observable<any> { return null }
+    getObservable(name: string): Observable<any> {
+        if(!this.observables.get(name)) {
+            console.log("Create observable for " +  name);
+            this.observables.set(name, new Subject());
+        }
+
+        return this.observables.get(name);
+    }
 
 }

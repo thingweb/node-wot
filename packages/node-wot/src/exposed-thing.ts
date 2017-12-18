@@ -215,7 +215,6 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         newProp.name = property.name;
         newProp.outputData = property.type;
         newProp.writable = property.writable;
-        // TODO observable
 
         this.interactions.push(newProp);
 
@@ -292,6 +291,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
 
     /** @inheritDoc */
     removeProperty(propertyName: string): ExposedThing {
+        // TODO necessary to inform observers?
         delete this.interactionStates[propertyName];
         this.removeResourceListener(this.name + "/properties/" + propertyName)
         return this;
