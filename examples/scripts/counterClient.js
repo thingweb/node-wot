@@ -12,10 +12,17 @@ WoT.fetchTD(targetUri)
     })
 	.catch(err => { throw err });
 	
-	// increment property
+	// increment property #1
 	thing.invokeAction("increment")
 	.then(function(count){
-		console.log("count value after increment is ", count);
+		console.log("count value after increment #1 is ", count);
+    })
+	.catch(err => { throw err });
+	
+	// increment property #2
+	thing.invokeAction("increment")
+	.then(function(count){
+		console.log("count value after increment #2 is ", count);
     })
 	.catch(err => { throw err });
 	
