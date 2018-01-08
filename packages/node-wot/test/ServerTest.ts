@@ -253,7 +253,7 @@ class WoTServerTest {
         //.then(thing => {
             let inita : WoT.ThingActionInit = {
                 name: "action1",
-                inputTypes: [JSON.stringify({ "type": "number" })],
+                inputType: JSON.stringify({ "type": "number" }),
                 outputType: JSON.stringify({ "type": "number" }),
                 semanticTypes: undefined,
                 action : function(request : any) : number {
@@ -288,7 +288,7 @@ class WoTServerTest {
         // .then(thing => {
             let inita : WoT.ThingActionInit = {
                 name: "action1", 
-                inputTypes: [JSON.stringify({ "type": "number" })], 
+                inputType: JSON.stringify({ "type": "number" }), 
                 outputType: JSON.stringify({ "type": "number" }), 
                 semanticTypes: undefined, 
                 action: function(newValue: any, oldValue: any) : number {
@@ -310,7 +310,7 @@ class WoTServerTest {
         // .then(thing => {
             let inita : WoT.ThingActionInit = {
                 name: "action1",
-                inputTypes: [JSON.stringify({ "type": "number" })],
+                inputType: JSON.stringify({ "type": "number" }),
                 outputType: JSON.stringify({ "type": "number" }),
                 semanticTypes: undefined,
                 action: function(request: any) : number {
