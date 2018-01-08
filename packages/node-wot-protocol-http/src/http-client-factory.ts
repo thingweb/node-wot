@@ -27,15 +27,15 @@ import HttpClient from './http-client';
 export default class HttpClientFactory implements ProtocolClientFactory {
 
   public static readonly schemes: Array<string> = ["http"];
-  private proxy : any = null;
+  private clientSideProxy : any = null;
 
   constructor(proxy : any = null) {
-    this.proxy = proxy;
+    this.clientSideProxy = proxy;
   }
 
   public getClient(): ProtocolClient {
     console.log(`HttpClientFactory creating client for '${this.getSchemes()}'`);
-    return new HttpClient(this.proxy);
+    return new HttpClient(this.clientSideProxy);
   }
 
   public init(): boolean {

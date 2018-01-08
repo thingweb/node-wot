@@ -36,13 +36,10 @@ export default class DefaultServient extends Servient {
     private static readonly defaultServientConf = {
         servient: {
             scriptDir: ".",
-            scriptAction: true
+            scriptAction: false
         },
         http: {
             port: 8080
-        },
-        log : {
-            level : "info"
         }
     }
 
@@ -60,6 +57,8 @@ export default class DefaultServient extends Servient {
         this.addClientFactory(new HttpClientFactory(this.config.http.proxy));
         this.addClientFactory(new HttpsClientFactory(this.config.http.proxy));
         this.addClientFactory(new CoapClientFactory());
+        
+        this.addCredentials(this.config.credentials);
     }
 
     /**
@@ -69,31 +68,36 @@ export default class DefaultServient extends Servient {
         let WoTs = super.start();
         console.info("DefaultServient started");
 
-        // WoTs.createThing("servient").then(thing => {
+        WoTs.expose({ name: "servient" }).then(thing => {
 
-        //     thing
-        //         .addAction("log", { type: "string" })
-        //         .onInvokeAction("log", (msg) => {
-        //             console.info(msg);
-        //             return `logged '${msg}`;
-        //         });
-            
-        //     thing
-        //         .addAction("shutdown")
-        //         .onInvokeAction("shutdown", () => {
-        //             console.info("shutting down by remote");
-        //             this.shutdown();
-        //         });
+            thing
+                .addAction({ name: "log",
+                             inputDataDescription: `{ type: "string" }`,
+                             outputDataDescription: `{ type: "string" }`,
+                             action: (msg: string) => {
+                                 console.info(msg);
+                                 return `logged '${msg}`;
+                             }
+                           })
+                .addAction({ name: "shutdown",
+                             outputDataDescription: `{ type: "string" }`,
+                             action: () => {
+                                 console.info("shutting down by remote");
+                                 this.shutdown();
+                             }
+                           });
 
-        //     if (this.config.servient.scriptAction)
-        //     thing
-        //         .addAction("runScript", { type: "string" })
-        //         .onInvokeAction("runScript", (script) => {
-        //             console.log("runnig script", script);
-        //             return this.runScript(script);
-        //         });
-
-        // });
+            if (this.config.servient.scriptAction)
+            thing
+                .addAction({ name: "runScript",
+                             inputDataDescription: `{ type: "string" }`,
+                             outputDataDescription: `{ type: "string" }`,
+                             action: (script: string) => {
+                                console.log("runnig script", script);
+                                return this.runScript(script);
+                             }
+                           });
+        });
         return WoTs;
     }
 }

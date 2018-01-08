@@ -212,6 +212,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         // new way
         let newProp = new TD.Interaction();
         newProp.pattern = TD.InteractionPattern.Property;
+        //newProp.semanticTypes = property.semanticTypes.slice(0);
         newProp.name = property.name;
         newProp.outputData = property.type;
         newProp.writable = property.writable;
@@ -226,7 +227,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
 
         this.addResourceListener("/" + this.name + "/properties/" + property.name, new Rest.PropertyResourceListener(this, newProp));
 
-        if(property.onWrite) {
+        if (property.onWrite) {
             console.info("set onWrite handler for " + property.name);
             propState.handlers.push(property.onWrite);
         }

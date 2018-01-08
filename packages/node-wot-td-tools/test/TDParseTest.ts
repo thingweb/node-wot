@@ -199,7 +199,7 @@ class TDParserTest {
         expect(td).to.not.have.property("base");
 
         expect(td.interaction).to.have.lengthOf(1);
-        expect(td.interaction[0]).to.have.property("semanticTypes").that.contains("Property");
+        expect(td.interaction[0]).to.have.property("semanticTypes").that.is.empty;
         expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
         expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
         expect(td.interaction[0]).to.have.property("writable").that.equals(false);
@@ -228,7 +228,7 @@ class TDParserTest {
         expect(td.interaction[0].link[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
     }
 
-    @test "should parse and apply base Property"() {
+    @test "should parse and apply base field"() {
         let td : ThingDescription = TDParser.parseTDString(tdSample3);
 
         expect(td).to.have.property("context").that.has.lengthOf(1);

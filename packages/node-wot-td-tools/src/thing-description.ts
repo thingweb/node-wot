@@ -115,6 +115,10 @@ export default class ThingDescription {
   @Expose({ name: "@type" })
   public semanticType: Array<string>;
 
+  /** unique identifier (a URI, includes URN) */
+  @Expose({ name: "@id" })
+  public id: string;
+
   /** human-readable name of the Thing */
   public name: string;
 

@@ -31,21 +31,26 @@ export default class HttpClient implements ProtocolClient {
   private readonly agent: http.Agent;
   private readonly provider : any;
   private proxyOptions : http.RequestOptions = null;
+  private authorization : string = null;
 
   constructor(proxy : any = null, secure = false) {
+    // config proxy by client side (not from TD)
     if (proxy!==null && proxy.href!==null) {
       this.proxyOptions = this.uriToOptions(proxy.href);
       if (proxy.authorization == "Basic") {
         this.proxyOptions.headers = { };
         this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(proxy.user+":"+proxy.password).toString('base64');
+      } else if (proxy.authorization == "Bearer") {
+        this.proxyOptions.headers = { };
+        this.proxyOptions.headers['Proxy-Authorization'] = "Bearer " + proxy.token;
       }
+      // security for hop to proxy
       if (this.proxyOptions.protocol === "https") {
         secure = true;
-      } else {
-        secure = false;
       }
       console.info(`HttpClient using ${secure ? "secure " : ""}proxy ${this.proxyOptions.hostname}:${this.proxyOptions.port}`);
     }
+    // using one client impl for both HTTP and HTTPS
     this.agent = secure ? new https.Agent({ keepAlive: true }) : new http.Agent({ keepAlive: true });
     this.provider = secure ? https : http;
   }
@@ -95,7 +100,9 @@ export default class HttpClient implements ProtocolClient {
 
       // TODO get explicit binding from TD
       options.method = 'PUT';
-      options.headers = { 'Content-Type': content.mediaType, 'Content-Length': content.body.byteLength };
+      // do not reset headers array
+      options.headers["Content-Type"] = content.mediaType;
+      options.headers["Content-Length"] = content.body.byteLength;
 
       console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
       let req = this.provider.request(options, (res : https.IncomingMessage) => {
@@ -124,7 +131,9 @@ export default class HttpClient implements ProtocolClient {
       // TODO get explicit binding from TD
       options.method = 'POST';
       if (content) {
-        options.headers = { 'Content-Type': content.mediaType, 'Content-Length': content.body.byteLength };
+        // do not reset headers array
+        options.headers["Content-Type"] = content.mediaType;
+        options.headers["Content-Length"] = content.body.byteLength;
       }
       console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
       let req = this.provider.request(options, (res : https.IncomingMessage) => {
@@ -180,17 +189,38 @@ export default class HttpClient implements ProtocolClient {
     return true;
   }
 
-  public setSecurity(metadata: any): boolean {
-    if (metadata.cat!==null && metadata.cat==="proxy" && metadata.href!==null) {
-      this.proxyOptions = this.uriToOptions(metadata.href);
-      if (metadata.authorization == "Basic") {
-        this.proxyOptions.headers = { };
-        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(metadata.user+":"+metadata.password).toString('base64');
+  public setSecurity(metadata: any, credentials?: any): boolean {
+    
+    if (metadata.authorization == "Basic") {
+      this.authorization = "Basic " + new Buffer(credentials.user+":"+credentials.password).toString('base64');
+      
+    } else if (metadata.authorization==="Bearer") {
+      // TODO get token from metadata.as (authorization server)
+      this.authorization = "Bearer " + credentials.token;
+    
+    } else if (metadata.authorization==="Proxy" && metadata.href!==null) {
+      if (this.proxyOptions !== null) {
+        console.info(`HttpClient overriding client-side proxy with security metadata 'Proxy'`);
       }
-      console.info(`HttpClient using security metadata ${metadata.cat}`);
-      return true;
+      this.proxyOptions = this.uriToOptions(metadata.href);
+      if (metadata.proxyauthorization == "Basic") {
+        this.proxyOptions.headers = { };
+        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(credentials.user+":"+credentials.password).toString('base64');
+      } else if (metadata.proxyauthorization == "Bearer") {
+        this.proxyOptions.headers = { };
+        this.proxyOptions.headers['Proxy-Authorization'] = "Bearer " + credentials.token;
+      }
+    
+    } else if (metadata.authorization==="SessionID") {
+      // TODO this is just an idea sketch
+    
+    } else {
+      console.error(`HttpClient cannot use metadata ${metadata}`);
+      return false;
     }
-    return false;
+
+    console.info(`HttpClient using security metadata '${metadata.authorization}'`);
+    return true;
   }
 
   private uriToOptions(uri: string): http.RequestOptions {
@@ -210,8 +240,12 @@ export default class HttpClient implements ProtocolClient {
       options.hostname = requestUri.hostname;
       options.port = parseInt(requestUri.port, 10);
       options.path = requestUri.path;
+      options.headers = { };
     }
-    // TODO auth and headers
+    
+    if (this.authorization!==null) {
+      options.headers["Authorization"] = this.authorization;
+    }
 
     return options;
   }

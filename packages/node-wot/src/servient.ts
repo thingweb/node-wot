@@ -32,6 +32,7 @@ export default class Servient {
     private clientFactories: Map<string, ProtocolClientFactory> = new Map<string, ProtocolClientFactory>();
     private things: Map<string, ExposedThing> = new Map<string, ExposedThing>();
     private listeners : Map<string,ResourceListener> = new Map<string,ResourceListener>();
+    private credentialStore : Map<string, any> = new Map<string, any>();
 
     /** runs the script in a new sandbox */
     public runScript(code : string, filename = 'script') {
@@ -147,6 +148,17 @@ export default class Servient {
         if (this.things.has(name)) {
             return this.things.get(name);
         } else return null;
+    }
+
+    public addCredentials(credentials: any) {
+        if (typeof credentials === "object") {
+            for (let i in credentials) {
+                this.credentialStore.set(i, credentials[i]);
+            }
+        }
+    }
+    public getCredentials(identifier: string): any {
+        return this.credentialStore.get(identifier);
     }
 
     //will return WoT object

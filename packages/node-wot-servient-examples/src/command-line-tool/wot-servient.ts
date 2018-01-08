@@ -104,15 +104,23 @@ wot-servient.conf.json:
     "http": {
         "port": HPORT
     },
-    "log": {
-        "level": LEVEL
+    "credentials": {
+        THING_ID1: {
+            "token": TOKEN
+        },
+        THING_ID2: {
+            "username": USERNAME,
+            "password": PASSWORD
+        }
     }
 }
   AUTORUN is a path string for the directory to load at startup
   RUNSCRIPT is a boolean indicating whether to provide the 'runScript' Action
   HPORT is a number defining the HTTP listening port
-  LEVEL is a string or number to set the logging level:
-        { error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }`);
+  THING_IDx is a TD @id for which credentials should be configured
+  TOKEN is an OAuth (Bearer) token
+  USERNAME is an HTTP Basic Auth username
+  PASSWORD is an HTTP Basic Auth password`);
             process.exit(0);
         }
     });

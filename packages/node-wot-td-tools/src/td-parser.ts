@@ -41,24 +41,27 @@ export function parseTDString(json: string, normalize?: boolean): ThingDescripti
   // and, if "base" is given, normalize each Interaction link
   for (let interaction of td.interaction) {
 
-    if(interaction.semanticTypes && interaction.semanticTypes.length > 0) {
-      if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString()) !== -1) {
-        console.log(` * Property '${interaction.name}'`);
-        interaction.pattern = TD.InteractionPattern.Property;
-      } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString()) !== -1) {
-        console.log(` * Action '${interaction.name}'`);
-        interaction.pattern = TD.InteractionPattern.Action;
-      } else if (interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString()) !== -1) {
-        console.log(` * Event '${interaction.name}'`);
-        interaction.pattern = TD.InteractionPattern.Event;
-      } else {
-        console.error(`parseTDString() found unknown Interaction pattern '${interaction.semanticTypes}'`);
-      }
+    // moving Interaction Pattern information to 'pattern' field
+    let indexProperty = interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString());
+    let indexAction = interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString());
+    let indexEvent = interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString());
+    if (indexProperty !== -1) {
+      console.log(` * Property '${interaction.name}'`);
+      interaction.pattern = TD.InteractionPattern.Property;
+      interaction.semanticTypes.splice(indexProperty, 1);
+    } else if (indexAction !== -1) {
+      console.log(` * Action '${interaction.name}'`);
+      interaction.pattern = TD.InteractionPattern.Action;
+      interaction.semanticTypes.splice(indexAction, 1);
+    } else if (indexEvent !== -1) {
+      console.log(` * Event '${interaction.name}'`);
+      interaction.pattern = TD.InteractionPattern.Event;
+      interaction.semanticTypes.splice(indexEvent, 1);
     } else {
       console.error(`parseTDString() found no Interaction pattern`);
     }
 
-    if(normalize == null || normalize) {
+    if (normalize == null || normalize) {
       /* if a base uri is used normalize all relative hrefs in links */
       if (td.base !== undefined) {
         console.log(`parseTDString() applying base '${td.base}' to href '${interaction.link[0].href}'`);
@@ -77,13 +80,17 @@ export function parseTDString(json: string, normalize?: boolean): ThingDescripti
         interaction.link[0].href = uriTemp;
       }
     }
-
   }
 
   return td;
 }
 
 export function serializeTD(td: ThingDescription): string {
+
+  // merging Interaction Pattern with semantic annotations
+  for (let interaction of td.interaction) {
+    interaction.semanticTypes.unshift(interaction.pattern.toString());
+  }
 
   let jsonc = classToPlain(td);
   let json = JSON.stringify(jsonc);
@@ -92,4 +99,3 @@ export function serializeTD(td: ThingDescription): string {
 
   return json;
 }
-
