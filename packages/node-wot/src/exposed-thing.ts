@@ -248,7 +248,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         newAction.pattern = TD.InteractionPattern.Action;
         newAction.name = action.name;
         // inputData & outputData
-        newAction.inputData = action.inputTypes ? action.inputTypes : null;
+        newAction.inputData = action.inputType ? action.inputType : null;
         newAction.outputData = action.outputType ? action.outputType : null;
 
         this.interactions.push(newAction);

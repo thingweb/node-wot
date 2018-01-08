@@ -72,7 +72,7 @@ export default class DefaultServient extends Servient {
 
         thing
             .addAction({ name: "log",
-                            inputTypes: [`{ type: "string" }`],
+                            inputType: `{ type: "string" }`,
                             outputType: `{ type: "string" }`,
                             action: (msg: string) => {
                                 console.info(msg);
@@ -80,6 +80,7 @@ export default class DefaultServient extends Servient {
                             }
                         })
             .addAction({ name: "shutdown",
+                            inputType: `{ type: null }`,
                             outputType: `{ type: "string" }`,
                             action: () => {
                                 console.info("shutting down by remote");
@@ -90,7 +91,7 @@ export default class DefaultServient extends Servient {
         if (this.config.servient.scriptAction)
         thing
             .addAction({ name: "runScript",
-                            inputTypes: [`{ type: "string" }`],
+                            inputType: `{ type: "string" }`,
                             outputType: `{ type: "string" }`,
                             action: (script: string) => {
                             console.log("runnig script", script);
