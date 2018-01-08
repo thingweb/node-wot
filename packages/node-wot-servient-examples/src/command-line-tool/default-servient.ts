@@ -68,36 +68,36 @@ export default class DefaultServient extends Servient {
         let WoTs = super.start();
         console.info("DefaultServient started");
 
-        WoTs.expose({ name: "servient" }).then(thing => {
+        let thing = WoTs.expose({ name: "servient" });
 
-            thing
-                .addAction({ name: "log",
-                             inputDataDescription: `{ type: "string" }`,
-                             outputDataDescription: `{ type: "string" }`,
-                             action: (msg: string) => {
-                                 console.info(msg);
-                                 return `logged '${msg}`;
-                             }
-                           })
-                .addAction({ name: "shutdown",
-                             outputDataDescription: `{ type: "string" }`,
-                             action: () => {
-                                 console.info("shutting down by remote");
-                                 this.shutdown();
-                             }
-                           });
+        thing
+            .addAction({ name: "log",
+                            inputTypes: [`{ type: "string" }`],
+                            outputType: `{ type: "string" }`,
+                            action: (msg: string) => {
+                                console.info(msg);
+                                return `logged '${msg}`;
+                            }
+                        })
+            .addAction({ name: "shutdown",
+                            outputType: `{ type: "string" }`,
+                            action: () => {
+                                console.info("shutting down by remote");
+                                this.shutdown();
+                            }
+                        });
 
-            if (this.config.servient.scriptAction)
-            thing
-                .addAction({ name: "runScript",
-                             inputDataDescription: `{ type: "string" }`,
-                             outputDataDescription: `{ type: "string" }`,
-                             action: (script: string) => {
-                                console.log("runnig script", script);
-                                return this.runScript(script);
-                             }
-                           });
-        });
+        if (this.config.servient.scriptAction)
+        thing
+            .addAction({ name: "runScript",
+                            inputTypes: [`{ type: "string" }`],
+                            outputType: `{ type: "string" }`,
+                            action: (script: string) => {
+                            console.log("runnig script", script);
+                            return this.runScript(script);
+                            }
+                        });
+        
         return WoTs;
     }
 }
