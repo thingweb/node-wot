@@ -215,6 +215,8 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         //newProp.semanticTypes = property.semanticTypes.slice(0);
         newProp.name = property.name;
         newProp.outputData = property.type;
+        // TODO newProp.semanticTypes = property.semanticTypes;
+        newProp.metadata = property.metadata;
         newProp.writable = property.writable;
 
         this.interactions.push(newProp);
@@ -247,6 +249,8 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         let newAction = new TD.Interaction();
         newAction.pattern = TD.InteractionPattern.Action;
         newAction.name = action.name;
+        // TODO newAction.semanticTypes = action.semanticTypes;
+        newAction.metadata = action.metadata;
         // inputData & outputData
         newAction.inputData = action.inputType ? action.inputType : null;
         newAction.outputData = action.outputType ? action.outputType : null;
@@ -279,6 +283,8 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         let newEvent = new TD.Interaction();
         newEvent.pattern = TD.InteractionPattern.Event;
         newEvent.name = event.name; //  eventName;
+        // TODO newEvent.semanticTypes = event.semanticTypes;
+        newEvent.metadata = event.metadata;
 
         this.interactions.push(newEvent);
 

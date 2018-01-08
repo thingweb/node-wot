@@ -17,6 +17,10 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
+// global W3C WoT Scripting API definitions
+import _ from "wot-typescript-definitions";
+// import * as WoT from 'wot-typescript-definitions';
+
 // import { JsonMember, JsonObject } from 'typedjson-npm';
 import {Type, Expose, Exclude} from "class-transformer";
 import "reflect-metadata";
@@ -65,8 +69,13 @@ export class InteractionLink {
  */
 export class Interaction {
   /** @ type information of the Interaction */
+  /* TODO Should be public semanticTypes: Array<WoT.SemanticType>; */
   @Expose({ name: "@type" })
   public semanticTypes: Array<string>;
+
+  @Exclude() // for now only!!
+  public metadata: Array<WoT.SemanticMetadata>;
+  // public metadata: Array<string>
 
   /** name/identifier of the Interaction */
   public name: string;
@@ -90,6 +99,7 @@ export class Interaction {
 
   constructor() {
     this.semanticTypes = [];
+    this.metadata = [];
     this.link = [];
   }
 }
@@ -114,6 +124,8 @@ export default class ThingDescription {
   /** @ type information, usually 'Thing' */
   @Expose({ name: "@type" })
   public semanticType: Array<string>;
+
+  public metadata: Array<string>;
 
   /** unique identifier (a URI, includes URN) */
   @Expose({ name: "@id" })
