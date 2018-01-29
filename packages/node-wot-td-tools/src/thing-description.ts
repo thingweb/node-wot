@@ -33,6 +33,11 @@ import "reflect-metadata";
 
 } */
 
+export const  DEFAULT_HTTP_CONTEXT : string = "http://w3c.github.io/wot/w3c-wot-td-context.jsonld" ;
+export const DEFAULT_HTTPS_CONTEXT : string = "https://w3c.github.io/wot/w3c-wot-td-context.jsonld";
+
+export const DEFAULT_THING_TYPE : string = "Thing";
+
 /** Interaction pattern */
 export enum InteractionPattern {
   Property = 'Property' as any,
@@ -90,6 +95,9 @@ export class Interaction {
   /** writable flag for the Property */
   public writable: boolean;
 
+  /** observable flag for the Property */
+  public observable: boolean;
+
   // TODO: how to handle types internally?
   /** JSON Schema for input */
   public inputData: any;
@@ -122,10 +130,11 @@ export class PrefixedContext {
 export default class ThingDescription {
 
   /** @ type information, usually 'Thing' */
+  /* TODO Should be public semanticTypes: Array<WoT.SemanticType>; */
   @Expose({ name: "@type" })
   public semanticType: Array<string>;
 
-  public metadata: Array<string>;
+  public metadata: Array<WoT.SemanticMetadata>;
 
   /** unique identifier (a URI, includes URN) */
   @Expose({ name: "@id" })
@@ -146,7 +155,7 @@ export default class ThingDescription {
 
   /** @context information of the TD */
   @Expose({ name: "@context" })
-  private context: Array<string | object>;
+  public context: Array<string | object>
 
   public getSimpleContexts() :  Array<string> {
     // @DAPE: Shall we cache created list?
@@ -181,8 +190,9 @@ export default class ThingDescription {
   } 
 
   constructor() {
-    this.context = ['http://w3c.github.io/wot/w3c-wot-td-context.jsonld'];
-    this.semanticType = ['Thing'];
+    this.context = [DEFAULT_HTTP_CONTEXT];
+    this.semanticType = []; // DEFAULT_THING_TYPE
     this.interaction = [];
+    this.metadata = [];
   }
 }
