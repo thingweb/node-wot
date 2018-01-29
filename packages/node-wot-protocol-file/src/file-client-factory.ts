@@ -18,37 +18,24 @@
  */
 
 /**
- * HTTP client Factory
+ * File protocol binding
  */
-
 import { ProtocolClientFactory, ProtocolClient } from 'node-wot';
-import HttpClient from './http-client';
+import FileClient from './file-client';
 
-export default class HttpClientFactory implements ProtocolClientFactory {
+export default class FileClientFactory implements ProtocolClientFactory {
+  public static readonly scheme: string = "file";
 
-  public static readonly scheme: string = "http";
-  private clientSideProxy : any = null;
-
-  constructor(proxy : any = null) {
-    this.clientSideProxy = proxy;
-  }
+  constructor(proxy? : string) { }
 
   public getScheme(): string {
-    return HttpClientFactory.scheme;
+    return FileClientFactory.scheme;
   }
 
   public getClient(): ProtocolClient {
-    console.log(`HttpClientFactory creating client for '${this.getScheme()}'`);
-    return new HttpClient(this.clientSideProxy);
+    return new FileClient();
   }
 
-  public init(): boolean {
-    console.info(`HttpClientFactory for '${this.getScheme()}' initializing`);
-    return true;
-  }
-
-  public destroy(): boolean {
-    console.info(`HttpClientFactory for '${this.getScheme()}' destroyed`);
-    return true;
-  }
+  public init = () => true;
+  public destroy = () => true;
 }

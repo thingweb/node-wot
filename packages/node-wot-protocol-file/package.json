@@ -5,8 +5,8 @@
     "dist/"
   ],
   "description": "File interface for node-wot",
-  "main": "dist/file-client.js",
-  "typings": "dist/file-client.d.ts",
+  "main": "dist/file.js",
+  "typings": "dist/file.d.ts",
   "scripts": {
     "build": "tsc",
     "codestyle": "standard --pretty"

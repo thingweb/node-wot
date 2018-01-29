@@ -106,7 +106,7 @@ export default class Servient {
     }
 
     public addClientFactory(clientFactory: ProtocolClientFactory): void {
-        clientFactory.getSchemes().forEach(scheme => this.clientFactories.set(scheme, clientFactory));
+        this.clientFactories.set(clientFactory.getScheme(), clientFactory);
     }
 
     public hasClientFor(scheme: string) : boolean {

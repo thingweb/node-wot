@@ -20,33 +20,10 @@
 /**
  * File protocol binding
  */
-import { ProtocolClientFactory, ProtocolClient, Content } from 'node-wot'
-
+import { ProtocolClient, Content } from 'node-wot'
 import fs = require('fs');
 
-export class FileClientFactory implements ProtocolClientFactory {
-  public static readonly schemes: Array<string> = ['file'];
-
-  constructor(proxy? : string) { }
-
-  public getClient(): ProtocolClient {
-    return new FileClient();
-  }
-
-  public init(): boolean {
-    return true;
-  }
-
-  public destroy(): boolean {
-    return true;
-  }
-
-  public getSchemes(): Array<string> {
-    return FileClientFactory.schemes;
-  }
-}
-
-class FileClient implements ProtocolClient {
+export default class FileClient implements ProtocolClient {
 
   constructor() {
     // console.log("File: new client created");

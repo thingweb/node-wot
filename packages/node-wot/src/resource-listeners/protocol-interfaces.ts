@@ -41,12 +41,10 @@ export interface ProtocolClient {
 }
 
 export interface ProtocolClientFactory {
+  getScheme(): string;
   getClient(): ProtocolClient;
   init(): boolean;
   destroy(): boolean;
-
-  /** get the protocol types supported by this client - identified by its scheme (e.g. http, https etc.) */
-  getSchemes(): Array<string>;
 }
 
 export interface ProtocolServer {
