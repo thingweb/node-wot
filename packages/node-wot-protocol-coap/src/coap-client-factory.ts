@@ -27,26 +27,24 @@ import CoapClient from './coap-client';
 
 export default class CoapClientFactory implements ProtocolClientFactory {
 
-  public static readonly scheme: string = "coap";
+  public readonly scheme: string = "coap";
 
   constructor(proxy? : string) { }
 
-  public getScheme(): string {
-    return CoapClientFactory.scheme;
-  }
-
   public getClient(): ProtocolClient {
-    console.log(`CoapClientFactory creating client for '${this.getScheme()}'`);
+    console.log(`CoapClientFactory creating client for '${this.scheme}'`);
     return new CoapClient();
   }
 
   public init(): boolean {
-    console.info(`CoapClientFactory for '${this.getScheme()}' initializing`);
+    // console.info(`CoapClientFactory for '${this.scheme}' initializing`);
+    // TODO uncomment info if something is executed here
     return true;
   }
 
   public destroy(): boolean {
-    console.info(`CoapClientFactory for '${this.getScheme()}' destroyed`);
+    //console.info(`CoapClientFactory for '${this.scheme}' destroyed`);
+    // TODO uncomment info if something is executed here
     return true;
   }
 }

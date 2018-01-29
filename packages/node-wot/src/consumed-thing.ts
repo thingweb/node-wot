@@ -47,7 +47,6 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         this.name = td.name;
         this.td = td;
         this.description = JSON.stringify(td);
-        console.info(`ConsumedThing '${this.name}' created`);
     }
 
     // lazy singleton for ProtocolClient per scheme

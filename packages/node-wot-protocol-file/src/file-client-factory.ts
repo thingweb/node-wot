@@ -24,15 +24,12 @@ import { ProtocolClientFactory, ProtocolClient } from 'node-wot';
 import FileClient from './file-client';
 
 export default class FileClientFactory implements ProtocolClientFactory {
-  public static readonly scheme: string = "file";
+  public readonly scheme: string = "file";
 
   constructor(proxy? : string) { }
 
-  public getScheme(): string {
-    return FileClientFactory.scheme;
-  }
-
   public getClient(): ProtocolClient {
+    console.log(`FileClientFactory creating client for '${this.scheme}'`);
     return new FileClient();
   }
 

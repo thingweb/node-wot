@@ -69,7 +69,7 @@ class JsonCodec implements ContentCodec {
   }
 
   valueToBytes(value: any): Buffer {
-    console.log(`JsonCodec serializing '${value}'`);
+    console.log("JsonCodec serializing", value);
     let body = "";
     if(value !== undefined) {
       body = JSON.stringify(value);

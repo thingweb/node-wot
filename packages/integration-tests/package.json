@@ -1,7 +1,7 @@
 {
   "name": "node-wot-integration-tests",
   "private": true,
-  "version": "0.3.0-SNAPSHOT.5",
+  "version": "0.3.0-SNAPSHOT.6",
   "description": "Integration tests for node-wot",
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register"
@@ -15,9 +15,9 @@
     "coap": "0.20.0",
     "mocha": "3.5.3",
     "mocha-typescript": "1.1.8",
-    "node-wot-protocol-coap": "0.3.0-SNAPSHOT.5",
-    "node-wot-protocol-http": "0.3.0-SNAPSHOT.5",
-    "node-wot": "0.3.0-SNAPSHOT.5",
+    "node-wot-protocol-coap": "0.3.0-SNAPSHOT.6",
+    "node-wot-protocol-http": "0.3.0-SNAPSHOT.6",
+    "node-wot": "0.3.0-SNAPSHOT.6",
     "request": "2.79.0",
     "request-promise": "4.1.1",
     "ts-node": "3.3.0",

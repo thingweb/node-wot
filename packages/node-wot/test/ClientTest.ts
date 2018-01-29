@@ -66,6 +66,9 @@ class TDDataClient implements ProtocolClient {
     }
 
 class TDDataClientFactory implements ProtocolClientFactory {
+
+    public readonly scheme: string = "data";
+
     client = new TDDataClient();
 
     public getClient() : ProtocolClient {
@@ -78,10 +81,6 @@ class TDDataClientFactory implements ProtocolClientFactory {
 
     public destroy() : boolean {
         return true;
-    }
-
-    public getSchemes() : Array<string> {
-        return ["data"];
     }
 }
 
@@ -122,6 +121,8 @@ class TrapClient implements ProtocolClient {
 }
 
 class TrapClientFactory implements ProtocolClientFactory {
+
+    public scheme: string = "test";
     client = new TrapClient();
 
     public setTrap(callback : Function) {
@@ -138,10 +139,6 @@ class TrapClientFactory implements ProtocolClientFactory {
 
     public destroy() : boolean {
         return true;
-    }
-
-    public getSchemes() : Array<string> {
-        return ["test"];
     }
 }
 
@@ -186,15 +183,7 @@ class WoTClientTest {
         this.clientFactory = new TrapClientFactory();
         this.servient.addClientFactory(this.clientFactory);
         this.servient.addClientFactory(new TDDataClientFactory());
-        this.WoT = this.servient.start();
-
-        // // create local file to allow consuming TD based on URL
-        // fs.writeFile(this.tdFileUri, JSON.stringify(myThingDesc),  function(err) {
-        //     if (err) {
-        //         return console.error(err);
-        //     }
-        //     console.log("TD File created!");
-        // });
+        this.servient.start().then( WoTfactory => { this.WoT = WoTfactory; } );
 
         console.log("starting test suite")
     }

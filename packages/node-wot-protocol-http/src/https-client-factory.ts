@@ -26,15 +26,11 @@ import HttpClient from './http-client';
 
 export default class HttpsClientFactory implements ProtocolClientFactory {
 
-  public static readonly scheme: string = 'https';
+  public readonly scheme: string = 'https';
   private clientSideProxy: any = null;
 
   constructor(proxy : any = null) {
     this.clientSideProxy = proxy;
-  }
-
-  public getScheme(): string {
-    return HttpsClientFactory.scheme;
   }
 
   public getClient(): ProtocolClient {
@@ -43,18 +39,20 @@ export default class HttpsClientFactory implements ProtocolClientFactory {
       console.warn(`HttpsClientFactory creating client for 'http' due to insecure proxy configuration`);
       return new HttpClient(this.clientSideProxy);
     } else {
-      console.log(`HttpsClientFactory creating client for '${this.getScheme()}'`);
+      console.log(`HttpsClientFactory creating client for '${this.scheme}'`);
       return new HttpClient(this.clientSideProxy, true);
     }
   }
 
   public init(): boolean {
-    console.info(`HttpsClientFactory for '${this.getScheme()}' initializing`);
+    // console.info(`HttpsClientFactory for '${HttpsClientFactory.scheme}' initializing`);
+    // TODO uncomment info if something is executed here
     return true;
   }
 
   public destroy(): boolean {
-    console.info(`HttpsClientFactory for '${this.getScheme()}' destroyed`);
+    // console.info(`HttpsClientFactory for '${HttpsClientFactory.scheme}' destroyed`);
+    // TODO uncomment info if something is executed here
     return true;
   }
 }

@@ -17,9 +17,6 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-
-
-
  /**
  * CoAP Server based on coap by mcollina
  */
@@ -29,10 +26,10 @@ import {ContentSerdes} from 'node-wot';
 import { ProtocolServer, ResourceListener, Content } from 'node-wot'
 
 const coap = require('coap');
-const deasync = require('deasync'); // to convert async calls to blocking calls
 
 export default class CoapServer implements ProtocolServer {
 
+  public readonly scheme: string = "coap";
   private readonly port: number = 5683;
   private readonly address: string = undefined;
   private readonly server: any = coap.createServer((req: any, res: any) => { this.handleRequest(req, res); });
@@ -48,14 +45,6 @@ export default class CoapServer implements ProtocolServer {
     if (address !== undefined) {
       this.address = address;
     }
-
-    this.server.on('error', (err: Error) => {
-      console.error(`CoapServer for port ${this.port} failed: ${err.message}`); this.failed = true;
-    });
-  }
-
-  public getScheme(): string {
-    return 'coap';
   }
 
   public addResource(path: string, res: ResourceListener): boolean {
@@ -63,81 +52,50 @@ export default class CoapServer implements ProtocolServer {
       console.warn(`CoapServer on port ${this.getPort()} already has ResourceListener '${path}' - skipping`);
       return false;
     } else {
-      console.log(`CoapServer on port ${this.getPort()} addeding resource '${path}'`);
+      // TODO debug-level
+      console.log(`CoapServer on port ${this.getPort()} adding resource '${path}'`);
       this.resources[path] = res;
       return true;
     }
   }
 
   public removeResource(path: string): boolean {
+    // TODO debug-level
     console.log(`CoapServer on port ${this.getPort()} removing resource '${path}'`);
     return delete this.resources[path];
   }
 
-  public start(): boolean {
+  public start(): Promise<void> {
     console.info(`CoapServer starting on ${(this.address !== undefined ? this.address + ' ' : '')}port ${this.port}`);
-
-    if (this.socketFree()) {
-      this.server.listen(this.port, this.address, () => { this.running = true; });
-      // converting async listen API to sync start function
-      setTimeout(() => {
-        // put something in the event loop, since .listen() sometimes finishes immediately and deasync blocks
-      }, 0);
-      while (!this.running && !this.failed) {
-        deasync.runLoopOnce();
-      }
-      return this.running;
-    } else {
-      this.server.emit('error', new Error('listen EADDRINUSE ' + this.port));
-      return false;
-    }
+    return new Promise<void>((resolve, reject) => {
+      
+      // start promise handles all errors until successful start
+      this.server.once('error', (err: Error) => { reject(err); });
+      this.server.listen(this.port, this.address, () => {
+        // once started, console "handles" errors
+        this.server.on('error', (err: Error) => {
+          console.error(`CoapServer for port ${this.port} failed: ${err.message}`); this.failed = true;
+        });
+        resolve();
+      });
+    });
   }
 
-  public stop(): boolean {
-    console.info(`CoapServer stopping on port ${this.getPort()} (running=${this.running})`);
-    let closed = this.running;
-    this.server.close(() => { closed = true; });
-
-    while (!closed && !this.failed) {
-      deasync.runLoopOnce();
-    }
-
-    this.running = false;
-    return closed;
+  public stop(): Promise<void> {
+    console.info(`CoapServer stopping on port ${this.getPort()}`);
+    return new Promise<void>((resolve, reject) => {
+      // stop promise handles all errors from now on
+      this.server.once('error', (err: Error) => { reject(err); });
+      this.server.close(() => { resolve(); } );
+    });
   }
 
   public getPort(): number {
-    if (this.running) {
+    if (this.server._sock) {
       return this.server._sock.address().port;
     } else {
       return -1;
     }
-  }
-
-  private socketFree(): boolean {
-
-    if (this.port === 0) {
-      return true;
-    }
-    let dgram = require('dgram');
-
-    let free: boolean = undefined;
-    let tester = dgram.createSocket('udp4')
-      .once('error', (err: any) => {
-        if (err.code !== 'EADDRINUSE') {
-          throw err;
-        }
-        free = false;
-      })
-      .once('listening', () => {
-        tester.once('close', () => { free = true; }).close();
-      })
-      .bind(this.port);
-
-    while (free === undefined) {
-      deasync.runLoopOnce();
-    }
-    return free;
   }
 
   private handleRequest(req: any, res: any) {
@@ -228,4 +186,3 @@ export default class CoapServer implements ProtocolServer {
     }
   }
 }
-

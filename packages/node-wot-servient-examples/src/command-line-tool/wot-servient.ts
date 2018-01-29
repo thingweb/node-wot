@@ -38,7 +38,6 @@ const readConf = function () : Promise<any> {
     return new Promise((resolve, reject) => {
         fs.readFile(path.join(baseDir, confFile), "utf-8", (err, data) => {
             if (err) {
-                console.warn("WoT-Servient using defaults due to", err.message);
                 reject(err);
             }
             if (data) {
@@ -130,15 +129,26 @@ readConf()
         return new DefaultServient(conf);
     })
     .catch(err => {
-        return new DefaultServient();
+        if (err.code == 'ENOENT') {
+            console.warn("WoT-Servient using defaults as 'wot-servient.conf.json' does not exist");
+            return new DefaultServient();
+        } else {
+            console.error("WoT-Servient config file error: " + err.message);
+            process.exit(err.errno);
+        }
     })
     .then(servient => {
-        servient.start();
-        if (process.argv.length>2) {
-            console.info(`WoT-Servient loading ${process.argv.length-2} command line script${process.argv.length-2>1 ? "s" : ""}`);
-            return runScripts(servient, process.argv.slice(2));
-        } else {
-            return runAllScripts(servient);
-        }
+        servient.start()
+            .then( () => {
+                if (process.argv.length>2) {
+                    console.info(`WoT-Servient loading ${process.argv.length-2} command line script${process.argv.length-2>1 ? "s" : ""}`);
+                    return runScripts(servient, process.argv.slice(2));
+                } else {
+                    return runAllScripts(servient);
+                }
+            })
+        .catch( err => {
+            console.error("WoT-Servient cannot start: " + err.message);
+        });
     })
     .catch(err => console.error(err));

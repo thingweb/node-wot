@@ -26,29 +26,33 @@ import HttpClient from './http-client';
 
 export default class HttpClientFactory implements ProtocolClientFactory {
 
-  public static readonly scheme: string = "http";
+  public readonly scheme: string = "http";
   private clientSideProxy : any = null;
 
   constructor(proxy : any = null) {
     this.clientSideProxy = proxy;
   }
 
-  public getScheme(): string {
-    return HttpClientFactory.scheme;
-  }
-
   public getClient(): ProtocolClient {
-    console.log(`HttpClientFactory creating client for '${this.getScheme()}'`);
-    return new HttpClient(this.clientSideProxy);
+    // HTTP over HTTPS proxy requires HttpsClient
+    if (this.clientSideProxy && this.clientSideProxy.href && this.clientSideProxy.href.startsWith("https:")) {
+      console.warn(`HttpClientFactory creating client for 'https' due to insecure proxy configuration`);
+      return new HttpClient(this.clientSideProxy, true);
+    } else {
+      console.log(`HttpClientFactory creating client for '${this.scheme}'`);
+      return new HttpClient(this.clientSideProxy);
+    }
   }
 
   public init(): boolean {
-    console.info(`HttpClientFactory for '${this.getScheme()}' initializing`);
+    // console.info(`HttpClientFactory for '${HttpClientFactory.scheme}' initializing`);
+    // TODO uncomment info if something is executed here
     return true;
   }
 
   public destroy(): boolean {
-    console.info(`HttpClientFactory for '${this.getScheme()}' destroyed`);
+    // console.info(`HttpClientFactory for '${HttpClientFactory.scheme}' destroyed`);
+    // TODO uncomment info if something is executed here
     return true;
   }
 }

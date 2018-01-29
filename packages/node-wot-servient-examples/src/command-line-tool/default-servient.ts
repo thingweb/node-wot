@@ -21,11 +21,12 @@
 "use strict"
 
 // global W3C WoT Scripting API definitions
-import _ from "wot-typescript-definitions";
+import _, { WoTFactory } from "wot-typescript-definitions";
 // node-wot implementation of W3C WoT Servient 
 import Servient from "node-wot";
 // protocols used
 import {HttpServer} from "node-wot-protocol-http";
+import {CoapServer} from "node-wot-protocol-coap";
 import {FileClientFactory} from "node-wot-protocol-file";
 import {HttpClientFactory} from "node-wot-protocol-http";
 import {HttpsClientFactory} from "node-wot-protocol-http";
@@ -49,7 +50,7 @@ export default class DefaultServient extends Servient {
         super();
 
         Object.assign(this.config, config);
-        console.info("DefaultServient configured", this.config);
+        console.info("DefaultServient configured with", this.config);
 
         let httpServer = (typeof this.config.http.port === "number") ? new HttpServer(this.config.http.port) : new HttpServer();
         this.addServer(httpServer);
@@ -58,46 +59,54 @@ export default class DefaultServient extends Servient {
         this.addClientFactory(new HttpsClientFactory(this.config.http.proxy));
         this.addClientFactory(new CoapClientFactory());
         
+        // loads credentials from the configuration
         this.addCredentials(this.config.credentials);
     }
 
     /**
      * start
      */
-    public start() {
-        let WoTs = super.start();
-        console.info("DefaultServient started");
+    public start(): Promise<WoTFactory> {
 
-        WoTs.expose({ name: "servient" }).then(thing => {
+        return new Promise<WoTFactory>( (resolve, reject) => {
+            super.start().then( WoT => {
+                console.info("DefaultServient started");
+    
+                WoT.expose({ name: "servient" }).then(thing => {
+    
+                    thing
+                        .addAction({ name: "log",
+                                    inputDataDescription: `{ type: "string" }`,
+                                    outputDataDescription: `{ type: "string" }`,
+                                    action: (msg: string) => {
+                                        console.info(msg);
+                                        return `logged '${msg}`;
+                                    }
+                                })
+                        .addAction({ name: "shutdown",
+                                    outputDataDescription: `{ type: "string" }`,
+                                    action: () => {
+                                        console.info("shutting down by remote");
+                                        this.shutdown();
+                                    }
+                                });
+    
+                    if (this.config.servient.scriptAction)
+                        thing
+                            .addAction({ name: "runScript",
+                                    inputDataDescription: `{ type: "string" }`,
+                                    outputDataDescription: `{ type: "string" }`,
+                                    action: (script: string) => {
+                                        console.log("runnig script", script);
+                                        return this.runScript(script);
+                                    }
+                                });
+                });
 
-            thing
-                .addAction({ name: "log",
-                             inputDataDescription: `{ type: "string" }`,
-                             outputDataDescription: `{ type: "string" }`,
-                             action: (msg: string) => {
-                                 console.info(msg);
-                                 return `logged '${msg}`;
-                             }
-                           })
-                .addAction({ name: "shutdown",
-                             outputDataDescription: `{ type: "string" }`,
-                             action: () => {
-                                 console.info("shutting down by remote");
-                                 this.shutdown();
-                             }
-                           });
+                // pass WoTFactory on
+                resolve(WoT);
 
-            if (this.config.servient.scriptAction)
-            thing
-                .addAction({ name: "runScript",
-                             inputDataDescription: `{ type: "string" }`,
-                             outputDataDescription: `{ type: "string" }`,
-                             action: (script: string) => {
-                                console.log("runnig script", script);
-                                return this.runScript(script);
-                             }
-                           });
+            }).catch( err => reject(err));
         });
-        return WoTs;
     }
 }

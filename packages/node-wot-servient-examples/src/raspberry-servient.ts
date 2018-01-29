@@ -62,126 +62,128 @@ function main() {
   servient.addServer(new CoapServer());
 
   // get WoT object for privileged script
-  let wot = servient.start();
-  console.info('RaspberryServient started');
+  servient.start().then( WoT => {
+  
+    console.info("RaspberryServient started");
 
-  let thingInit : WoT.ThingInit;
-  thingInit.name = 'unicorn'; 
+    let thingInit : WoT.ThingInit;
+    thingInit.name = "unicorn"; 
 
-  wot.expose(thingInit).then(thing => {
-    unicorn = thing;
-    let thingPropertyInitBrightness : WoT.ThingPropertyInit;
-    thingPropertyInitBrightness.name = 'brightness';
-    thingPropertyInitBrightness.value = 50;
-    // TODO valueType: { type: 'integer', minimum: 0, maximum: 255 }
-    let thingPropertyInitColor : WoT.ThingPropertyInit;
-    thingPropertyInitColor.name = 'color';
-    thingPropertyInitColor.value = { r: 0, g: 0, b: 0 };
-  // TODO valueType: type: 'object',
-        // properties: {
-        //   r: { type: 'integer', minimum: 0, maximum: 255 },
-        //   g: { type: 'integer', minimum: 0, maximum: 255 },
-        //   b: { type: 'integer', minimum: 0, maximum: 255 }
+    WoT.expose(thingInit).then(thing => {
+      unicorn = thing;
+      let thingPropertyInitBrightness : WoT.ThingPropertyInit;
+      thingPropertyInitBrightness.name = 'brightness';
+      thingPropertyInitBrightness.value = 50;
+      // TODO valueType: { type: 'integer', minimum: 0, maximum: 255 }
+      let thingPropertyInitColor : WoT.ThingPropertyInit;
+      thingPropertyInitColor.name = 'color';
+      thingPropertyInitColor.value = { r: 0, g: 0, b: 0 };
+    // TODO valueType: type: 'object',
+          // properties: {
+          //   r: { type: 'integer', minimum: 0, maximum: 255 },
+          //   g: { type: 'integer', minimum: 0, maximum: 255 },
+          //   b: { type: 'integer', minimum: 0, maximum: 255 }
+          // }
+      let thingActionInitGradient : WoT.ThingActionInit;
+      thingActionInitGradient.name = 'gradient';
+      // TODO valueType: {
+        //   type: 'array',
+        //   items: {
+        //     type: 'object',
+        //     properties: {
+        //       r: { type: 'integer', minimum: 0, maximum: 255 },
+        //       g: { type: 'integer', minimum: 0, maximum: 255 },
+        //       b: { type: 'integer', minimum: 0, maximum: 255 }
+        //     }
+        //   },
+        //   minItems: 2
         // }
-    let thingActionInitGradient : WoT.ThingActionInit;
-    thingActionInitGradient.name = 'gradient';
-     // TODO valueType: {
-      //   type: 'array',
-      //   items: {
-      //     type: 'object',
-      //     properties: {
-      //       r: { type: 'integer', minimum: 0, maximum: 255 },
-      //       g: { type: 'integer', minimum: 0, maximum: 255 },
-      //       b: { type: 'integer', minimum: 0, maximum: 255 }
-      //     }
-      //   },
-      //   minItems: 2
-      // }
-    let thingActionInitCancel : WoT.ThingActionInit;
-    thingActionInitCancel.name = 'cancel';
-    unicorn
-      .addProperty(thingPropertyInitBrightness)
-      .addProperty(thingPropertyInitColor)
-      .addAction(thingActionInitGradient)
-      .addAction(thingActionInitCancel);
-    // implementations
-    let rhBrightness : WoT.RequestHandler;
-    // rhBrightness.name = "brightness";
-    rhBrightness.callback.call = (nu, old) => {
-      setBrightness(nu);}
+      let thingActionInitCancel : WoT.ThingActionInit;
+      thingActionInitCancel.name = 'cancel';
+      unicorn
+        .addProperty(thingPropertyInitBrightness)
+        .addProperty(thingPropertyInitColor)
+        .addAction(thingActionInitGradient)
+        .addAction(thingActionInitCancel);
+      // implementations
+      let rhBrightness : WoT.RequestHandler;
+      // rhBrightness.name = "brightness";
+      rhBrightness.callback.call = (nu, old) => {
+        setBrightness(nu);}
 
-    unicorn.onUpdateProperty(rhBrightness);
+      unicorn.onUpdateProperty(rhBrightness);
 
-    // unicorn
-    //   .onUpdateProperty('brightness', (nu, old) => {
-    //     setBrightness(nu);
-    //   })
-      // .onUpdateProperty('color', (nu, old) => {
-      //   setAll(nu.r, nu.g, nu.b);
-      // })
-      // .onInvokeAction('gradient', (input: Array<Color>) => {
-      //   if (input.length < 2) {
-      //     return '{ "minItems": 2 }';
-      //   }
-      //   unicorn.invokeAction('cancel');
+      // unicorn
+      //   .onUpdateProperty('brightness', (nu, old) => {
+      //     setBrightness(nu);
+      //   })
+        // .onUpdateProperty('color', (nu, old) => {
+        //   setAll(nu.r, nu.g, nu.b);
+        // })
+        // .onInvokeAction('gradient', (input: Array<Color>) => {
+        //   if (input.length < 2) {
+        //     return '{ "minItems": 2 }';
+        //   }
+        //   unicorn.invokeAction('cancel');
 
-      //   gradient = input;
-      //   gradIndex = 0;
-      //   gradNow = gradient[0];
-      //   gradNext = gradient[1];
-      //   gradVector = {
-      //     r: (gradNext.r - gradNow.r) / 20,
-      //     g: (gradNext.g - gradNow.g) / 20,
-      //     b: (gradNext.b - gradNow.b) / 20
-      //   };
-      //   gradientTimer = setInterval(gradientStep, 50);
-      //   return true;
-      // })
-      // .onInvokeAction('forceColor', (input: Color) => {
-      //   unicorn.invokeAction('cancel');
-      //   unicorn.setProperty('color', input);
-      //   return true;
-      // })
-      // .onInvokeAction('cancel', (input) => {
-      //   if (gradientTimer) {
-      //     console.log('>> canceling timer');
-      //     clearInterval(gradientTimer);
-      //     gradientTimer = null;
-      //   }
-      // })
-      //;
-    // initialize
-    // unicorn.setProperty('brightness', 50);
-    // unicorn.setProperty('color', { r: 0, g: 0, b: 0 });
-  // };
+        //   gradient = input;
+        //   gradIndex = 0;
+        //   gradNow = gradient[0];
+        //   gradNext = gradient[1];
+        //   gradVector = {
+        //     r: (gradNext.r - gradNow.r) / 20,
+        //     g: (gradNext.g - gradNow.g) / 20,
+        //     b: (gradNext.b - gradNow.b) / 20
+        //   };
+        //   gradientTimer = setInterval(gradientStep, 50);
+        //   return true;
+        // })
+        // .onInvokeAction('forceColor', (input: Color) => {
+        //   unicorn.invokeAction('cancel');
+        //   unicorn.setProperty('color', input);
+        //   return true;
+        // })
+        // .onInvokeAction('cancel', (input) => {
+        //   if (gradientTimer) {
+        //     console.log('>> canceling timer');
+        //     clearInterval(gradientTimer);
+        //     gradientTimer = null;
+        //   }
+        // })
+        //;
+      // initialize
+      // unicorn.setProperty('brightness', 50);
+      // unicorn.setProperty('color', { r: 0, g: 0, b: 0 });
+    // };
 
+    });
   });
 }
 
-// helper
-function roundColor(color: Color): Color {
-  return { r: Math.round(color.r), g: Math.round(color.g), b: Math.round(color.b) };
-}
+  // helper
+  function roundColor(color: Color): Color {
+    return { r: Math.round(color.r), g: Math.round(color.g), b: Math.round(color.b) };
+  }
 
-// function gradientStep() {
-//   gradNow = {
-//     r: (gradNow.r + gradVector.r),
-//     g: (gradNow.g + gradVector.g),
-//     b: (gradNow.b + gradVector.b)
-//   };
-//   unicorn.setProperty('color', roundColor(gradNow));
-//   if (gradNow.r === gradNext.r && gradNow.g === gradNext.g && gradNow.b === gradNext.b) {
-//     gradNow = gradient[gradIndex];
-//     gradIndex = ++gradIndex % gradient.length;
-//     gradNext = gradient[gradIndex];
-//     console.log('> step new index ' + gradIndex);
-//     gradVector = {
-//       r: (gradNext.r - gradNow.r) / 20,
-//       g: (gradNext.g - gradNow.g) / 20,
-//       b: (gradNext.b - gradNow.b) / 20
-//     };
-//   }
-// }
+  // function gradientStep() {
+  //   gradNow = {
+  //     r: (gradNow.r + gradVector.r),
+  //     g: (gradNow.g + gradVector.g),
+  //     b: (gradNow.b + gradVector.b)
+  //   };
+  //   unicorn.setProperty('color', roundColor(gradNow));
+  //   if (gradNow.r === gradNext.r && gradNow.g === gradNext.g && gradNow.b === gradNext.b) {
+  //     gradNow = gradient[gradIndex];
+  //     gradIndex = ++gradIndex % gradient.length;
+  //     gradNext = gradient[gradIndex];
+  //     console.log('> step new index ' + gradIndex);
+  //     gradVector = {
+  //       r: (gradNext.r - gradNow.r) / 20,
+  //       g: (gradNext.g - gradNow.g) / 20,
+  //       b: (gradNext.b - gradNow.b) / 20
+  //     };
+  //   }
+  // }
 
 function setBrightness(val: number) {
   if (!client) {

@@ -40,6 +40,7 @@ export function extractScheme(uri: string) {
     throw new Error(`Protocol in url "${uri}" must be valid`)
   }
   let scheme = parsed.protocol.slice(0, -1);
+  // TODO debug-level
   console.log(`Helpers found scheme '${scheme}'`);
   return scheme;
 }
@@ -51,6 +52,7 @@ export function getAddresses(): Array<string> {
 
   for (let iface in interfaces) {
     interfaces[iface].forEach((entry: any) => {
+      // TODO debug-level
       console.log(`AddressHelper found ${entry.address}`);
       if (entry.internal === false) {
         if (entry.family === 'IPv4') {
@@ -64,6 +66,7 @@ export function getAddresses(): Array<string> {
 
   addresses.push('127.0.0.1');
 
+  // TODO debug-level
   console.log(`AddressHelper identified ${addresses}`);
 
   return addresses;

@@ -25,9 +25,7 @@ import fs = require('fs');
 
 export default class FileClient implements ProtocolClient {
 
-  constructor() {
-    // console.log("File: new client created");
-  }
+  constructor() { }
 
   public readResource(uri: string): Promise<Content> {
     return new Promise<Content>((resolve, reject) => {

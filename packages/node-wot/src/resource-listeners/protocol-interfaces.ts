@@ -41,19 +41,19 @@ export interface ProtocolClient {
 }
 
 export interface ProtocolClientFactory {
-  getScheme(): string;
+  readonly scheme: string;
   getClient(): ProtocolClient;
   init(): boolean;
   destroy(): boolean;
 }
 
 export interface ProtocolServer {
+  readonly scheme: string;
   addResource(path: string, res: ResourceListener): boolean;
   removeResource(path: string): boolean;
-  start(): boolean;
-  stop(): boolean;
+  start(): Promise<void>;
+  stop(): Promise<void>;
   getPort(): number;
-  getScheme(): string;
 }
 
 export interface Content {

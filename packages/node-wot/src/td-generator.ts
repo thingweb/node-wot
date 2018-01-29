@@ -45,10 +45,11 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
     genTD.interaction = thing.getInteractions()
 
     console.log(`generateTD() found ${genTD.interaction.length} Interaction${genTD.interaction.length==1?"":"s"}`);
-    for (let interaction of   genTD.interaction) {
-      /* empty semantic type array*/
+    for (let interaction of genTD.interaction) {
+
+      // empty semantic type array
       interaction.semanticTypes = []
-      /* assign interaction pattern to the rdf @type*/
+      // assign interaction pattern to the rdf @type
       /* now done in td-parser.ts after split in pattern and semanticTypes
       if (interaction.pattern === TD.InteractionPattern.Property) {
         interaction.semanticTypes.push("Property");
@@ -59,42 +60,44 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
       }
       */
 
-      let l = 0
-      /* for each address, supported protocol, and media type an intreaction resouce is generated */
-      for (let add of Helpers.getAddresses()) {
-        for(let ser of servient.getServers()) {
-          for(let med of servient.getSupportedMediaTypes()) {
+      // link counter
+      let l = 0;
+
+      // for each address, supported protocol, and media type an intreaction resouce is generated
+      for (let address of Helpers.getAddresses()) {
+        for (let server of servient.getServers()) {
+          for (let type of servient.getSupportedMediaTypes()) {
 
             /* if server is online !==-1 assign the href information */
-            if(ser.getPort()!==-1) {
-                let href:string = ser.getScheme()+"://" +add+":"+ser.getPort()+"/" + thing.name
+            if(server.getPort() !== -1) {
+              let href:string = server.scheme + "://" + address + ":" + server.getPort() + "/" + thing.name;
 
-          
-                /* depending of the resource pattern, uri is constructed */
-                if(interaction.pattern === TD.InteractionPattern.Property) {
-                      interaction.link[l] = new TD.InteractionLink()
-                      interaction.link[l].href = href+"/properties/" + interaction.name
-                      interaction.link[l].mediaType = med
-                }
-                else if(interaction.pattern === TD.InteractionPattern.Action) {
-                      interaction.link[l] = new TD.InteractionLink()
-                      interaction.link[l].href = href+"/actions/" + interaction.name
-                      interaction.link[l].mediaType = med
-                }
-                if(interaction.pattern === TD.InteractionPattern.Event) {
-                      interaction.link[l] = new TD.InteractionLink()
-                      interaction.link[l].href = href+"/events/" + interaction.name
-                      interaction.link[l].mediaType = med
-                }
-                console.log(`generateTD() assign href  ${interaction.link[l].href } for interaction ${interaction.name}`);
-                l++
+              /* depending of the resource pattern, uri is constructed */
+              if (interaction.pattern === TD.InteractionPattern.Property) {
+                interaction.link[l] = new TD.InteractionLink();
+                interaction.link[l].href = href + "/properties/" + interaction.name;
+                interaction.link[l].mediaType = type;
               }
+              else if (interaction.pattern === TD.InteractionPattern.Action) {
+                interaction.link[l] = new TD.InteractionLink();
+                interaction.link[l].href = href + "/actions/" + interaction.name;
+                interaction.link[l].mediaType = type;
+              }
+              if (interaction.pattern === TD.InteractionPattern.Event) {
+                interaction.link[l] = new TD.InteractionLink();
+                interaction.link[l].href = href + "/events/" + interaction.name;
+                interaction.link[l].mediaType = type;
+              }
+              // TODO debug-level
+              console.log(`generateTD() assigns href '${interaction.link[l].href}' to Interaction '${interaction.name}'`);
+              ++l;
+            }
           }
-
         }
-
       }
-      l=0 /* reset for next interactions */
+
+      // reset counter for next iteration
+      l = 0;
     }
 
     return genTD;

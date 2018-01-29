@@ -35,11 +35,9 @@ import {ProtocolServer,Content,ResourceListener} from "../src/resource-listeners
 
 // implement a testserver to mock a server
 class TestProtocolServer implements ProtocolServer {
-    private listeners: Map<string, ResourceListener> = new Map();
 
-    getScheme() : string {
-        return "test";
-    }
+    public readonly scheme: string = "test";
+    private listeners: Map<string, ResourceListener> = new Map();
 
     getListenerFor(path: string): ResourceListener {
         return this.listeners.get(path);
@@ -54,8 +52,8 @@ class TestProtocolServer implements ProtocolServer {
         return true;
     }
 
-    start(): boolean { return true }
-    stop(): boolean { return true }
+    start(): Promise<void> { return new Promise<void>((resolve, reject) => { resolve(); }); }
+    stop(): Promise<void> { return new Promise<void>((resolve, reject) => { resolve(); }); }
     getPort(): number { return -1 }
 }
 
@@ -70,7 +68,7 @@ class WoTServerTest {
         this.servient = new Servient();
         this.server = new TestProtocolServer();
         this.servient.addServer(this.server);
-        this.WoT = this.servient.start();
+        this.servient.start().then( WoTruntime => { this.WoT = WoTruntime; });
         console.log("before starting test suite");
     }
 

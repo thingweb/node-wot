@@ -3,7 +3,7 @@
  */
 
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import { expect, should } from "chai";
+import { expect, should, assert } from "chai";
 // should must be called to augment all variables
 should();
 
@@ -16,67 +16,64 @@ import * as rp from "request-promise";
 @suite("HTTP implementation")
 class HttpTest {
 
-    @test "should start and stop a server"() {
-        let httpServer = new HttpServer(58080);
-        let ret = httpServer.start();
+  @test async "should start and stop a server"() {
+    let httpServer = new HttpServer(58080);
 
-        expect(ret).to.eq(true);
-        expect(httpServer.getPort()).to.eq(58080); // from test
+    await httpServer.start();
+    expect(httpServer.getPort()).to.eq(58080); // from test
 
-        ret = httpServer.stop();
+    await httpServer.stop();
+    expect(httpServer.getPort()).to.eq(-1); // from getPort() when not listening
+  }
 
-        expect(ret).to.eq(true);
-        expect(httpServer.getPort()).to.eq(-1); // from getPort() when not listening
-    }
+  @test async "should change resource from 'off' to 'on' and try to invoke and delete"() {
+    let httpServer = new HttpServer(0);
+    httpServer.addResource("/", new AssetResourceListener("off") );
 
-    @test "should change resource from 'off' to 'on' and try to invoke and delete"(done : Function) {
-        let httpServer = new HttpServer(0);
-        httpServer.addResource("/", new AssetResourceListener("off") );
-        let ret = httpServer.start();
+    await httpServer.start();
 
-        let uri = `http://localhost:${httpServer.getPort()}/`;
+    let uri = `http://localhost:${httpServer.getPort()}/`;
 
+    rp.get(uri).then(body => {
+      expect(body).to.equal("off");
+      rp.put(uri, {body: "on"}).then(body => {
+        expect(body).to.equal("");
         rp.get(uri).then(body => {
-                expect(body).to.equal("off");
-                rp.put(uri, {body: "on"}).then(body => {
-                        expect(body).to.equal("");
-                        rp.get(uri).then(body => {
-                                expect(body).to.equal("on");
-                                rp.post(uri, {body: "toggle"}).then(body => {
-                                        expect(body).to.equal("TODO");
+          expect(body).to.equal("on");
+          rp.post(uri, {body: "toggle"}).then(async body => {
+            expect(body).to.equal("TODO");
+            await httpServer.stop();
+          });
+        });
+      });
+    });
+  }
 
-                                        ret = httpServer.stop();
-                                        done();
-                                    });
-                            });
-                    });
-            });
-    }
+  @test async "should cause EADDRINUSE error when already running"() {
+    let httpServer1 = new HttpServer(0);
+    httpServer1.addResource("/", new AssetResourceListener("One") );
 
-    @test "should cause EADDRINUSE error when already running"(done : Function) {
-        let httpServer1 = new HttpServer(0);
-        httpServer1.addResource("/", new AssetResourceListener("One") );
-        let ret1 = httpServer1.start();
+    await httpServer1.start();
+    expect(httpServer1.getPort()).to.be.above(0);
 
-        expect(httpServer1.getPort()).to.be.above(0);
+    let httpServer2 = new HttpServer(httpServer1.getPort());
+    httpServer2.addResource("/", new AssetResourceListener("Two") );
 
-        let httpServer2 = new HttpServer(httpServer1.getPort());
-        httpServer2.addResource("/", new AssetResourceListener("Two") );
-        let ret2 = httpServer2.start(); // should fail
+    try {
+      await httpServer2.start(); // should fail
+    } catch(err) { assert(true) };
 
-        expect(ret2).to.eq(false);
-        expect(httpServer2.getPort()).to.eq(-1);
+    //expect(ret2).to.eq(false);
+    expect(httpServer2.getPort()).to.eq(-1);
 
-        let uri = `http://localhost:${httpServer1.getPort()}/`;
+    let uri = `http://localhost:${httpServer1.getPort()}/`;
 
-        rp.get(uri).then(body => {
-                expect(body).to.equal("One");
-        
-                ret1 = httpServer1.stop();
-                ret2 = httpServer2.stop();
+    rp.get(uri).then(async body => {
+      expect(body).to.equal("One");
 
-                done();
-            });
-    }
+      await httpServer1.stop();
+      await httpServer2.stop();
+    });
+  }
 }
 

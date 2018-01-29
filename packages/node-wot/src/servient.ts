@@ -17,15 +17,15 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
+import * as vm from "vm";
 
-import ExposedThing from "./exposed-thing";
 import WoTImpl from "./wot-impl";
-import {ProtocolClientFactory, ProtocolServer, ResourceListener, ProtocolClient} from "./resource-listeners/protocol-interfaces"
-import {ThingDescription} from "node-wot-td-tools";
+import ExposedThing from "./exposed-thing";
+import { ProtocolClientFactory, ProtocolServer, ResourceListener, ProtocolClient } from "./resource-listeners/protocol-interfaces"
+import { default as ContentSerdes, ContentCodec } from "./content-serdes";
+import { ThingDescription } from "node-wot-td-tools";
 import * as TD from "node-wot-td-tools";
 import * as Helpers from "./helpers";
-import { default as ContentSerdes, ContentCodec } from "./content-serdes"
-import * as vm from 'vm'
 
 export default class Servient {
     private servers: Array<ProtocolServer> = [];
@@ -84,12 +84,14 @@ export default class Servient {
     }
 
     public addResourceListener(path : string, resourceListener : ResourceListener) {
-        console.log(`Servient adding ResourceListener '${path}' of type ${resourceListener.constructor.name}`);
+        // TODO debug-level
+        console.log(`Servient adding ${resourceListener.constructor.name} '${path}'`);
         this.listeners.set(path,resourceListener);
         this.servers.forEach(srv => srv.addResource(path,resourceListener));
     }
 
     public removeResourceListener(path : string) {
+        // TODO debug-level
         console.log(`Servient removing ResourceListener '${path}'`);
         this.listeners.delete(path);
         this.servers.forEach(srv => srv.removeResource(path));
@@ -106,16 +108,18 @@ export default class Servient {
     }
 
     public addClientFactory(clientFactory: ProtocolClientFactory): void {
-        this.clientFactories.set(clientFactory.getScheme(), clientFactory);
+        this.clientFactories.set(clientFactory.scheme, clientFactory);
     }
 
     public hasClientFor(scheme: string) : boolean {
+        // TODO debug-level
         console.log(`Servient checking for '${scheme}' scheme in ${this.clientFactories.size} ClientFactories`);
         return this.clientFactories.has(scheme);
     }
 
     public getClientFor(scheme: string): ProtocolClient {
-        if(this.clientFactories.has(scheme)) {
+        if (this.clientFactories.has(scheme)) {
+            // TODO debug-level
             console.log(`Servient creating client for scheme '${scheme}'`);
             return this.clientFactories.get(scheme).getClient();
         } else {
@@ -161,13 +165,21 @@ export default class Servient {
         return this.credentialStore.get(identifier);
     }
 
-    //will return WoT object
-    public start(): WoT.WoTFactory {
-        this.servers.forEach((server) => server.start());
-        // FIXME if ClientFactory has multiple schemes it is initialized multiple times
+    // will return WoT object
+    public start(): Promise<WoT.WoTFactory> {
+        let serverStatus: Array<Promise<void>> = [];
+        this.servers.forEach((server) => serverStatus.push(server.start()));
         this.clientFactories.forEach((clientFactory) => clientFactory.init());
-        // Clients are to be created / started when a ConsumedThing is created
-        return new WoTImpl(this);
+
+        return new Promise<WoT.WoTFactory>((resolve, reject) => {
+            Promise.all(serverStatus)
+                .then( () => {
+                    resolve(new WoTImpl(this));
+                })
+                .catch( err => {
+                    reject(err);
+                });
+        });
     }
 
     public shutdown(): void {

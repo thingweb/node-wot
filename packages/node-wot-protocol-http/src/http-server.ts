@@ -27,10 +27,9 @@ import * as url from 'url';
 import {ContentSerdes} from 'node-wot';
 import { ProtocolServer, ResourceListener } from 'node-wot'
 
-const deasync = require('deasync');
-
 export default class HttpServer implements ProtocolServer {
 
+  public readonly scheme: string = "http";
   private readonly port: number = 8080;
   private readonly address: string = undefined;
   private readonly server: http.Server = http.createServer((req, res) => { this.handleRequest(req, res) });
@@ -46,14 +45,6 @@ export default class HttpServer implements ProtocolServer {
     if (address !== undefined) {
       this.address = address;
     }
-
-    this.server.on('error', (err) => {
-      console.error(`HttpServer for port ${this.port} failed: ${err.message}`); this.failed = true;
-    });
-  }
-
-  public getScheme(): string {
-    return 'http'
   }
 
   public addResource(path: string, res: ResourceListener): boolean {
@@ -61,45 +52,49 @@ export default class HttpServer implements ProtocolServer {
       console.warn(`HttpServer on port ${this.getPort()} already has ResourceListener '${path}' - skipping`);
       return false;
     } else {
-      console.log(`HttpServer on port ${this.getPort()} addeding resource '${path}'`);
+      // TODO debug-level
+      console.log(`HttpServer on port ${this.getPort()} adding resource '${path}'`);
       this.resources[path] = res;
       return true;
     }
   }
 
   public removeResource(path: string): boolean {
+    // TODO debug-level
     console.log(`HttpServer on port ${this.getPort()} removing resource '${path}'`);
     return delete this.resources[path];
   }
 
-  public start(): boolean {
+  public start(): Promise<void> {
     console.info(`HttpServer starting on ${(this.address !== undefined ? this.address + ' ' : '')}port ${this.port}`);
-    this.server.listen(this.port, this.address);
-    this.server.once('listening', () => { this.running = true; });
-    // converting async listen API to sync start function
-    setTimeout(()=>{}, 0);
-    while (!this.running && !this.failed) {
-      deasync.runLoopOnce();
-    }
-    return this.running;
+    return new Promise<void>((resolve, reject) => {
+      
+      // start promise handles all errors until successful start
+      this.server.once('error', (err: Error) => { reject(err); });
+      this.server.once('listening', () => {
+        // once started, console "handles" errors
+        this.server.on('error', (err: Error) => {
+          console.error(`HttpServer on port ${this.port} failed: ${err.message}`);
+        });
+        resolve();
+      });
+      this.server.listen(this.port, this.address);
+    });
   }
 
-  public stop(): boolean {
-    console.info(`HttpServer stopping on port ${this.getPort()} (running=${this.running})`);
-    let closed = this.running;
-    this.server.once('close', () => { closed = true; });
-    this.server.close();
+  public stop(): Promise<void> {
+    console.info(`HttpServer stopping on port ${this.getPort()}`);
+    return new Promise<void>((resolve, reject) => {
 
-    while (!closed && !this.failed) {
-      deasync.runLoopOnce();
-    }
-
-    this.running = false;
-    return closed;
+      // stop promise handles all errors from now on
+      this.server.once('error', (err: Error) => { reject(err); });
+      this.server.once('close', () => { resolve(); } );
+      this.server.close();
+    });
   }
 
   public getPort(): number {
-    if (this.running) {
+    if (this.server.address()) {
       return this.server.address().port;
     } else {
       return -1;

@@ -57,10 +57,10 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     */
     public invokeAction(actionName: string, parameter?: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            console.log("Try to find action for: " + actionName);
             let state = this.interactionStates[actionName];
             if (state) {
-                console.log("Action state : " + state);
+                // TODO debug-level
+                console.log(`ExposedThing '${this.name}' Action state of '${actionName}':`, state);
 
                 if (state.handlers.length) {
                     let handler = state.handlers[0];
@@ -149,12 +149,6 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         return this;
     }
 
-
-    // function (request: WoT.Request) {
-    //     request.name;
-    //     return 1;
-    // }
-
     /** @inheritDoc */
     // (request: WoT.Request) => any
     // handler: WoT.RequestHandler
@@ -164,7 +158,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
             if (state.handlers.length > 0) state.handlers.splice(0);
             state.handlers.push(handler.callback); // cb
         } else {
-            console.error("no such action " + handler.request.name + " on " + this.name);
+            console.error(`ExposedThing '${this.name}' has no Action '${handler.request.name}`);
         }
 
         return this;
@@ -177,7 +171,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         if (state) {
             state.handlers.push(handler.callback); // cb
         } else {
-            console.error("no such property " + handler.request.name + " on " + this.name);
+            console.error(`ExposedThing '${this.name}' has no Property '${handler.request.name}'`);
         }
 
         return this;
@@ -206,6 +200,8 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     addProperty(property: WoT.ThingPropertyInit): ExposedThing {
         // propertyName: string, valueType: Object, initialValue?: any
 
+        console.log(`ExposedThing '${this.name}' adding Property '${property.name}'`);
+
         // new way
         let newProp = new TD.Interaction();
         newProp.pattern = TD.InteractionPattern.Property;
@@ -219,15 +215,10 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         let propState = new InteractionState();
         propState.value = property.value; // initialValue;
         propState.handlers = [];
+        if (property.onWrite) propState.handlers.push(property.onWrite);
 
         this.interactionStates[property.name] = propState;
-
         this.addResourceListener("/" + this.name + "/properties/" + property.name, new Rest.PropertyResourceListener(this, newProp));
-
-        if (property.onWrite) {
-            console.info("set onWrite handler for " + property.name);
-            propState.handlers.push(property.onWrite);
-        }
 
         return this;
     }
@@ -235,6 +226,9 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     /** @inheritDoc */
     addAction(action: WoT.ThingActionInit): ExposedThing {
         // actionName: string, inputType?: Object, outputType?: Object
+
+        console.log(`ExposedThing '${this.name}' adding Action '${action.name}'`);
+
         // new way
         let newAction = new TD.Interaction();
         newAction.pattern = TD.InteractionPattern.Action;
@@ -246,19 +240,11 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         this.interactions.push(newAction);
 
         let actionState = new InteractionState();
-        // actionState.value = action.action;
         actionState.handlers = [];
-
-        console.log("Add action '" + action.name + "' to interactionStates");
+        if(action.action) actionState.handlers.push(action.action);
 
         this.interactionStates[action.name] = actionState;
-
         this.addResourceListener("/" + this.name + "/actions/" + action.name, new Rest.ActionResourceListener(this, newAction));
-
-        if(action.action) {
-            console.info("set action handler for " + action.name);
-            actionState.handlers.push(action.action);
-        }
 
         return this;
     }
@@ -305,7 +291,6 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
 
 class InteractionState {
     public value: any;
-    // public handlers: Array<(param?: any) => any> = [];
     public handlers: Array<Function> = [];
     public path: string;
 }
