@@ -10,7 +10,7 @@
   "license": "W3C Software License",
   "devDependencies": {
     "@types/chai": "4.0.4",
-    "@types/request-promise": "4.1.37",
+    "@types/request-promise": "4.1.41",
     "chai": "4.1.2",
     "coap": "0.20.0",
     "mocha": "3.5.3",
@@ -19,7 +19,7 @@
     "node-wot-protocol-http": "0.3.0-SNAPSHOT.6",
     "node-wot": "0.3.0-SNAPSHOT.6",
     "request": "2.79.0",
-    "request-promise": "4.1.1",
+    "request-promise": "4.2.2",
     "ts-node": "3.3.0",
     "typescript": "2.5.2"
   },
