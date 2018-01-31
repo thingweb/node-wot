@@ -117,25 +117,25 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     // define how to expose and run the Thing
 
     /** @inheritDoc */
-    register(directory?: USVString): Promise<void> {
+    register(directory: USVString): Promise<void> {
         return new Promise<void>((resolve, reject) => {    
         });
     }
 
     /** @inheritDoc */
-    unregister(directory?: USVString): Promise<void> {
+    unregister(directory: USVString): Promise<void> {
         return new Promise<void>((resolve, reject) => {    
         });
     }
 
     /** @inheritDoc */
-    start(directory?: USVString): Promise<void> {
+    start(): Promise<void> {
         return new Promise<void>((resolve, reject) => {    
         });
     }
 
     /** @inheritDoc */
-    stop(directory?: USVString): Promise<void> {
+    stop(): Promise<void> {
         return new Promise<void>((resolve, reject) => {    
         });
     }
@@ -205,6 +205,16 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         )
     }
 
+    updateTD(): void {
+        this.td = TD.serializeTD(TDGenerator.generateTD(this, this.srv));
+    }
+
+    updateTDAndInform(): void {
+        // TODO update TD properly
+        // this.updateTD(); // fails!?!?!
+        this.observablesTDChange.next(this.td);
+    }
+
     /** @inheritDoc */
     addProperty(property: WoT.ThingPropertyInit): ExposedThing {
         // propertyName: string, valueType: Object, initialValue?: any
@@ -233,6 +243,9 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
             console.info("set onWrite handler for " + property.name);
             propState.handlers.push(property.onWrite);
         }
+
+        // update TD and inform observers
+        this.updateTDAndInform();
 
         // TODO on read
         // if (propState) {
@@ -272,6 +285,9 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
             actionState.handlers.push(action.action);
         }
 
+        // update TD and inform observers
+        this.updateTDAndInform();
+
         return this;
     }
 
@@ -293,6 +309,9 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
 
         this.interactionStates[event.name] = eventState;
 
+        // update TD and inform observers
+        this.updateTDAndInform();
+
         return this;
     }
 
@@ -301,6 +320,10 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         // TODO necessary to inform observers?
         delete this.interactionStates[propertyName];
         this.removeResourceListener(this.name + "/properties/" + propertyName)
+
+        // update TD and inform observers
+        this.updateTDAndInform();
+
         return this;
     }
 
@@ -308,12 +331,20 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     removeAction(actionName: string): ExposedThing {
         delete this.interactionStates[actionName];
         this.removeResourceListener(this.name + "/actions/" + actionName)
+
+        // update TD and inform observers
+        this.updateTDAndInform();
+
         return this;
     }
 
     /** @inheritDoc */
     removeEvent(eventName: string): ExposedThing {
         // TODO 
+
+        // update TD and inform observers
+        this.updateTDAndInform();
+
         return this;
     }
 }

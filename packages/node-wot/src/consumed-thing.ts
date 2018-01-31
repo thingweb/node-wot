@@ -36,14 +36,14 @@ interface ClientAndLink {
 export default class ConsumedThing implements WoT.ConsumedThing {
 
     readonly name: string;
-    readonly td: WoT.ThingDescription;
+    td: WoT.ThingDescription;
 
     protected readonly _td: ThingDescription;
     protected readonly srv: Servient;
     private clients: Map<string, ProtocolClient> = new Map();
-    private observablesEvent: Map<string, Subject<any>> = new Map();
-    private observablesPropertyChange: Map<string, Subject<any>> = new Map();
-    private observablesTDChange: Map<string, Subject<any>> = new Map();
+    protected observablesEvent: Map<string, Subject<any>> = new Map();
+    protected observablesPropertyChange: Map<string, Subject<any>> = new Map();
+    protected observablesTDChange: Subject<any> = new Subject<any>();
 
     constructor(servient: Servient, _td: ThingDescription) {
         this.srv = servient
@@ -204,13 +204,8 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         return this.observablesPropertyChange.get(name);
     }
 
-    onTDChange(name: string): Observable<any> {
-        if(!this.observablesTDChange.get(name)) {
-            console.log("Create TDChange observable for " +  name);
-            this.observablesTDChange.set(name, new Subject());
-        }
-
-        return this.observablesTDChange.get(name);
+    onTDChange(): Observable<any> {
+        return this.observablesTDChange;
     }
 
 }
