@@ -79,8 +79,8 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
      * @param Name of the property
      * @param newValue value to be set
      */
-    public writeProperty(propertyName: string, newValue: any): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
+    public writeProperty(propertyName: string, newValue: any): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             let state = this.interactionStates[propertyName];
             if (state) {
                 let oldValue = state.value;

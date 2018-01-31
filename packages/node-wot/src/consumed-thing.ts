@@ -41,7 +41,9 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     protected readonly _td: ThingDescription;
     protected readonly srv: Servient;
     private clients: Map<string, ProtocolClient> = new Map();
-    private observables: Map<string, Subject<any>> = new Map();
+    private observablesEvent: Map<string, Subject<any>> = new Map();
+    private observablesPropertyChange: Map<string, Subject<any>> = new Map();
+    private observablesTDChange: Map<string, Subject<any>> = new Map();
 
     constructor(servient: Servient, _td: ThingDescription) {
         this.srv = servient
@@ -125,8 +127,8 @@ export default class ConsumedThing implements WoT.ConsumedThing {
      * @param Name of the property
      * @param newValue value to be set
      */
-    writeProperty(propertyName: string, newValue: any): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
+    writeProperty(propertyName: string, newValue: any): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.InteractionPattern.Property);
             if (!property) {
                 reject(new Error(`ConsumedThing '${this.name}' cannot find Property '${propertyName}'`));
@@ -139,8 +141,8 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     let payload = ContentSerdes.valueToBytes(newValue,link.mediaType)
                     resolve(client.writeResource(link.href, payload));
                     
-                    if(this.observables.get(propertyName)) {
-                        this.observables.get(propertyName).next(newValue);
+                    if(this.observablesPropertyChange.get(propertyName)) {
+                        this.observablesPropertyChange.get(propertyName).next(newValue);
                     };
                 }
             }
@@ -184,13 +186,31 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     // removeListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing { return this }
     // removeAllListeners(eventName: string): ConsumedThing { return this }
 
-    getObservable(name: string): Observable<any> {
-        if(!this.observables.get(name)) {
-            console.log("Create observable for " +  name);
-            this.observables.set(name, new Subject());
+    onEvent(name: string): Observable<any> {
+        if(!this.observablesEvent.get(name)) {
+            console.log("Create event observable for " +  name);
+            this.observablesEvent.set(name, new Subject());
         }
 
-        return this.observables.get(name);
+        return this.observablesEvent.get(name);
+    }
+
+    onPropertyChange(name: string): Observable<any> {
+        if(!this.observablesPropertyChange.get(name)) {
+            console.log("Create propertyChange observable for " +  name);
+            this.observablesPropertyChange.set(name, new Subject());
+        }
+
+        return this.observablesPropertyChange.get(name);
+    }
+
+    onTDChange(name: string): Observable<any> {
+        if(!this.observablesTDChange.get(name)) {
+            console.log("Create TDChange observable for " +  name);
+            this.observablesTDChange.set(name, new Subject());
+        }
+
+        return this.observablesTDChange.get(name);
     }
 
 }

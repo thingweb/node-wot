@@ -249,9 +249,9 @@ class WoTClientTest {
                 let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
-                expect(thing.getObservable("aProperty")).not.to.be.null;
+                expect(thing.onPropertyChange("aProperty")).not.to.be.null;
 
-                let subscription = thing.getObservable("aProperty").subscribe(
+                let subscription = thing.onPropertyChange("aProperty").subscribe(
                     x => {
                         console.log('onNext: %s', x);
                         if(x == 123) {
