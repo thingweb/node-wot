@@ -132,7 +132,7 @@ export default class ThingDescription {
   /** @ type information, usually 'Thing' */
   /* TODO Should be public semanticTypes: Array<WoT.SemanticType>; */
   @Expose({ name: "@type" })
-  public semanticType: Array<string>;
+  public semanticType: Array<WoT.SemanticType>; // Array<string>;
 
   public metadata: Array<WoT.SemanticMetadata>;
 

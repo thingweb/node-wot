@@ -323,15 +323,8 @@ class TDParserTest {
         // sampleLemonbeatBurlingame
         // Note: avoid href normalization in this test-case
         let tdLemonbeatBurlingame : ThingDescription = TDParser.parseTDString(tdSampleLemonbeatBurlingame, false)
-        // simple contexts
-        let scs = tdLemonbeatBurlingame.getSimpleContexts();
-        expect(scs).to.have.lengthOf(1);
-        expect(scs[0]).that.equals("http://w3c.github.io/wot/w3c-wot-td-context.jsonld");
 
-        // prefixed contexts
-        let pcs = tdLemonbeatBurlingame.getPrefixedContexts();
-
-        // TODO
+        // test context
         /*
         "@context": [
           "http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
@@ -341,23 +334,27 @@ class TDParserTest {
           }
         ],
         */
-        /*
+
+        // simple contexts
+        let scs = tdLemonbeatBurlingame.getSimpleContexts();
+        expect(scs).to.have.lengthOf(1);
+        expect(scs[0]).that.equals("http://w3c.github.io/wot/w3c-wot-td-context.jsonld");
+
+        // prefixed contexts
+        let pcs = tdLemonbeatBurlingame.getPrefixedContexts();
+
         expect(pcs).to.have.lengthOf(2);
         expect(pcs[0].prefix).that.equals("actuator");
         expect(pcs[0].context).that.equals("http://example.org/actuator#");
         expect(pcs[1].prefix).that.equals("sensor");
         expect(pcs[1].context).that.equals("http://example.org/sensors#");
-        */
 
         let newJsonLemonbeatBurlingame = TDParser.serializeTD(tdLemonbeatBurlingame);
 
         jsonExpected = JSON.parse(tdSampleLemonbeatBurlingame);
         jsonActual = JSON.parse(newJsonLemonbeatBurlingame);
 
-        if(false) {
-          // TODO need to wait how @context is encoded
-          // expect(jsonActual).to.deep.equal(jsonExpected);
-        }
+        expect(jsonActual).to.deep.equal(jsonExpected);
     }
 
 
@@ -373,17 +370,24 @@ class TDParserTest {
       expect(td).to.have.property("name").that.equals("MyTemperatureThing3");
       expect(td).to.have.property("base").that.equals("coap://mytemp.example.com:5683/interactions/");
 
-      // TODO "reference": "myTempThing" in metadata
-      // expect(td).to.have.property("reference").that.equals("myTempThing");
-      // expect(td).to.have.property("metadata").to.have.property("reference").that.equals("myTempThing");
+      // thing metadata "reference": "myTempThing" in metadata
+      expect(td).to.have.property("metadata").to.have.lengthOf(1);
+      expect(td.metadata[0].type).to.have.property("name").that.equals("reference");
+      expect(td.metadata[0]).to.have.property("value").that.equals("myTempThing");
 
       expect(td.interaction).to.have.lengthOf(1);
       expect(td.interaction[0]).to.have.property("name").that.equals("myTemp");
       expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
       expect(td.interaction[0]).to.have.property("writable").that.equals(false);
 
-      // TODO "unit": "celsius"
-      // TODO "reference": "threshold"
+      // metadata
+      expect(td.interaction[0]).to.have.property("metadata").to.have.lengthOf(2);
+      // metadata "unit": "celsius"
+      expect(td.interaction[0].metadata[0].type).to.have.property("name").that.equals("unit");
+      expect(td.interaction[0].metadata[0]).to.have.property("value").that.equals("celsius");
+      // metadata "reference": "threshold"
+      expect(td.interaction[0].metadata[1].type).to.have.property("name").that.equals("reference");
+      expect(td.interaction[0].metadata[1]).to.have.property("value").that.equals("threshold");
 
       expect(td.interaction[0].link).to.have.lengthOf(1);
       expect(td.interaction[0].link[0]).to.have.property("mediaType").that.equals("application/json");

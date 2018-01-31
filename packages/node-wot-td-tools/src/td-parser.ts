@@ -54,6 +54,10 @@ function stringToThingDescription(tdJson: string) : ThingDescription {
                 // default set in constructor already
               } else if(typeof contextEntry === "string") {
                 td.context.push(contextEntry);
+              } else if(typeof contextEntry === "object") {
+                td.context.push(contextEntry);
+              } else {
+                console.error("@context field entry of array of unknown type");
               }
             }
           } else {
@@ -203,8 +207,7 @@ function stringToThingDescription(tdJson: string) : ThingDescription {
           }
           break;
         default:
-          // TODO metadata
-
+          // metadata
           // TODO prefix/context parsing metadata
           let md  : WoT.SemanticMetadata = {
             type: {
@@ -216,8 +219,6 @@ function stringToThingDescription(tdJson: string) : ThingDescription {
             value: tdPlain[fieldNameRoot]
           };
           td.metadata.push(md);
-
-
           break;
         }
     }
