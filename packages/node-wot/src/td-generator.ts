@@ -19,8 +19,8 @@
 
 import Servient from "./servient"
 import ExposedThing from "./exposed-thing"
-import {ThingDescription} from "node-wot-td-tools"
-import * as TD from "node-wot-td-tools"
+import {ThingDescription} from "@node-wot/td-tools"
+import * as TD from "@node-wot/td-tools"
 import * as Helpers from "./helpers";
 
 

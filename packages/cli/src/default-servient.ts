@@ -17,20 +17,19 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-
-"use strict"
+"use strict";
 
 // global W3C WoT Scripting API definitions
 import _, { WoTFactory } from "wot-typescript-definitions";
 // node-wot implementation of W3C WoT Servient 
-import Servient from "node-wot";
+import Servient from "@node-wot/core";
 // protocols used
-import {HttpServer} from "node-wot-protocol-http";
-import {CoapServer} from "node-wot-protocol-coap";
-import {FileClientFactory} from "node-wot-protocol-file";
-import {HttpClientFactory} from "node-wot-protocol-http";
-import {HttpsClientFactory} from "node-wot-protocol-http";
-import {CoapClientFactory} from "node-wot-protocol-coap";
+import { HttpServer } from "@node-wot/binding-http";
+import { CoapServer } from "@node-wot/binding-coap";
+import { FileClientFactory } from "@node-wot/binding-file";
+import { HttpClientFactory } from "@node-wot/binding-http";
+import { HttpsClientFactory } from "@node-wot/binding-http";
+import { CoapClientFactory } from "@node-wot/binding-coap";
 
 export default class DefaultServient extends Servient {
 

@@ -17,14 +17,16 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import * as WoT from 'wot-typescript-definitions';
-import {ProtocolClient} from "./resource-listeners/protocol-interfaces"
+import { Observable } from "rxjs/Observable";
+import * as WoT from "wot-typescript-definitions";
+
+import { ThingDescription } from "@node-wot/td-tools";
+import * as TD from "@node-wot/td-tools";
+
 import Servient from "./servient";
-import {ThingDescription} from "node-wot-td-tools"
-import * as TD from "node-wot-td-tools";
 import * as Helpers from "./helpers";
-import ContentSerdes from "./content-serdes"
-import {Observable} from 'rxjs/Observable';
+import ContentSerdes from "./content-serdes";
+import { ProtocolClient } from "./resource-listeners/protocol-interfaces";
 
 interface ClientAndLink {
     client: ProtocolClient

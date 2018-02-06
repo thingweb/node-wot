@@ -18,11 +18,17 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-
-"use strict"
+"use strict";
 
 // global W3C WoT Scripting API definitions
-import _ from "wot-typescript-definitions";
+// using core definitions instead of 'wot-typescript-definitions' to avoid typing error
+import _ from "@node-wot/core";
+// node-wot implementation of W3C WoT Servient 
+import { Servient } from "@node-wot/core";
+import { HttpServer } from "@node-wot/binding-http";
+
+// exposed protocols
+import { CoapServer } from "@node-wot/binding-coap";
 
 // node-wot implementation of W3C WoT Servient 
 import DefaultServient from "./default-servient";

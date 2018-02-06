@@ -7,12 +7,12 @@ import { expect, should } from "chai";
 // should must be called to augment all variables
 should();
 
-import {HttpServer} from "node-wot-protocol-http";
-import {CoapServer} from "node-wot-protocol-coap"; 
-import {AssetResourceListener} from "node-wot";
-
 import * as http from "http";
 import * as rp from "request-promise";
+
+import { AssetResourceListener } from "@node-wot/core";
+import { HttpServer } from "@node-wot/binding-http";
+import { CoapServer } from "@node-wot/binding-coap";
 
 const coap = require("coap");
 

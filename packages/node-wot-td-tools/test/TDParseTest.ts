@@ -28,7 +28,7 @@ should();
 
 import ThingDescription from "../src/thing-description";
 import * as TDParser from "../src/td-parser";
-// import * as AddressHelper from "node-wot-helpers";
+// import * as AddressHelper from "@node-wot/helpers";
 
 /** sample TD json-ld string from the CP page*/
 let tdSample1 = `{

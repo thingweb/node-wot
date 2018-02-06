@@ -20,7 +20,7 @@
 /**
  * CoAP client based on coap by mcollina
  */
-import { ProtocolClient, Content } from 'node-wot'
+import { ProtocolClient, Content } from "@node-wot/core"
 
 let coap = require('coap');
 import * as url from 'url';

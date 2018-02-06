@@ -20,7 +20,7 @@
 /**
  * File protocol binding
  */
-import { ProtocolClient, Content } from 'node-wot'
+import { ProtocolClient, Content } from "@node-wot/core"
 import fs = require('fs');
 
 export default class FileClient implements ProtocolClient {

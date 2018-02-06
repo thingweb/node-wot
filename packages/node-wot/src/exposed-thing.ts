@@ -17,13 +17,14 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import {ResourceListener} from "./resource-listeners/protocol-interfaces"
-import {ThingDescription} from "node-wot-td-tools";
-import ConsumedThing from "./consumed-thing";
-import * as TD from "node-wot-td-tools";
-import * as Rest from "./resource-listeners/all-resource-listeners"
+import {ThingDescription} from "@node-wot/td-tools";
+import * as TD from "@node-wot/td-tools";
+
 import Servient from "./servient";
+import ConsumedThing from "./consumed-thing";
 import * as TDGenerator from "./td-generator"
+import * as Rest from "./resource-listeners/all-resource-listeners";
+import {ResourceListener} from "./resource-listeners/protocol-interfaces";
 
 export default class ExposedThing extends ConsumedThing implements WoT.ExposedThing {
     // these arrays and their contents are mutable

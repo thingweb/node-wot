@@ -21,7 +21,7 @@ import BasicResourceListener from "./basic-resource-listener";
 import ExposedThing from "../exposed-thing";
 
 import {ResourceListener, Content} from "./protocol-interfaces"
-import * as TD from "node-wot-td-tools";
+import * as TD from "@node-wot/td-tools";
 import ContentSerdes from "../content-serdes";
 /**
  * Resource that provides a Thing Description

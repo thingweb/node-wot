@@ -1,6 +1,6 @@
 {
-  "name": "node-wot-protocol-file",
-  "version": "0.3.0-SNAPSHOT.6",
+  "name": "@node-wot/binding-file",
+  "version": "0.3.0-SNAPSHOT.7",
   "files": [
     "dist/"
   ],
@@ -20,6 +20,6 @@
     "typescript-standard": "0.3.30"
   },
   "dependencies": {
-    "node-wot": "0.3.0-SNAPSHOT.6"
+    "@node-wot/core": "0.3.0-SNAPSHOT.7"
   }
 }

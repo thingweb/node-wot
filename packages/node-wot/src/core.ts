@@ -17,25 +17,37 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import {HttpServer} from "node-wot-protocol-http";
-import {CoapServer} from "node-wot-protocol-coap";
-import {AssetResourceListener} from 'node-wot';
+"use strict"
 
-// for level only - use console for output
-// import logger from '../../logger';
-// logger.level = 'debug';
+/** Exports of this module */
 
-let res1 = new AssetResourceListener('"Hello World"', 'application/json');
-let res2 = new AssetResourceListener('true', 'application/json');
+//Servient: is also the default export
+import { default as Servient } from "./servient";
 
-let hServer = new HttpServer(8081);
-hServer.addResource('/test', res1);
-hServer.addResource('/exit', res2);
-hServer.start();
-console.log('HTTP listening on port ' + hServer.getPort());
+export default Servient;
+export { Servient };
 
-let cServer = new CoapServer();
-cServer.addResource('/test', res1);
-cServer.addResource('/exit', res2);
-cServer.start();
-console.log('CoAP listening on port ' + cServer.getPort());
+// ResourceListener & Content
+export {ResourceListener,Content} from "./resource-listeners/protocol-interfaces";
+
+// ResourceListener Implementations
+export * from "./resource-listeners/all-resource-listeners";
+
+// ContentSerdes
+export * from "./content-serdes";
+
+// Protocols
+export * from "./resource-listeners/protocol-interfaces";
+
+export { default as ConsumedThing } from "./consumed-thing";
+export { default as ExposedThing } from "./exposed-thing";
+
+
+//export {ThingDescription} from 'node-wot-td-tools'
+//export * from "node-wot-td-tools";
+
+// Helper Implementations
+export * from './td-generator'
+
+// Helper Implementations
+export * from './helpers'

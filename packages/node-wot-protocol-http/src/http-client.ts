@@ -20,11 +20,12 @@
 /**
  * HTTP client based on http
  */
-import { ProtocolClient, Content } from "node-wot";
 
 import * as http from "http";
 import * as https from "https";
 import * as url from "url";
+
+import { ProtocolClient, Content } from "@node-wot/core";
 
 export default class HttpClient implements ProtocolClient {
 

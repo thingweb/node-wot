@@ -1,8 +1,8 @@
 {
-  "name": "node-wot-integration-tests",
+  "name": "@node-wot/integration-tests",
   "private": true,
-  "version": "0.3.0-SNAPSHOT.6",
-  "description": "Integration tests for node-wot",
+  "version": "0.3.0-SNAPSHOT.7",
+  "description": "Integration tests for node-wot (not published)",
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register"
   },
@@ -15,15 +15,12 @@
     "coap": "0.20.0",
     "mocha": "3.5.3",
     "mocha-typescript": "1.1.8",
-    "node-wot-protocol-coap": "0.3.0-SNAPSHOT.6",
-    "node-wot-protocol-http": "0.3.0-SNAPSHOT.6",
-    "node-wot": "0.3.0-SNAPSHOT.6",
     "request": "2.79.0",
     "request-promise": "4.2.2",
     "ts-node": "3.3.0",
-    "typescript": "2.5.2"
-  },
-  "dependencies": {
-    "coap": "0.20.0"
+    "typescript": "2.5.2",
+    "@node-wot/binding-coap": "0.3.0-SNAPSHOT.7",
+    "@node-wot/binding-http": "0.3.0-SNAPSHOT.7",
+    "@node-wot/core": "0.3.0-SNAPSHOT.7"
   }
 }

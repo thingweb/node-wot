@@ -22,7 +22,7 @@
  * CoAP client Factory
  */
 
-import { ProtocolClientFactory, ProtocolClient } from 'node-wot'
+import { ProtocolClientFactory, ProtocolClient } from "@node-wot/core"
 import CoapClient from './coap-client';
 
 export default class CoapClientFactory implements ProtocolClientFactory {

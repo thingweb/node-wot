@@ -1,7 +1,7 @@
 {
-  "name": "node-wot-root",
+  "name": "node-wot",
   "private": true,
-  "version": "0.3.0-SNAPSHOT.6",
+  "version": "0.3.0-SNAPSHOT.7",
   "description": "Web of Things implementation based on node.js and typescript (root project)",
   "main": "dist/main.js",
   "scripts": {

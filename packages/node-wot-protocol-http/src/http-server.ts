@@ -21,11 +21,10 @@
  * HTTP Server based on http
  */
 
-import * as http from 'http';
-import * as url from 'url';
-// import ContentSerdes from 'node-wot-content-serdes';
-import {ContentSerdes} from 'node-wot';
-import { ProtocolServer, ResourceListener } from 'node-wot'
+import * as http from "http";
+import * as url from "url";
+
+import { ProtocolServer, ResourceListener, ContentSerdes } from "@node-wot/core";
 
 export default class HttpServer implements ProtocolServer {
 

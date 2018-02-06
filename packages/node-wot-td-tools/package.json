@@ -1,6 +1,6 @@
 {
-  "name": "node-wot-td-tools",
-  "version": "0.3.0-SNAPSHOT.6",
+  "name": "@node-wot/td-tools",
+  "version": "0.3.0-SNAPSHOT.7",
   "files": [
     "dist/"
   ],

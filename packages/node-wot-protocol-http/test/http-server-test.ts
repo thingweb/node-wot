@@ -7,11 +7,12 @@ import { expect, should, assert } from "chai";
 // should must be called to augment all variables
 should();
 
-import HttpServer from "../src/http-server";
-import {AssetResourceListener} from "node-wot"
-
 import * as http from "http";
 import * as rp from "request-promise";
+
+import { AssetResourceListener } from "@node-wot/core";
+
+import HttpServer from "../src/http-server";
 
 @suite("HTTP implementation")
 class HttpTest {

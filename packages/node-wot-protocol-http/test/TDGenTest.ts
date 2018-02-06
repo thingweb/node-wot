@@ -20,23 +20,21 @@
 /**
  * Basic test suite for TD parsing
  */
-import Servient from 'node-wot'
-import ExposedThing from 'node-wot'
-// import {HttpServer} from "node-wot-protocol-http"
-import HttpServer from "../src/http-server"
-import {ProtocolServer} from "node-wot" // "node-wot-protocols"
 
-
-import {ContentCodec} from 'node-wot'
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import { expect, should } from "chai";
 // should must be called to augment all variables
 should();
 
-import * as TDTools from "node-wot-td-tools";
-import * as TDGenerator from "node-wot";
-// import * as Helpers from "../src/helpers";
-import * as Helpers from 'node-wot'
+import Servient from "@node-wot/core";
+import ExposedThing from "@node-wot/core";
+import { ContentCodec } from "@node-wot/core";
+import { ProtocolServer } from "@node-wot/core";
+import * as Helpers from "@node-wot/core";
+import * as TDGenerator from "@node-wot/core";
+import * as TDTools from "@node-wot/td-tools";
+
+import HttpServer from "../src/http-server";
 
 @suite("TD Generation")
 class TDGeneratorTest {

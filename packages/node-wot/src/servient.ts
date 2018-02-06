@@ -23,8 +23,8 @@ import WoTImpl from "./wot-impl";
 import ExposedThing from "./exposed-thing";
 import { ProtocolClientFactory, ProtocolServer, ResourceListener, ProtocolClient } from "./resource-listeners/protocol-interfaces"
 import { default as ContentSerdes, ContentCodec } from "./content-serdes";
-import { ThingDescription } from "node-wot-td-tools";
-import * as TD from "node-wot-td-tools";
+import { ThingDescription } from "@node-wot/td-tools";
+import * as TD from "@node-wot/td-tools";
 import * as Helpers from "./helpers";
 
 export default class Servient {

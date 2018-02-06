@@ -1,6 +1,6 @@
 {
-  "name": "node-wot-protocol-coap",
-  "version": "0.3.0-SNAPSHOT.6",
+  "name": "@node-wot/binding-coap",
+  "version": "0.3.0-SNAPSHOT.7",
   "files": [
     "dist/"
   ],
@@ -26,6 +26,6 @@
   },
   "dependencies": {
     "coap": "0.20.0",
-    "node-wot": "0.3.0-SNAPSHOT.6"
+    "@node-wot/core": "0.3.0-SNAPSHOT.7"
   }
 }

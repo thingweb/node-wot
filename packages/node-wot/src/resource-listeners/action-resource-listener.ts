@@ -17,10 +17,11 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import {ResourceListener,Content} from "./protocol-interfaces"
+import * as TD from "@node-wot/td-tools";
+
+import { ResourceListener, Content } from "./protocol-interfaces";
 import BasicResourceListener from "./basic-resource-listener";
 import ExposedThing from "../exposed-thing";
-import * as TD from "node-wot-td-tools";
 import ContentSerdes from "../content-serdes";
 
 /**

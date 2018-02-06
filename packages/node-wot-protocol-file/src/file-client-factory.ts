@@ -20,7 +20,7 @@
 /**
  * File protocol binding
  */
-import { ProtocolClientFactory, ProtocolClient } from 'node-wot';
+import { ProtocolClientFactory, ProtocolClient } from "@node-wot/core";
 import FileClient from './file-client';
 
 export default class FileClientFactory implements ProtocolClientFactory {

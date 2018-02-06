@@ -17,16 +17,16 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
+import { Observable } from "rxjs/Observable";
+import * as WoT from "wot-typescript-definitions";
+
+import { ThingDescription } from "@node-wot/td-tools";
+
 import Servient from "./servient";
 import ExposedThing from "./exposed-thing";
 import ConsumedThing from "./consumed-thing";
 import * as Helpers from "./helpers";
-import * as TDParser from "node-wot-td-tools";
-
-import * as WoT from 'wot-typescript-definitions';
-import { ThingDescription } from 'node-wot-td-tools';
-
-import {Observable} from 'rxjs/Observable';
+import * as TDParser from "@node-wot/td-tools";
 
 export default class WoTImpl implements WoT.WoTFactory {
     private srv: Servient;
