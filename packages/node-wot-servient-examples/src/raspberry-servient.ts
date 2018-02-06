@@ -65,44 +65,86 @@ function main() {
   let wot = servient.start();
   console.info('RaspberryServient started');
 
-  let thingInit : WoT.ThingTemplate;
-  thingInit.name = 'unicorn'; 
+  let thingInit : WoT.ThingTemplate = {'name': 'unicorn'};
+//  thingInit.name = 'unicorn'; 
 
   let thing = wot.expose(thingInit);
   //wot.expose(thingInit).then(thing => {
     unicorn = thing;
-    let thingPropertyInitBrightness : WoT.ThingPropertyInit;
-    thingPropertyInitBrightness.name = 'brightness';
-    thingPropertyInitBrightness.initValue = 50;
-    // TODO valueType: { type: 'integer', minimum: 0, maximum: 255 }
-    let thingPropertyInitColor : WoT.ThingPropertyInit;
-    thingPropertyInitColor.name = 'color';
-    thingPropertyInitColor.initValue = { r: 0, g: 0, b: 0 };
-    thingPropertyInitColor.onWrite = (old, nu) => {
-      setBrightness(nu);
-    }
-  // TODO valueType: type: 'object',
-        // properties: {
-        //   r: { type: 'integer', minimum: 0, maximum: 255 },
-        //   g: { type: 'integer', minimum: 0, maximum: 255 },
-        //   b: { type: 'integer', minimum: 0, maximum: 255 }
-        // }
-    let thingActionInitGradient : WoT.ThingActionInit;
-    thingActionInitGradient.name = 'gradient';
-     // TODO valueType: {
-      //   type: 'array',
-      //   items: {
-      //     type: 'object',
-      //     properties: {
-      //       r: { type: 'integer', minimum: 0, maximum: 255 },
-      //       g: { type: 'integer', minimum: 0, maximum: 255 },
-      //       b: { type: 'integer', minimum: 0, maximum: 255 }
-      //     }
-      //   },
-      //   minItems: 2
-      // }
-    let thingActionInitCancel : WoT.ThingActionInit;
-    thingActionInitCancel.name = 'cancel';
+
+    let thingPropertyInitBrightness : WoT.ThingPropertyInit = {
+      name: 'brightness', 
+      writable: true, 
+      type: JSON.stringify({ "type": "integer", 'minimum': 0, 'maximum': 255 }),
+      initValue: 50,
+      onWrite: (old, nu) => {
+        setBrightness(nu);
+      }
+    };
+    
+    let thingPropertyInitColor : WoT.ThingPropertyInit = {
+      name : 'color',
+      type: JSON.stringify({
+        'type': 'object',
+        'properties': {
+           'r': { 'type': 'integer', 'minimum': 0, 'maximum': 255 },
+           'g': { 'type': 'integer', 'minimum': 0, 'maximum': 255 },
+           'b': { 'type': 'integer', 'minimum': 0, 'maximum': 255 }
+         }
+      }),
+      initValue : { r: 0, g: 0, b: 0 },
+      onWrite : (old, nu) => {
+        setAll(nu.r, nu.g, nu.b);
+      }
+    };
+
+    let thingActionInitGradient : WoT.ThingActionInit = {
+      name : 'gradient',
+      inputType: JSON.stringify({
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'r' : { 'type': 'integer', 'minimum': 0, 'maximum': 255 },
+            'g' : { 'type': 'integer', 'minimum': 0, 'maximum': 255 },
+            'b' : { 'type': 'integer', 'minimum': 0, 'maximum': 255 }
+          }
+        },
+        'minItems': 2
+      }),
+      outputType: JSON.stringify({'type': 'string'}),
+      action: (gradarray: Array<Color>) => {
+          if(gradarray.length < 2){ return "{minItems: 2}"; }
+
+	  unicorn.invokeAction('cancel');
+
+          gradient = gradarray;
+          gradIndex = 0;
+          gradNow = gradient[0];
+          gradNext = gradient[1];
+          gradVector = {
+            r: (gradNext.r - gradNow.r) / 20,
+            g: (gradNext.g - gradNow.g) / 20,
+            b: (gradNext.b - gradNow.b) / 20
+          };
+          gradientTimer = setInterval(gradientStep, 50);
+          return 'OK';
+        
+      }
+    };
+    let thingActionInitCancel : WoT.ThingActionInit = {
+      name : 'cancel',
+      inputType: null,
+      outputType: JSON.stringify({'type': 'string'}),
+	action: () => {
+          if (gradientTimer) {
+            console.log('>> canceling timer');
+            clearInterval(gradientTimer);
+            gradientTimer = null;
+          }
+	  return 'OK';
+	}
+    };
     unicorn
       .addProperty(thingPropertyInitBrightness)
       .addProperty(thingPropertyInitColor)
@@ -168,25 +210,25 @@ function roundColor(color: Color): Color {
   return { r: Math.round(color.r), g: Math.round(color.g), b: Math.round(color.b) };
 }
 
-// function gradientStep() {
-//   gradNow = {
-//     r: (gradNow.r + gradVector.r),
-//     g: (gradNow.g + gradVector.g),
-//     b: (gradNow.b + gradVector.b)
-//   };
-//   unicorn.setProperty('color', roundColor(gradNow));
-//   if (gradNow.r === gradNext.r && gradNow.g === gradNext.g && gradNow.b === gradNext.b) {
-//     gradNow = gradient[gradIndex];
-//     gradIndex = ++gradIndex % gradient.length;
-//     gradNext = gradient[gradIndex];
-//     console.log('> step new index ' + gradIndex);
-//     gradVector = {
-//       r: (gradNext.r - gradNow.r) / 20,
-//       g: (gradNext.g - gradNow.g) / 20,
-//       b: (gradNext.b - gradNow.b) / 20
-//     };
-//   }
-// }
+function gradientStep() {
+  gradNow = {
+    r: (gradNow.r + gradVector.r),
+    g: (gradNow.g + gradVector.g),
+    b: (gradNow.b + gradVector.b)
+  };
+  unicorn.writeProperty('color', roundColor(gradNow));
+  if (gradNow.r === gradNext.r && gradNow.g === gradNext.g && gradNow.b === gradNext.b) {
+    gradNow = gradient[gradIndex];
+    gradIndex = ++gradIndex % gradient.length;
+    gradNext = gradient[gradIndex];
+    console.log('> step new index ' + gradIndex);
+    gradVector = {
+      r: (gradNext.r - gradNow.r) / 20,
+      g: (gradNext.g - gradNow.g) / 20,
+      b: (gradNext.b - gradNow.b) / 20
+    };
+  }
+}
 
 function setBrightness(val: number) {
   if (!client) {
