@@ -9,7 +9,7 @@
   "typings": "dist/td-tools.d.ts",
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register",
-    "build": "tsc",
+    "build": "tsc && webpack",
     "codestyle": "standard --pretty"
   },
   "author": "the thingweb community",
@@ -20,9 +20,11 @@
     "chai": "4.1.2",
     "mocha": "3.5.3",
     "mocha-typescript": "1.1.8",
+    "ts-loader": "^3.2.0",
     "ts-node": "3.3.0",
     "typescript": "2.5.2",
-    "typescript-standard": "0.3.30"
+    "typescript-standard": "0.3.30",
+    "webpack": "^3.10.0"
   },
   "dependencies": {
     "reflect-metadata": "0.1.10",
