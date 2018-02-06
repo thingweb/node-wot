@@ -1,19 +1,14 @@
 {
   "name": "@node-wot/binding-http",
   "version": "0.3.0-SNAPSHOT.7",
+  "description": "HTTP client & server protocol binding for node-wot",
+  "author": "the thingweb community",
+  "license": "W3C-20150513",
   "files": [
     "dist/"
   ],
-  "description": "an http server & client plugin for node-wot",
   "main": "dist/http.js",
   "typings": "dist/http.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "test": "mocha --compilers ts:ts-node/register",
-    "codestyle": "standard --pretty"
-  },
-  "author": "the thingweb community",
-  "license": "W3C Software License",
   "devDependencies": {
     "@types/chai": "4.0.4",
     "@types/node": "8.0.28",
@@ -30,5 +25,10 @@
   },
   "dependencies": {
     "@node-wot/core": "0.3.0-SNAPSHOT.7"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --compilers ts:ts-node/register",
+    "codestyle": "standard --pretty"
   }
 }

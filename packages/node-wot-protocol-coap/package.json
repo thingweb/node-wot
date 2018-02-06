@@ -1,19 +1,14 @@
 {
   "name": "@node-wot/binding-coap",
   "version": "0.3.0-SNAPSHOT.7",
+  "description": "CoAP client & server protocol binding for node-wot",
+  "author": "the thingweb community",
+  "license": "W3C-20150513",
   "files": [
     "dist/"
   ],
-  "description": "an coap client & server plugin for node-wot",
   "main": "dist/coap.js",
   "typings": "dist/coap.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "test": "mocha --compilers ts:ts-node/register",
-    "codestyle": "standard --pretty"
-  },
-  "author": "the thingweb community",
-  "license": "W3C Software License",
   "devDependencies": {
     "@types/chai": "4.0.4",
     "@types/node": "8.0.28",
@@ -27,5 +22,10 @@
   "dependencies": {
     "coap": "0.20.0",
     "@node-wot/core": "0.3.0-SNAPSHOT.7"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --compilers ts:ts-node/register",
+    "codestyle": "standard --pretty"
   }
 }

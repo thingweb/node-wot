@@ -1,13 +1,10 @@
 {
   "name": "@node-wot/integration-tests",
-  "private": true,
   "version": "0.3.0-SNAPSHOT.7",
+  "private": true,
   "description": "Integration tests for node-wot (not published)",
-  "scripts": {
-    "test": "mocha --compilers ts:ts-node/register"
-  },
   "author": "the thingweb community",
-  "license": "W3C Software License",
+  "license": "W3C-20150513",
   "devDependencies": {
     "@types/chai": "4.0.4",
     "@types/request-promise": "4.1.41",
@@ -19,8 +16,11 @@
     "request-promise": "4.2.2",
     "ts-node": "3.3.0",
     "typescript": "2.5.2",
+    "@node-wot/core": "0.3.0-SNAPSHOT.7",
     "@node-wot/binding-coap": "0.3.0-SNAPSHOT.7",
-    "@node-wot/binding-http": "0.3.0-SNAPSHOT.7",
-    "@node-wot/core": "0.3.0-SNAPSHOT.7"
+    "@node-wot/binding-http": "0.3.0-SNAPSHOT.7"
+  },
+  "scripts": {
+    "test": "mocha --compilers ts:ts-node/register"
   }
 }

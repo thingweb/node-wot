@@ -1,18 +1,14 @@
 {
   "name": "@node-wot/binding-file",
   "version": "0.3.0-SNAPSHOT.7",
+  "description": "File client protocol binding for node-wot",
+  "author": "the thingweb community",
+  "license": "W3C-20150513",
   "files": [
     "dist/"
   ],
-  "description": "File interface for node-wot",
   "main": "dist/file.js",
   "typings": "dist/file.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "codestyle": "standard --pretty"
-  },
-  "author": "the thingweb community",
-  "license": "W3C Software License",
   "devDependencies": {
     "@types/node": "8.0.28",
     "ts-node": "3.3.0",
@@ -21,5 +17,9 @@
   },
   "dependencies": {
     "@node-wot/core": "0.3.0-SNAPSHOT.7"
+  },
+  "scripts": {
+    "build": "tsc",
+    "codestyle": "standard --pretty"
   }
 }

@@ -1,19 +1,14 @@
 {
   "name": "@node-wot/td-tools",
   "version": "0.3.0-SNAPSHOT.7",
+  "description": "W3C Web of Things (WoT) Thing Description parser, serializer, and other tools",
+  "author": "the thingweb community",
+  "license": "W3C-20150513",
   "files": [
     "dist/"
   ],
-  "description": "Thing description parser and serializer for node-wot",
   "main": "dist/td-tools.js",
   "typings": "dist/td-tools.d.ts",
-  "scripts": {
-    "test": "mocha --compilers ts:ts-node/register",
-    "build": "tsc",
-    "codestyle": "standard --pretty"
-  },
-  "author": "the thingweb community",
-  "license": "W3C Software License",
   "devDependencies": {
     "@types/chai": "4.0.4",
     "@types/node": "8.0.28",
@@ -27,5 +22,10 @@
   "dependencies": {
     "reflect-metadata": "0.1.10",
     "class-transformer": "0.1.8"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --compilers ts:ts-node/register",
+    "codestyle": "standard --pretty"
   }
 }
