@@ -1,6 +1,4 @@
 {
-  "name": "node-wot",
-  "version": "0.3.0-SNAPSHOT.7",
   "private": true,
   "description": "W3C Web of Things (WoT) implementation based on Node.js and TypeScript (root project, not published)",
   "author": "the thingweb community",
@@ -11,9 +9,7 @@
   },
   "devDependencies": {
     "lerna": "2.1.1",
-    "lerna-run": "0.0.2",
-    "typescript": "2.3.2",
-    "typescript-standard": "0.3.30"
+    "lerna-run": "0.0.2"
   },
   "dependencies": { },
   "scripts": {
@@ -24,6 +20,8 @@
     "test": "lerna run test",
     "prelink": "npm run build",
     "link": "lerna-run npm link",
-    "codestyle": "lerna run codestyle"
+    "codestyle": "lerna run codestyle",
+    "clean": "lerna clean",
+    "unlock": "lerna-run rm package-lock.json"
   }
 }
