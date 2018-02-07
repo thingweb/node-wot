@@ -1,6 +1,6 @@
 {
   "name": "@node-wot/binding-coap",
-  "version": "0.3.0-SNAPSHOT.8",
+  "version": "0.3.0-RC.1",
   "description": "CoAP client & server protocol binding for node-wot",
   "author": "the thingweb community",
   "license": "W3C-20150513",
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "coap": "0.20.0",
-    "@node-wot/core": "0.3.0-SNAPSHOT.8"
+    "@node-wot/core": "0.3.0-RC.1"
   },
   "scripts": {
     "build": "tsc",

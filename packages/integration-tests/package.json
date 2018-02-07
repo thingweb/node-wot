@@ -1,6 +1,6 @@
 {
   "name": "@node-wot/integration-tests",
-  "version": "0.3.0-SNAPSHOT.8",
+  "version": "0.3.0-RC.1",
   "private": true,
   "description": "Integration tests for node-wot (not published)",
   "author": "the thingweb community",
@@ -19,9 +19,9 @@
     "coap": "0.20.0",
     "request": "2.79.0",
     "request-promise": "4.2.2",
-    "@node-wot/core": "0.3.0-SNAPSHOT.8",
-    "@node-wot/binding-coap": "0.3.0-SNAPSHOT.8",
-    "@node-wot/binding-http": "0.3.0-SNAPSHOT.8"
+    "@node-wot/core": "0.3.0-RC.1",
+    "@node-wot/binding-coap": "0.3.0-RC.1",
+    "@node-wot/binding-http": "0.3.0-RC.1"
   },
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register"

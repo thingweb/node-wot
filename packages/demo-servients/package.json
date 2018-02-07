@@ -1,6 +1,7 @@
 {
   "name": "@node-wot/demo-servients",
-  "version": "0.3.0-SNAPSHOT.8",
+  "version": "0.3.0-RC.1",
+  "private": true,
   "description": "W3C Web of Things (WoT) demo Servients (Raspberry-Pi with Unicorn HAT)",
   "author": "the thingweb community",
   "license": "W3C-20150513",
@@ -23,11 +24,11 @@
   },
   "dependencies": {
     "wot-typescript-definitions": "0.3.0-SNAPSHOT.8",
-    "@node-wot/core": "0.3.0-SNAPSHOT.8",
-    "@node-wot/td-tools": "0.3.0-SNAPSHOT.8",
-    "@node-wot/binding-coap": "0.3.0-SNAPSHOT.8",
-    "@node-wot/binding-http": "0.3.0-SNAPSHOT.8",
-    "@node-wot/binding-file": "0.3.0-SNAPSHOT.8"
+    "@node-wot/core": "0.3.0-RC.1",
+    "@node-wot/td-tools": "0.3.0-RC.1",
+    "@node-wot/binding-coap": "0.3.0-RC.1",
+    "@node-wot/binding-http": "0.3.0-RC.1",
+    "@node-wot/binding-file": "0.3.0-RC.1"
   },
   "scripts": {
     "build": "tsc",
