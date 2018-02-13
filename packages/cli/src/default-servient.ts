@@ -71,36 +71,38 @@ export default class DefaultServient extends Servient {
             super.start().then( WoT => {
                 console.info("DefaultServient started");
     
-                WoT.expose({ name: "servient" }).then(thing => {
-    
-                    thing
-                        .addAction({ name: "log",
-                                    inputDataDescription: `{ type: "string" }`,
-                                    outputDataDescription: `{ type: "string" }`,
+                // FIXME produce() instead of expose()
+                // TODO think about builder pattern that starts with produce() ends with expose(), which exposes/publishes the Thing
+                let thing = WoT.expose({ name: "servient" })
+                                .addAction({ name: "log",
+                                    inputType: `{ type: "string" }`,
+                                    outputType: `{ type: "string" }`,
                                     action: (msg: string) => {
                                         console.info(msg);
                                         return `logged '${msg}`;
                                     }
                                 })
-                        .addAction({ name: "shutdown",
-                                    outputDataDescription: `{ type: "string" }`,
+                                .addAction({ name: "shutdown",
+                                    // FIXME define input/outputTypes as optional
+                                    inputType: null,
+                                    outputType: `{ type: "string" }`,
                                     action: () => {
                                         console.info("shutting down by remote");
                                         this.shutdown();
                                     }
                                 });
     
-                    if (this.config.servient.scriptAction)
-                        thing
-                            .addAction({ name: "runScript",
-                                    inputDataDescription: `{ type: "string" }`,
-                                    outputDataDescription: `{ type: "string" }`,
-                                    action: (script: string) => {
-                                        console.log("runnig script", script);
-                                        return this.runScript(script);
-                                    }
-                                });
-                });
+                if (this.config.servient.scriptAction) {
+                    thing
+                        .addAction({ name: "runScript",
+                            inputType: `{ type: "string" }`,
+                            outputType: `{ type: "string" }`,
+                            action: (script: string) => {
+                                console.log("runnig script", script);
+                                return this.runScript(script);
+                            }
+                        });
+                }
 
                 // pass WoTFactory on
                 resolve(WoT);

@@ -17,7 +17,6 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import { Observable } from "rxjs/Observable";
 import * as WoT from "wot-typescript-definitions";
 
 import { ThingDescription } from "@node-wot/td-tools";
@@ -25,8 +24,15 @@ import * as TD from "@node-wot/td-tools";
 
 import Servient from "./servient";
 import * as Helpers from "./helpers";
-import ContentSerdes from "./content-serdes";
+
+
 import { ProtocolClient } from "./resource-listeners/protocol-interfaces";
+
+import ContentSerdes from "./content-serdes"
+
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
+
 
 interface ClientAndLink {
     client: ProtocolClient
@@ -37,18 +43,21 @@ interface ClientAndLink {
 export default class ConsumedThing implements WoT.ConsumedThing {
 
     readonly name: string;
-    readonly url: USVString;
-    readonly description: WoT.ThingDescription;
+    td: WoT.ThingDescription;
 
-    protected readonly td: ThingDescription;
+    protected readonly _td: ThingDescription;
     protected readonly srv: Servient;
     private clients: Map<string, ProtocolClient> = new Map();
+    protected observablesEvent: Map<string, Subject<any>> = new Map();
+    protected observablesPropertyChange: Map<string, Subject<any>> = new Map();
+    protected observablesTDChange: Subject<any> = new Subject<any>();
 
-    constructor(servient: Servient, td: ThingDescription) {
+    constructor(servient: Servient, _td: ThingDescription) {
         this.srv = servient
-        this.name = td.name;
-        this.td = td;
-        this.description = JSON.stringify(td);
+        this.name = _td.name;
+        this._td = _td;
+        this.td = JSON.stringify(_td);
+        console.info(`ConsumedThing '${this.name}' created`);
     }
 
     // lazy singleton for ProtocolClient per scheme
@@ -74,10 +83,10 @@ export default class ConsumedThing implements WoT.ConsumedThing {
             let client = this.srv.getClientFor(schemes[srvIdx]);
             if (client) {
                 console.log(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
-                if (this.td.security) {
+                if (this._td.security) {
                     console.warn("ConsumedThing applying security metadata");
-                    console.dir(this.td.security);
-                    client.setSecurity(this.td.security, this.srv.getCredentials(this.td.id));
+                    console.dir(this._td.security);
+                    client.setSecurity(this._td.security);
                 }
                 this.clients.set(schemes[srvIdx], client);
                 let link = links[srvIdx];
@@ -89,7 +98,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     }
 
     private findInteraction(name: string, type: TD.InteractionPattern) {
-        let res = this.td.interaction.filter((ia) => ia.pattern === type && ia.name === name)
+        let res = this._td.interaction.filter((ia) => ia.pattern === type && ia.name === name)
         return (res.length > 0) ? res[0] : null;
     }
 
@@ -97,7 +106,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
      * Read a given property
      * @param propertyName Name of the property
      */
-    getProperty(propertyName: string): Promise<any> {
+    readProperty(propertyName: string): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.InteractionPattern.Property);
             if (!property) {
@@ -121,12 +130,12 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     }
 
     /**
-     * Set a given property
+     * Write a given property
      * @param Name of the property
      * @param newValue value to be set
      */
-    setProperty(propertyName: string, newValue: any): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
+    writeProperty(propertyName: string, newValue: any): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.InteractionPattern.Property);
             if (!property) {
                 reject(new Error(`ConsumedThing '${this.name}' cannot find Property '${propertyName}'`));
@@ -138,6 +147,10 @@ export default class ConsumedThing implements WoT.ConsumedThing {
                     console.info(`ConsumedThing '${this.name}' writing ${link.href} with '${newValue}'`);
                     let payload = ContentSerdes.valueToBytes(newValue,link.mediaType)
                     resolve(client.writeResource(link.href, payload));
+                    
+                    if(this.observablesPropertyChange.get(propertyName)) {
+                        this.observablesPropertyChange.get(propertyName).next(newValue);
+                    };
                 }
             }
         });
@@ -174,19 +187,26 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         });
     }
 
-    addListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing {    
-        return this
+    onEvent(name: string): Observable<any> {
+        if(!this.observablesEvent.get(name)) {
+            console.log("Create event observable for " +  name);
+            this.observablesEvent.set(name, new Subject());
+        }
+
+        return this.observablesEvent.get(name);
     }
-    removeListener(eventName: string, listener: WoT.ThingEventListener): ConsumedThing { return this }
-    removeAllListeners(eventName: string): ConsumedThing { return this }
 
-    observe(name: string, requestType: WoT.RequestType): Observable<any> { return null }
+    onPropertyChange(name: string): Observable<any> {
+        if(!this.observablesPropertyChange.get(name)) {
+            console.log("Create propertyChange observable for " +  name);
+            this.observablesPropertyChange.set(name, new Subject());
+        }
 
+        return this.observablesPropertyChange.get(name);
+    }
 
-    // /**
-    //  * Retrive the thing description for this object
-    //  */
-    // getDescription(): Object {
-    //     return this.td;
-    // }
+    onTDChange(): Observable<any> {
+        return this.observablesTDChange;
+    }
+
 }

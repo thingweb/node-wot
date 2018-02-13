@@ -42,7 +42,7 @@ export default class PropertyResourceListener extends BasicResourceListener impl
 
     public onRead() : Promise<Content> {
         return this.thing
-            .getProperty(this.name)
+            .readProperty(this.name)
             .then((value) => {
                 let bytes = ContentSerdes.valueToBytes(value); // TODO where to get media type
                 return Promise.resolve(bytes);
@@ -51,6 +51,6 @@ export default class PropertyResourceListener extends BasicResourceListener impl
 
     public onWrite(input : Content) : Promise<void> {
         let value = ContentSerdes.bytesToValue(input); // TODO where to get media type
-        return this.thing.setProperty(this.name, value);
+        return this.thing.writeProperty(this.name, value);
     }
 }

@@ -17,14 +17,16 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import {ThingDescription} from "@node-wot/td-tools";
+import * as WoT from "wot-typescript-definitions";
+
+import { ThingDescription } from "@node-wot/td-tools";
 import * as TD from "@node-wot/td-tools";
 
 import Servient from "./servient";
 import ConsumedThing from "./consumed-thing";
 import * as TDGenerator from "./td-generator"
 import * as Rest from "./resource-listeners/all-resource-listeners";
-import {ResourceListener} from "./resource-listeners/protocol-interfaces";
+import { ResourceListener } from "./resource-listeners/protocol-interfaces";
 
 export default class ExposedThing extends ConsumedThing implements WoT.ExposedThing {
     // these arrays and their contents are mutable
@@ -76,12 +78,12 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     }
 
     /**
-     * Set a given property
+     * Write a given property
      * @param Name of the property
      * @param newValue value to be set
      */
-    public setProperty(propertyName: string, newValue: any): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
+    public writeProperty(propertyName: string, newValue: any): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             let state = this.interactionStates[propertyName];
             if (state) {
                 let oldValue = state.value;
@@ -101,10 +103,13 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
      * Read a given property
      * @param propertyName Name of the property
      */
-    public getProperty(propertyName: string): Promise<any> {
+    public readProperty(propertyName: string): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             let state = this.interactionStates[propertyName];
             if (state) {
+
+                // TODO calls all handlers
+
                 resolve(state.value);
             } else {
                 reject(new Error("No property called " + propertyName));
@@ -115,25 +120,25 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     // define how to expose and run the Thing
 
     /** @inheritDoc */
-    register(directory?: USVString): Promise<void> {
+    register(directory: USVString): Promise<void> {
         return new Promise<void>((resolve, reject) => {    
         });
     }
 
     /** @inheritDoc */
-    unregister(directory?: USVString): Promise<void> {
+    unregister(directory: USVString): Promise<void> {
         return new Promise<void>((resolve, reject) => {    
         });
     }
 
     /** @inheritDoc */
-    start(directory?: USVString): Promise<void> {
+    start(): Promise<void> {
         return new Promise<void>((resolve, reject) => {    
         });
     }
 
     /** @inheritDoc */
-    stop(directory?: USVString): Promise<void> {
+    stop(): Promise<void> {
         return new Promise<void>((resolve, reject) => {    
         });
     }
@@ -143,47 +148,6 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         return new Promise<void>((resolve, reject) => {    
         });
     }
-
-    /** @inheritDoc */
-    onRetrieveProperty(handler: WoT.RequestHandler): ExposedThing {
-        // TODO implement onRetrieveProperty
-        return this;
-    }
-
-    /** @inheritDoc */
-    // (request: WoT.Request) => any
-    // handler: WoT.RequestHandler
-    onInvokeAction(handler: WoT.RequestHandler): ExposedThing {
-        let state = this.interactionStates[handler.request.name]; // actionName
-        if (state) {
-            if (state.handlers.length > 0) state.handlers.splice(0);
-            state.handlers.push(handler.callback); // cb
-        } else {
-            console.error(`ExposedThing '${this.name}' has no Action '${handler.request.name}`);
-        }
-
-        return this;
-    }
-
-    /** @inheritDoc */
-    onUpdateProperty(handler: WoT.RequestHandler): ExposedThing {
-        // propertyName: string, cb: (newValue: any, oldValue?: any) => void
-        let state = this.interactionStates[handler.request.name]; // propertyName
-        if (state) {
-            state.handlers.push(handler.callback); // cb
-        } else {
-            console.error(`ExposedThing '${this.name}' has no Property '${handler.request.name}'`);
-        }
-
-        return this;
-    }
-
-    /** @inheritDoc */
-    onObserve(handler: WoT.RequestHandler): ExposedThing {
-        // TODO implement onObserve
-        return this;
-    }
-
 
     /**
      * Retrive the ExposedThing description for this object
@@ -197,6 +161,16 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         )
     }
 
+    updateTD(): void {
+        this.td = TD.serializeTD(TDGenerator.generateTD(this, this.srv));
+    }
+
+    updateTDAndInform(): void {
+        // TODO update TD properly
+        // this.updateTD(); // fails!?!?!
+        this.observablesTDChange.next(this.td);
+    }
+
     /** @inheritDoc */
     addProperty(property: WoT.ThingPropertyInit): ExposedThing {
         // propertyName: string, valueType: Object, initialValue?: any
@@ -208,18 +182,28 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         newProp.pattern = TD.InteractionPattern.Property;
         //newProp.semanticTypes = property.semanticTypes.slice(0);
         newProp.name = property.name;
-        newProp.outputData = property.description; // need to be properly specified in FPWD
+        newProp.outputData = property.type;
+        // TODO newProp.semanticTypes = property.semanticTypes;
+        newProp.metadata = property.metadata;
         newProp.writable = property.writable;
 
         this.interactions.push(newProp);
 
         let propState = new InteractionState();
-        propState.value = property.value; // initialValue;
+        propState.value = property.initValue; // initialValue;
         propState.handlers = [];
         if (property.onWrite) propState.handlers.push(property.onWrite);
 
         this.interactionStates[property.name] = propState;
         this.addResourceListener("/" + this.name + "/properties/" + property.name, new Rest.PropertyResourceListener(this, newProp));
+
+        if (property.onWrite) {
+            console.info("set onWrite handler for " + property.name);
+            propState.handlers.push(property.onWrite);
+        }
+
+        // update TD and inform observers
+        this.updateTDAndInform();
 
         return this;
     }
@@ -234,9 +218,11 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         let newAction = new TD.Interaction();
         newAction.pattern = TD.InteractionPattern.Action;
         newAction.name = action.name;
+        // TODO newAction.semanticTypes = action.semanticTypes;
+        newAction.metadata = action.metadata;
         // inputData & outputData
-        newAction.inputData = action.inputDataDescription ? action.inputDataDescription : null;
-        newAction.outputData = action.outputDataDescription ? action.outputDataDescription : null;
+        newAction.inputData = action.inputType ? action.inputType : null;
+        newAction.outputData = action.outputType ? action.outputType : null;
 
         this.interactions.push(newAction);
 
@@ -246,6 +232,14 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
 
         this.interactionStates[action.name] = actionState;
         this.addResourceListener("/" + this.name + "/actions/" + action.name, new Rest.ActionResourceListener(this, newAction));
+
+        if(action.action) {
+            console.info("set action handler for " + action.name);
+            actionState.handlers.push(action.action);
+        }
+
+        // update TD and inform observers
+        this.updateTDAndInform();
 
         return this;
     }
@@ -258,21 +252,31 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         let newEvent = new TD.Interaction();
         newEvent.pattern = TD.InteractionPattern.Event;
         newEvent.name = event.name; //  eventName;
+        // TODO newEvent.semanticTypes = event.semanticTypes;
+        newEvent.metadata = event.metadata;
 
         this.interactions.push(newEvent);
 
-         let eventState = new InteractionState();
+        let eventState = new InteractionState();
         eventState.handlers = [];
 
         this.interactionStates[event.name] = eventState;
+
+        // update TD and inform observers
+        this.updateTDAndInform();
 
         return this;
     }
 
     /** @inheritDoc */
     removeProperty(propertyName: string): ExposedThing {
+        // TODO necessary to inform observers?
         delete this.interactionStates[propertyName];
         this.removeResourceListener(this.name + "/properties/" + propertyName)
+
+        // update TD and inform observers
+        this.updateTDAndInform();
+
         return this;
     }
 
@@ -280,12 +284,20 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     removeAction(actionName: string): ExposedThing {
         delete this.interactionStates[actionName];
         this.removeResourceListener(this.name + "/actions/" + actionName)
+
+        // update TD and inform observers
+        this.updateTDAndInform();
+
         return this;
     }
 
     /** @inheritDoc */
     removeEvent(eventName: string): ExposedThing {
         // TODO 
+
+        // update TD and inform observers
+        this.updateTDAndInform();
+
         return this;
     }
 }

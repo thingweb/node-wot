@@ -208,16 +208,63 @@ class WoTClientTest {
         );
 
         // JSON.stringify(myThingDesc)
-        WoTClientTest.WoT.consume("data://" + "tdFoo")
-            .then((thing) => {
+        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+            .then((td) => {
+                let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
-                return thing.getProperty("aProperty");
+                return thing.readProperty("aProperty");
             })
             .then((value) => {
                 expect(value).not.to.be.null;
                 expect(value.toString()).to.equal("42");
                 done();
+            })
+            .catch(err => { throw err })
+    }
+
+    @test "observe a value"(done : Function) {
+        // let the client return 42
+        WoTClientTest.clientFactory.setTrap(
+            () => {
+                return { mediaType : "application/json", body: new Buffer("42") };
+            }
+        );
+
+
+        // JSON.stringify(myThingDesc)
+        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+            .then((td) => {
+                let thing = WoTClientTest.WoT.consume(td);
+                expect(thing).not.to.be.null;
+                expect(thing.name).to.equal("aThing");
+                expect(thing.onPropertyChange("aProperty")).not.to.be.null;
+
+                let subscription = thing.onPropertyChange("aProperty").subscribe(
+                    x => {
+                        console.log('onNext: %s', x);
+                        if(x == 123) {
+                            done();
+                        }
+                    },
+                    e => console.log('onError: %s', e),
+                    () => {
+                        console.log('onCompleted aProperty changed');
+                        // done();
+                    }
+                );
+
+                // write one other value
+                thing.writeProperty("aProperty", 12356666);
+
+                setTimeout(() => {
+                    // update value to trigger success
+                    return thing.writeProperty("aProperty", 123);
+                }, 25);
+            })
+            .then((value) => {
+                expect(value).not.to.be.null;
+                // done(); 
             })
             .catch(err => { throw err })
     }
@@ -231,11 +278,12 @@ class WoTClientTest {
         )
 
         // JSON.stringify(myThingDesc)
-        WoTClientTest.WoT.consume("data://" + "tdFoo")
-            .then((thing) => {
+        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+            .then((td) => {
+                let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
                 expect(thing.name).to.equal("aThing");
-                return thing.setProperty("aProperty", 23);
+                return thing.writeProperty("aProperty", 23);
             })
             .then(() => done())
             .catch(err => { throw err })
@@ -251,8 +299,9 @@ class WoTClientTest {
         )
 
         // JSON.stringify(myThingDesc)
-        WoTClientTest.WoT.consume("data://" + "tdFoo")
-            .then((thing) => {
+        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+            .then((td) => {
+                let thing = WoTClientTest.WoT.consume(td);
                 thing.should.not.be.null;
                 thing.name.should.equal("aThing");
                 return thing.invokeAction("anAction", 23);

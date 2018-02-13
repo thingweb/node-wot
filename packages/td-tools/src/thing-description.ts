@@ -17,6 +17,10 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
+// global W3C WoT Scripting API definitions
+import _ from "wot-typescript-definitions";
+// import * as WoT from 'wot-typescript-definitions';
+
 // import { JsonMember, JsonObject } from 'typedjson-npm';
 import {Type, Expose, Exclude} from "class-transformer";
 import "reflect-metadata";
@@ -28,6 +32,11 @@ import "reflect-metadata";
     EXI = <any>"application/exi"
 
 } */
+
+export const  DEFAULT_HTTP_CONTEXT : string = "http://w3c.github.io/wot/w3c-wot-td-context.jsonld" ;
+export const DEFAULT_HTTPS_CONTEXT : string = "https://w3c.github.io/wot/w3c-wot-td-context.jsonld";
+
+export const DEFAULT_THING_TYPE : string = "Thing";
 
 /** Interaction pattern */
 export enum InteractionPattern {
@@ -65,8 +74,13 @@ export class InteractionLink {
  */
 export class Interaction {
   /** @ type information of the Interaction */
+  /* TODO Should be public semanticTypes: Array<WoT.SemanticType>; */
   @Expose({ name: "@type" })
   public semanticTypes: Array<string>;
+
+  @Exclude() // for now only!!
+  public metadata: Array<WoT.SemanticMetadata>;
+  // public metadata: Array<string>
 
   /** name/identifier of the Interaction */
   public name: string;
@@ -81,6 +95,9 @@ export class Interaction {
   /** writable flag for the Property */
   public writable: boolean;
 
+  /** observable flag for the Property */
+  public observable: boolean;
+
   // TODO: how to handle types internally?
   /** JSON Schema for input */
   public inputData: any;
@@ -90,6 +107,7 @@ export class Interaction {
 
   constructor() {
     this.semanticTypes = [];
+    this.metadata = [];
     this.link = [];
   }
 }
@@ -112,8 +130,11 @@ export class PrefixedContext {
 export default class ThingDescription {
 
   /** @ type information, usually 'Thing' */
+  /* TODO Should be public semanticTypes: Array<WoT.SemanticType>; */
   @Expose({ name: "@type" })
-  public semanticType: Array<string>;
+  public semanticType: Array<WoT.SemanticType>; // Array<string>;
+
+  public metadata: Array<WoT.SemanticMetadata>;
 
   /** unique identifier (a URI, includes URN) */
   @Expose({ name: "@id" })
@@ -134,7 +155,7 @@ export default class ThingDescription {
 
   /** @context information of the TD */
   @Expose({ name: "@context" })
-  private context: Array<string | object>;
+  public context: Array<string | object>
 
   public getSimpleContexts() :  Array<string> {
     // @DAPE: Shall we cache created list?
@@ -169,8 +190,9 @@ export default class ThingDescription {
   } 
 
   constructor() {
-    this.context = ['http://w3c.github.io/wot/w3c-wot-td-context.jsonld'];
-    this.semanticType = ['Thing'];
+    this.context = [DEFAULT_HTTP_CONTEXT];
+    this.semanticType = []; // DEFAULT_THING_TYPE
     this.interaction = [];
+    this.metadata = [];
   }
 }
