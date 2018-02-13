@@ -25,12 +25,8 @@
 import _ from "@node-wot/core";
 // node-wot implementation of W3C WoT Servient 
 import { Servient } from "@node-wot/core";
-import { HttpServer } from "@node-wot/binding-http";
 
-// exposed protocols
-import { CoapServer } from "@node-wot/binding-coap";
-
-// node-wot implementation of W3C WoT Servient 
+// default implementation of W3C WoT Servient (http(s) and file bindings)
 import DefaultServient from "./default-servient";
 
 // tools

@@ -39,6 +39,20 @@ jspm_packages
 # ignore dist
 dist/
 
-#ignore compiled tests and scratch compiles
+# ignore package-lock.json as not part of published module and might cause break
+package-lock.json
+
+# ignore compiled tests and scratch compiles
 test/**/*.js
 src/**/*.js
+
+# ignore private packages
+packages/*
+!packages/td-tools
+!packages/core
+!packages/binding-file
+!packages/binding-http
+!packages/binding-coap
+!packages/cli
+!packages/demo-servients
+!packages/integration-tests

@@ -1,6 +1,6 @@
 {
   "name": "@node-wot/binding-coap",
-  "version": "0.3.0-RC.1",
+  "version": "0.3.0",
   "description": "CoAP client & server protocol binding for node-wot",
   "author": "the thingweb community",
   "license": "W3C-20150513",
@@ -16,16 +16,16 @@
   "devDependencies": {
     "@types/chai": "4.0.4",
     "@types/node": "9.4.1",
-    "typescript": "2.5.2",
+    "chai": "4.1.2",
     "mocha": "3.5.3",
     "mocha-typescript": "1.1.8",
-    "chai": "4.1.2",
     "ts-node": "3.3.0",
+    "typescript": "2.5.2",
     "typescript-standard": "0.3.30"
   },
   "dependencies": {
-    "coap": "0.20.0",
-    "@node-wot/core": "0.3.0-RC.1"
+    "@node-wot/core": "^0.3.0",
+    "coap": "0.20.0"
   },
   "scripts": {
     "build": "tsc",

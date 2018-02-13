@@ -22,6 +22,7 @@
     "link": "lerna-run npm link",
     "codestyle": "lerna run codestyle",
     "clean": "lerna clean",
-    "unlock": "lerna-run rm package-lock.json"
+    "unlock": "lerna-run rm package-lock.json",
+    "publish": "lerna publish --force-publish=*"
   }
 }
