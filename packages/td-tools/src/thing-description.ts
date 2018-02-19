@@ -22,7 +22,7 @@ import _ from "wot-typescript-definitions";
 // import * as WoT from 'wot-typescript-definitions';
 
 // import { JsonMember, JsonObject } from 'typedjson-npm';
-import {Type, Expose, Exclude} from "class-transformer";
+// import {Type, Expose, Exclude} from "class-transformer";
 import "reflect-metadata";
 
 /** Internet Media Types */
@@ -75,10 +75,8 @@ export class InteractionLink {
 export class Interaction {
   /** @ type information of the Interaction */
   /* TODO Should be public semanticTypes: Array<WoT.SemanticType>; */
-  @Expose({ name: "@type" })
   public semanticTypes: Array<string>;
 
-  @Exclude() // for now only!!
   public metadata: Array<WoT.SemanticMetadata>;
   // public metadata: Array<string>
 
@@ -86,7 +84,6 @@ export class Interaction {
   public name: string;
 
   /** type of the Interaction (action, property, event) */
-  @Exclude()
   public pattern: InteractionPattern;
 
   /** link information of the Interaction resources */
@@ -131,13 +128,11 @@ export default class ThingDescription {
 
   /** @ type information, usually 'Thing' */
   /* TODO Should be public semanticTypes: Array<WoT.SemanticType>; */
-  @Expose({ name: "@type" })
   public semanticType: Array<WoT.SemanticType>; // Array<string>;
 
   public metadata: Array<WoT.SemanticMetadata>;
 
   /** unique identifier (a URI, includes URN) */
-  @Expose({ name: "@id" })
   public id: string;
 
   /** human-readable name of the Thing */
@@ -150,11 +145,9 @@ export default class ThingDescription {
   public base: string;
 
   /** Interactions of this Thing */
-  @Type(() => Interaction)
   public interaction: Array<Interaction>;
 
   /** @context information of the TD */
-  @Expose({ name: "@context" })
   public context: Array<string | object>
 
   public getSimpleContexts() :  Array<string> {

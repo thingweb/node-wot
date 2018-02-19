@@ -21,15 +21,8 @@ import ThingDescription from './thing-description';
 
 import * as TD from './thing-description';
 
-import {plainToClass, classToPlain} from "class-transformer";
+// import {plainToClass, classToPlain} from "class-transformer";
 import "reflect-metadata";
-
-
-const useBuiltInParser : boolean = true;
-
-export function parseTDObject(td: Object): ThingDescription {
-  return plainToClass(ThingDescription, td);
-}
 
 
 function stringToThingDescription(tdJson: string) : ThingDescription {
@@ -303,9 +296,7 @@ function thingDescriptionToString(td: ThingDescription) : string {
 
 export function parseTDString(json: string, normalize?: boolean): ThingDescription {
   console.log(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
-  // declare type as single instance because plainToClass has multiple signatures
-  // see https://github.com/typestack/class-transformer/issues/97
-  let td: ThingDescription = useBuiltInParser ? stringToThingDescription(json) :  plainToClass(ThingDescription, JSON.parse(json) as ThingDescription);
+  let td: ThingDescription = stringToThingDescription(json);
 
   if (td.security) console.log(`parseTDString() found security metadata`);
 
@@ -365,13 +356,7 @@ export function serializeTD(td: ThingDescription): string {
     interaction.semanticTypes.unshift(interaction.pattern.toString());
   }
 
-  let json : string;
-  if (useBuiltInParser) {
-    json = thingDescriptionToString(td);
-  } else {
-    let jsonc = useBuiltInParser ? thingDescriptionToString : classToPlain(td);
-    json = JSON.stringify(jsonc);
-  }
+  let json : string = thingDescriptionToString(td);
 
   console.log(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
 
