@@ -85,7 +85,8 @@ class WoTServerTest {
         
         //.then(thing => {
             expect(thing).to.exist;
-            expect(thing).to.have.property("name", "myThing");
+            expect(JSON.parse(thing.getThingDescription()).name).equal("myThing");
+            // expect(thing).to.have.property("name", "myThing");
         //});
     }
 

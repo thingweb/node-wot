@@ -38,8 +38,8 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
     /* new td model instance */
     let genTD:ThingDescription = new ThingDescription()
 
-    console.log(`generateTD() assign name ${thing.name}`);
-    genTD.name = thing.name
+    console.log(`generateTD() assign name ${thing.getThingName()}`);
+    genTD.name = thing.getThingName()
 
     /* assign all interactions from ExposedThing */
     genTD.interaction = thing.getInteractions()
@@ -70,7 +70,7 @@ export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDe
 
             /* if server is online !==-1 assign the href information */
             if(server.getPort() !== -1) {
-              let href:string = server.scheme + "://" + address + ":" + server.getPort() + "/" + thing.name;
+              let href:string = server.scheme + "://" + address + ":" + server.getPort() + "/" + thing.getThingName();
 
               /* depending of the resource pattern, uri is constructed */
               if (interaction.pattern === TD.InteractionPattern.Property) {

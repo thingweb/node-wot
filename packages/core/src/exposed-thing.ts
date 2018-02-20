@@ -36,7 +36,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
 
     constructor(servient: Servient, td: ThingDescription) { // name: string
         super(servient, td);
-        this.addResourceListener("/" + this.name, new Rest.TDResourceListener(this));
+        this.addResourceListener("/" + this.td.name, new Rest.TDResourceListener(this));
     }
 
     private addResourceListener(path: string, resourceListener: ResourceListener) {
@@ -63,16 +63,16 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
             let state = this.interactionStates[actionName];
             if (state) {
                 // TODO debug-level
-                console.log(`ExposedThing '${this.name}' Action state of '${actionName}':`, state);
+                console.log(`ExposedThing '${this.td.name}' Action state of '${actionName}':`, state);
 
                 if (state.handlers.length) {
                     let handler = state.handlers[0];
                     resolve(handler(parameter));
                 } else {
-                    reject(new Error("No handler for " + actionName + " on " + this.name));
+                    reject(new Error("No handler for " + actionName + " on " + this.td.name));
                 }
             } else {
-                reject(new Error("No action " + actionName + " on " + this.name));
+                reject(new Error("No action " + actionName + " on " + this.td.name));
             }
         });
     }
@@ -149,33 +149,33 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         });
     }
 
-    /**
-     * Retrive the ExposedThing description for this object
-     */
-    getDescription(): Object {
-        //this is downright madness - TODO clean it up soon
-        return JSON.parse(
-            TD.serializeTD(
-                TDGenerator.generateTD(this, this.srv)
-            )
-        )
-    }
+    // /**
+    //  * Retrive the ExposedThing description for this object
+    //  */
+    // getDescription(): Object {
+    //     //this is downright madness - TODO clean it up soon
+    //     return JSON.parse(
+    //         TD.serializeTD(
+    //             TDGenerator.generateTD(this, this.srv)
+    //         )
+    //     )
+    // }
 
-    updateTD(): void {
-        this.td = TD.serializeTD(TDGenerator.generateTD(this, this.srv));
-    }
+    // updateTD(): void {
+    //     this.td = TD.serializeTD(TDGenerator.generateTD(this, this.srv));
+    // }
 
-    updateTDAndInform(): void {
-        // TODO update TD properly
-        // this.updateTD(); // fails!?!?!
-        this.observablesTDChange.next(this.td);
-    }
+    // updateTDAndInform(): void {
+    //     // TODO update TD properly
+    //     // this.updateTD(); // fails!?!?!
+    //     this.observablesTDChange.next(this.td);
+    // }
 
     /** @inheritDoc */
     addProperty(property: WoT.ThingPropertyInit): ExposedThing {
         // propertyName: string, valueType: Object, initialValue?: any
 
-        console.log(`ExposedThing '${this.name}' adding Property '${property.name}'`);
+        console.log(`ExposedThing '${this.td.name}' adding Property '${property.name}'`);
 
         // new way
         let newProp = new TD.Interaction();
@@ -195,15 +195,15 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         if (property.onWrite) propState.handlers.push(property.onWrite);
 
         this.interactionStates[property.name] = propState;
-        this.addResourceListener("/" + this.name + "/properties/" + property.name, new Rest.PropertyResourceListener(this, newProp));
+        this.addResourceListener("/" + this.td.name + "/properties/" + property.name, new Rest.PropertyResourceListener(this, newProp));
 
         if (property.onWrite) {
             console.info("set onWrite handler for " + property.name);
             propState.handlers.push(property.onWrite);
         }
 
-        // update TD and inform observers
-        this.updateTDAndInform();
+        // inform TD observers
+        this.observablesTDChange.next(this.getThingDescription());
 
         return this;
     }
@@ -212,7 +212,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     addAction(action: WoT.ThingActionInit): ExposedThing {
         // actionName: string, inputType?: Object, outputType?: Object
 
-        console.log(`ExposedThing '${this.name}' adding Action '${action.name}'`);
+        console.log(`ExposedThing '${this.td.name}' adding Action '${action.name}'`);
 
         // new way
         let newAction = new TD.Interaction();
@@ -231,15 +231,15 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         if(action.action) actionState.handlers.push(action.action);
 
         this.interactionStates[action.name] = actionState;
-        this.addResourceListener("/" + this.name + "/actions/" + action.name, new Rest.ActionResourceListener(this, newAction));
+        this.addResourceListener("/" + this.td.name + "/actions/" + action.name, new Rest.ActionResourceListener(this, newAction));
 
         if(action.action) {
             console.info("set action handler for " + action.name);
             actionState.handlers.push(action.action);
         }
 
-        // update TD and inform observers
-        this.updateTDAndInform();
+        // inform TD observers
+        this.observablesTDChange.next(this.getThingDescription());
 
         return this;
     }
@@ -262,8 +262,8 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
 
         this.interactionStates[event.name] = eventState;
 
-        // update TD and inform observers
-        this.updateTDAndInform();
+        // inform TD observers
+        this.observablesTDChange.next(this.getThingDescription());
 
         return this;
     }
@@ -272,10 +272,10 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     removeProperty(propertyName: string): ExposedThing {
         // TODO necessary to inform observers?
         delete this.interactionStates[propertyName];
-        this.removeResourceListener(this.name + "/properties/" + propertyName)
+        this.removeResourceListener(this.td.name + "/properties/" + propertyName)
 
-        // update TD and inform observers
-        this.updateTDAndInform();
+        // inform TD observers
+        this.observablesTDChange.next(this.getThingDescription());
 
         return this;
     }
@@ -283,10 +283,10 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     /** @inheritDoc */
     removeAction(actionName: string): ExposedThing {
         delete this.interactionStates[actionName];
-        this.removeResourceListener(this.name + "/actions/" + actionName)
+        this.removeResourceListener(this.td.name + "/actions/" + actionName)
 
-        // update TD and inform observers
-        this.updateTDAndInform();
+        // inform TD observers
+        this.observablesTDChange.next(this.getThingDescription());
 
         return this;
     }
@@ -295,8 +295,8 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     removeEvent(eventName: string): ExposedThing {
         // TODO 
 
-        // update TD and inform observers
-        this.updateTDAndInform();
+        // inform TD observers
+        this.observablesTDChange.next(this.getThingDescription());
 
         return this;
     }

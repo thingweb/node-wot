@@ -140,8 +140,8 @@ export default class Servient {
     }
 
     public addThing(thing: ExposedThing): boolean {
-        if (!this.things.has(thing.name)) {
-            this.things.set(thing.name, thing);
+        if (!this.things.has(thing.getThingName())) {
+            this.things.set(thing.getThingName(), thing);
             return true;
         } else {
             return false;

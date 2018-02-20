@@ -199,6 +199,11 @@ class WoTClientTest {
         // });
     }
 
+    getThingName(ct : WoT.ConsumedThing ) : string {
+        let td : WoT.ThingDescription = ct.getThingDescription();
+        return JSON.parse(td).name;
+    }
+
     @test "read a value"(done : Function) {
         // let the client return 42
         WoTClientTest.clientFactory.setTrap(
@@ -212,7 +217,7 @@ class WoTClientTest {
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
-                expect(thing.name).to.equal("aThing");
+                expect(this.getThingName(thing)).to.equal("aThing");
                 return thing.readProperty("aProperty");
             })
             .then((value) => {
@@ -237,7 +242,7 @@ class WoTClientTest {
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
-                expect(thing.name).to.equal("aThing");
+                expect(this.getThingName(thing)).to.equal("aThing");
                 expect(thing.onPropertyChange("aProperty")).not.to.be.null;
 
                 let subscription = thing.onPropertyChange("aProperty").subscribe(
@@ -282,7 +287,7 @@ class WoTClientTest {
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
-                expect(thing.name).to.equal("aThing");
+                expect(this.getThingName(thing)).to.equal("aThing");
                 return thing.writeProperty("aProperty", 23);
             })
             .then(() => done())
@@ -303,7 +308,7 @@ class WoTClientTest {
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
                 thing.should.not.be.null;
-                thing.name.should.equal("aThing");
+                this.getThingName(thing).should.equal("aThing");
                 return thing.invokeAction("anAction", 23);
             })
             .then((result) => {
