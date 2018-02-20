@@ -11,7 +11,7 @@
     "lerna": "2.1.1",
     "lerna-run": "0.0.2"
   },
-  "dependencies": { },
+  "dependencies": {},
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "prebuild": "npm run bootstrap",

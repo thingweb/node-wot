@@ -79,7 +79,7 @@ class WoTServerTest {
     }
 
     @test "should be able to add a thing"() {
-        let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
+        let thing : WoT.ExposedThing = WoTServerTest.WoT.produce({
             name : "myThing"
         });
         
@@ -150,7 +150,7 @@ class WoTServerTest {
     // } 
 
     @test "should be able to add a property, read it and write it locally"() {
-        let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
+        let thing : WoT.ExposedThing = WoTServerTest.WoT.produce({
             name : "otherthing"
         });
         // .then(thing => {
@@ -171,7 +171,7 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign it via listener and read it locally"() {
-        let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
+        let thing : WoT.ExposedThing = WoTServerTest.WoT.produce({
             name : "thing3"
         });
         // .then(thing => {
@@ -193,7 +193,7 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign it locally and read it via listener"() {
-        let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
+        let thing : WoT.ExposedThing = WoTServerTest.WoT.produce({
             name : "thing4"
         });
         // .then(thing => {
@@ -218,7 +218,7 @@ class WoTServerTest {
     }
 
     @test "should be able to add a property, assign and read it via listener"() {
-        let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
+        let thing : WoT.ExposedThing = WoTServerTest.WoT.produce({
             name : "thing5"
         });
         //.then(thing => {
@@ -245,7 +245,7 @@ class WoTServerTest {
     }
 
     @test "should be able to add an action and invoke it locally"() {
-        let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
+        let thing : WoT.ExposedThing = WoTServerTest.WoT.produce({
             name : "thing6"
         });
         //.then(thing => {
@@ -279,30 +279,46 @@ class WoTServerTest {
         // })
     }
 
-    @test "should be able to add an action and invoke it locally in ActionInit"() {
-        let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
+    @test "should be able to add an action and invoke it locally in ActionInit (based on WoT.ThingTemplate)"() {
+        let thing : WoT.ExposedThing = WoTServerTest.WoT.produce({
             name : "thing6b"
         });
-        // .then(thing => {
-            let inita : WoT.ThingActionInit = {
-                name: "action1", 
-                inputType: JSON.stringify({ "type": "number" }), 
-                outputType: JSON.stringify({ "type": "number" }), 
-                semanticTypes: undefined, 
-                action: function(newValue: any, oldValue: any) : number {
-                    newValue.should.be.a("number");
-                    newValue.should.equal(23);
-                    return 42;
-                }
-            };
-            thing.addAction(inita);
-            
-            return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
-        // })
+        let inita : WoT.ThingActionInit = {
+            name: "action1", 
+            inputType: JSON.stringify({ "type": "number" }), 
+            outputType: JSON.stringify({ "type": "number" }), 
+            semanticTypes: undefined, 
+            action: function(newValue: any, oldValue: any) : number {
+                newValue.should.be.a("number");
+                newValue.should.equal(23);
+                return 42;
+            }
+        };
+        thing.addAction(inita);
+        
+        return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
+    }
+
+    @test "should be able to add an action and invoke it locally in ActionInit (based on WoT.ThingDescription)"() {
+        let thing : WoT.ExposedThing = WoTServerTest.WoT.produce('{\"@context\": [\"https://w3c.github.io/wot/w3c-wot-td-context.jsonld\"],\"@type\": [\"Thing\"],\"name\": \"thing6b_\"}');
+        let inita : WoT.ThingActionInit = {
+            name: "action1", 
+            inputType: JSON.stringify({ "type": "number" }), 
+            outputType: JSON.stringify({ "type": "number" }), 
+            semanticTypes: undefined, 
+            action: function(newValue: any, oldValue: any) : number {
+                newValue.should.be.a("number");
+                newValue.should.equal(23);
+                return 42;
+            }
+        };
+        thing.addAction(inita);
+        
+        return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
     }
 
     @test "should be able to add an action and invoke it via listener"() {
-        let thing : WoT.ExposedThing = WoTServerTest.WoT.expose({
+        let thing : WoT.ExposedThing = WoTServerTest.WoT.produce({
             name : "thing7"
         });
         // .then(thing => {

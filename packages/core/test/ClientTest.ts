@@ -208,7 +208,7 @@ class WoTClientTest {
         );
 
         // JSON.stringify(myThingDesc)
-        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+        WoTClientTest.WoT.fetch("data://" + "tdFoo")
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
@@ -233,7 +233,7 @@ class WoTClientTest {
 
 
         // JSON.stringify(myThingDesc)
-        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+        WoTClientTest.WoT.fetch("data://" + "tdFoo")
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
@@ -278,7 +278,7 @@ class WoTClientTest {
         )
 
         // JSON.stringify(myThingDesc)
-        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+        WoTClientTest.WoT.fetch("data://" + "tdFoo")
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
                 expect(thing).not.to.be.null;
@@ -299,7 +299,7 @@ class WoTClientTest {
         )
 
         // JSON.stringify(myThingDesc)
-        WoTClientTest.WoT.fetchTD("data://" + "tdFoo")
+        WoTClientTest.WoT.fetch("data://" + "tdFoo")
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
                 thing.should.not.be.null;

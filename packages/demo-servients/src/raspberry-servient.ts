@@ -69,7 +69,7 @@ function main() {
     let template : WoT.ThingTemplate;
     template.name = "unicorn"; 
 
-    let thing = WoT.expose(template);
+    let thing = WoT.produce(template);
     unicorn = thing;
 
     let thingPropertyInitBrightness : WoT.ThingPropertyInit;

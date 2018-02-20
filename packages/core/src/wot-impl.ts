@@ -47,7 +47,7 @@ export default class WoTImpl implements WoT.WoTFactory {
 
 
     /** @inheritDoc */
-    fetchTD(url: USVString): Promise<WoT.ThingDescription> {
+    fetch(url: USVString): Promise<WoT.ThingDescription> {
         return new Promise<WoT.ThingDescription>((resolve, reject) => {
             let client = this.srv.getClientFor(Helpers.extractScheme(url));
             console.info(`WoTImpl consuming TD from ${url} with ${client}`);
@@ -102,23 +102,42 @@ export default class WoTImpl implements WoT.WoTFactory {
     }
 
     /**
+     * Very hacky way to do an interface type check with Typescript
+     * https://stackoverflow.com/questions/14425568/interface-type-check-with-typescript
+     */
+    isWoTThingDescription(arg: any): arg is WoT.ThingDescription {
+        return arg.length !== undefined;
+    }
+    isWoTThingTemplate(arg: any): arg is WoT.ThingTemplate {
+        return arg.name !== undefined;
+    }
+
+    /**
      * create a new Thing
      *
      * @param name name/identifier of the thing to be created
      */
-    expose(init: WoT.ThingTemplate): ExposedThing {
-        console.info(`WoTImpl creating new ExposedThing '${init.name}'`);
-        let td: ThingDescription = new ThingDescription();
-        td.name = init.name;
-        // TODO semanticTypes 
-        // TODO metadata
-        let mything = new ExposedThing(this.srv, td); // init.name
+    produce(model: WoT.ThingModel): WoT.ExposedThing {
+        let td: ThingDescription = null;
+        if(this.isWoTThingDescription(model)) {
+            let thingDescription : WoT.ThingDescription = model;
+            td = TDParser.parseTDString(thingDescription);
+        } else if(this.isWoTThingTemplate(model)) {
+            let thingTemplate : WoT.ThingTemplate = model;
+            console.info(`WoTImpl creating new ExposedThing '${thingTemplate.name}'`);
+            td = new ThingDescription();
+            td.name = thingTemplate.name;
+            // TODO semanticTypes 
+            // TODO metadata
+        } else {
+            throw new Error("WoTImpl could not create Thing because of unknown model argument " + model);
+        }
+        let mything = new ExposedThing(this.srv, td);
         if (this.srv.addThing(mything)) {
             return mything;
         } else {
             throw new Error("WoTImpl could not create Thing: " + mything);
         }
-        
     }
 
     // createFromDescription(thingDescription: ThingDescription): ExposedThing {

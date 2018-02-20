@@ -71,9 +71,8 @@ export default class DefaultServient extends Servient {
             super.start().then( WoT => {
                 console.info("DefaultServient started");
     
-                // FIXME produce() instead of expose()
                 // TODO think about builder pattern that starts with produce() ends with expose(), which exposes/publishes the Thing
-                let thing = WoT.expose({ name: "servient" })
+                let thing = WoT.produce({ name: "servient" })
                                 .addAction({ name: "log",
                                     inputType: `{ type: "string" }`,
                                     outputType: `{ type: "string" }`,
