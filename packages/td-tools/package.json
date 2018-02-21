@@ -26,7 +26,7 @@
   "dependencies": {
     "class-transformer": "0.1.8",
     "reflect-metadata": "0.1.10",
-    "wot-typescript-definitions": "0.4.0-SNAPSHOT.9"
+    "wot-typescript-definitions": "0.4.0-SNAPSHOT.10"
   },
   "scripts": {
     "build": "tsc",

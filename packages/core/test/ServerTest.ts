@@ -159,7 +159,7 @@ class WoTServerTest {
                 name: "number", 
                 writable: true, 
                 type: JSON.stringify({ "type": "number" }),
-                initValue:  10
+                value:  10
             };
             return thing.addProperty(initp).writeProperty("number", 5).then(value => {
                 expect(value).to.equal(5);
@@ -180,7 +180,7 @@ class WoTServerTest {
                 name: "prop1",
                 writable: true,
                 type: JSON.stringify({ "type": "number" }),
-                initValue: 10
+                value: 10
             };
             thing.addProperty(initp);
 
@@ -202,7 +202,7 @@ class WoTServerTest {
                 name: "prop1", 
                 writable: true,
                 type: JSON.stringify({ "type": "number" }), 
-                initValue:  10
+                value:  10
             };
             thing.addProperty(initp);
 
@@ -227,7 +227,7 @@ class WoTServerTest {
                 name: "prop1",
                 writable: true, 
                 type: JSON.stringify({ "type": "number" }), 
-                initValue: 10
+                value: 10
             };
             thing.addProperty(initp);
 
@@ -252,21 +252,20 @@ class WoTServerTest {
         //.then(thing => {
             let inita : WoT.ThingActionInit = {
                 name: "action1",
-                inputType: JSON.stringify({ "type": "number" }),
-                outputType: JSON.stringify({ "type": "number" }),
-                semanticTypes: undefined,
-                action : function(request : any) : number {
-                    request.should.be.a("number");
-                    request.should.equal(23);
-                    return 42;
-                }
-                // action: function(request : any) : any {
-                //     request.should.be.a("number");
-                //     request.should.equal(23);
-                //     return 42;
-                // }
+                inputDataDescription: JSON.stringify({ "type": "number" }),
+                outputDataDescription: JSON.stringify({ "type": "number" }),
+                semanticTypes: undefined
             };
-            thing.addAction(inita);
+            thing.addAction(inita).setActionHandler(
+                (parameters : any) => {
+                    return new Promise((resolve, reject) => {
+                        parameters.should.be.a("number");
+                        parameters.should.equal(23);
+                        resolve(42);
+                    });
+                  },
+                inita.name
+            );
 
             // let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
 
@@ -286,16 +285,22 @@ class WoTServerTest {
         });
         let inita : WoT.ThingActionInit = {
             name: "action1", 
-            inputType: JSON.stringify({ "type": "number" }), 
-            outputType: JSON.stringify({ "type": "number" }), 
-            semanticTypes: undefined, 
-            action: function(newValue: any, oldValue: any) : number {
-                newValue.should.be.a("number");
-                newValue.should.equal(23);
-                return 42;
-            }
-        };
-        thing.addAction(inita);
+            inputDataDescription: JSON.stringify({ "type": "number" }), 
+            outputDataDescription: JSON.stringify({ "type": "number" }), 
+            semanticTypes: undefined
+        };    
+
+        thing.addAction(inita).setActionHandler(
+            (parameters : any) => {
+                return new Promise((resolve, reject) => {
+                    parameters.should.be.a("number");
+                    parameters.should.equal(23);
+                    resolve(42);
+                    // reject(Error("It broke"));
+                });
+              },
+            inita.name
+        );
         
         return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
     }
@@ -304,16 +309,20 @@ class WoTServerTest {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.produce('{\"@context\": [\"https://w3c.github.io/wot/w3c-wot-td-context.jsonld\"],\"@type\": [\"Thing\"],\"name\": \"thing6b_\"}');
         let inita : WoT.ThingActionInit = {
             name: "action1", 
-            inputType: JSON.stringify({ "type": "number" }), 
-            outputType: JSON.stringify({ "type": "number" }), 
-            semanticTypes: undefined, 
-            action: function(newValue: any, oldValue: any) : number {
-                newValue.should.be.a("number");
-                newValue.should.equal(23);
-                return 42;
-            }
+            inputDataDescription: JSON.stringify({ "type": "number" }), 
+            outputDataDescription: JSON.stringify({ "type": "number" }), 
+            semanticTypes: undefined
         };
-        thing.addAction(inita);
+        thing.addAction(inita).setActionHandler(
+            (parameters : any) => {
+                return new Promise((resolve, reject) => {
+                    parameters.should.be.a("number");
+                    parameters.should.equal(23);
+                    resolve(42);
+                });
+              },
+            inita.name
+        );
         
         return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
     }
@@ -325,16 +334,20 @@ class WoTServerTest {
         // .then(thing => {
             let inita : WoT.ThingActionInit = {
                 name: "action1",
-                inputType: JSON.stringify({ "type": "number" }),
-                outputType: JSON.stringify({ "type": "number" }),
-                semanticTypes: undefined,
-                action: function(request: any) : number {
-                    request.should.be.a("number");
-                    request.should.equal(23);
-                    return 42;
-                }
+                inputDataDescription: JSON.stringify({ "type": "number" }),
+                outputDataDescription: JSON.stringify({ "type": "number" }),
+                semanticTypes: undefined
             };
-            thing.addAction(inita);
+            thing.addAction(inita).setActionHandler(
+                (parameters : any) => {
+                    return new Promise((resolve, reject) => {
+                        parameters.should.be.a("number");
+                        parameters.should.equal(23);
+                        resolve(42);
+                    });
+                  },
+                inita.name
+            );
 
             // let request : WoT.Request = {type: undefined, from: null, name: "action1", options : null, data: null, respond : undefined, respondWithError: undefined}; // WoT.RequestType.action, 
             // thing.onInvokeAction({"request" : request, "callback" : request => {

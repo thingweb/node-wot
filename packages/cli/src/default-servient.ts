@@ -74,33 +74,49 @@ export default class DefaultServient extends Servient {
                 // TODO think about builder pattern that starts with produce() ends with expose(), which exposes/publishes the Thing
                 let thing = WoT.produce({ name: "servient" })
                                 .addAction({ name: "log",
-                                    inputType: `{ type: "string" }`,
-                                    outputType: `{ type: "string" }`,
-                                    action: (msg: string) => {
-                                        console.info(msg);
-                                        return `logged '${msg}`;
-                                    }
+                                    inputDataDescription: `{ type: "string" }`,
+                                    outputDataDescription: `{ type: "string" }`
                                 })
+                                .setActionHandler(
+                                    (msg : any) => {
+                                        return new Promise((resolve, reject) => {
+                                            console.info(msg);
+                                            resolve(`logged '${msg}`);
+                                        });
+                                      },
+                                    "log"
+                                )
                                 .addAction({ name: "shutdown",
                                     // FIXME define input/outputTypes as optional
-                                    inputType: null,
-                                    outputType: `{ type: "string" }`,
-                                    action: () => {
-                                        console.info("shutting down by remote");
-                                        this.shutdown();
-                                    }
-                                });
+                                    inputDataDescription: null,
+                                    outputDataDescription: `{ type: "string" }`
+                                })
+                                .setActionHandler(
+                                    () => {
+                                        return new Promise((resolve, reject) => {
+                                            console.info("shutting down by remote");
+                                            this.shutdown();
+                                            resolve();
+                                        });
+                                      },
+                                    "shutdown"
+                                );
     
                 if (this.config.servient.scriptAction) {
                     thing
                         .addAction({ name: "runScript",
-                            inputType: `{ type: "string" }`,
-                            outputType: `{ type: "string" }`,
-                            action: (script: string) => {
-                                console.log("runnig script", script);
-                                return this.runScript(script);
-                            }
-                        });
+                            inputDataDescription: `{ type: "string" }`,
+                            outputDataDescription: `{ type: "string" }`
+                        })
+                        .setActionHandler(
+                            (script: string) => {
+                                return new Promise((resolve, reject) => {
+                                    console.log("runnig script", script);
+                                    resolve(this.runScript(script));
+                                });
+                              },
+                            "runScript"
+                        );
                 }
 
                 // pass WoTFactory on

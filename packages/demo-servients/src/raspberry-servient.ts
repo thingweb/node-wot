@@ -74,16 +74,14 @@ function main() {
 
     let thingPropertyInitBrightness : WoT.ThingPropertyInit;
       thingPropertyInitBrightness.name = 'brightness';
-      thingPropertyInitBrightness.initValue = 50;
+      thingPropertyInitBrightness.value = 50;
       thingPropertyInitBrightness.type = `{ type: "integer", minimum: 0, maximum: 255 }`;
       thingPropertyInitBrightness.writable = true;
-      thingPropertyInitBrightness.onWrite = (old, nu) => {
-        setBrightness(nu);
-      };
+
 
       let thingPropertyInitColor : WoT.ThingPropertyInit;
       thingPropertyInitColor.name = 'color';
-      thingPropertyInitColor.initValue = { r: 0, g: 0, b: 0 };
+      thingPropertyInitColor.value = { r: 0, g: 0, b: 0 };
       thingPropertyInitColor.type = `{ type: "object",
           field: [
             { name: "r", type: "integer", minimum: 0, maximum: 255 },
@@ -92,13 +90,11 @@ function main() {
           ]
         }`;
       thingPropertyInitColor.writable = true;
-      thingPropertyInitColor.onWrite = (old, nu) => {
-        setAll(nu.r, nu.g, nu.b);
-      };
+
 
       let thingActionInitGradient : WoT.ThingActionInit;
       thingActionInitGradient.name = 'gradient';
-      thingActionInitGradient.inputType = `{
+      thingActionInitGradient.inputDataDescription = `{
           type: "array",
           item: {
             type: "object",
@@ -110,55 +106,91 @@ function main() {
           },
           minItems: 2
         }`;
-      thingActionInitGradient.action = (input: Array<Color>) => {
-          if (input.length < 2) {
-            return '{ "minItems": 2 }';
-          }
-          unicorn.invokeAction('cancel');
 
-          gradient = input;
-          gradIndex = 0;
-          gradNow = gradient[0];
-          gradNext = gradient[1];
-          gradVector = {
-            r: (gradNext.r - gradNow.r) / 20,
-            g: (gradNext.g - gradNow.g) / 20,
-            b: (gradNext.b - gradNow.b) / 20
-          };
-          gradientTimer = setInterval(gradientStep, 50);
-          return true;
-        };
         
       let thingActionInitForce : WoT.ThingActionInit;
       thingActionInitForce.name = 'forceColor';
-      thingActionInitForce.inputType = `{ type: "object",
+      thingActionInitForce.inputDataDescription = `{ type: "object",
           properties: {
             r: { type: "integer", minimum: 0, maximum: 255 },
             g: { type: "integer", minimum: 0, maximum: 255 },
             b: { type: "integer", minimum: 0, maximum: 255 }
           }
         }`;
-      thingActionInitForce.action = (input: Color) => {
-        unicorn.invokeAction('cancel');
-        unicorn.writeProperty('color', input);
-      };
 
       let thingActionInitCancel : WoT.ThingActionInit;
       thingActionInitCancel.name = 'cancel';
-      thingActionInitCancel.action = () => {
-          if (gradientTimer) {
-            console.log('>> canceling timer');
-            clearInterval(gradientTimer);
-            gradientTimer = null;
-          }
-        };
 
       unicorn
         .addProperty(thingPropertyInitBrightness)
+        .setPropertyWriteHandler(
+          (value : any) => {
+            return new Promise((resolve, reject) => {
+                setBrightness(value);
+                resolve();
+            });
+          },
+          thingPropertyInitBrightness.name
+        )
         .addProperty(thingPropertyInitColor)
+        .setPropertyWriteHandler(
+          (value : any) => {
+            return new Promise((resolve, reject) => {
+                setAll(value.r, value.g, value.b);
+                resolve();
+            });
+          },
+          thingPropertyInitColor.name
+        )
         .addAction(thingActionInitGradient)
+        .setActionHandler(
+          (input: Array<Color>) => {
+            return new Promise((resolve, reject) => {
+              if (input.length < 2) {
+                return '{ "minItems": 2 }';
+              }
+              unicorn.invokeAction('cancel');
+    
+              gradient = input;
+              gradIndex = 0;
+              gradNow = gradient[0];
+              gradNext = gradient[1];
+              gradVector = {
+                r: (gradNext.r - gradNow.r) / 20,
+                g: (gradNext.g - gradNow.g) / 20,
+                b: (gradNext.b - gradNow.b) / 20
+              };
+              gradientTimer = setInterval(gradientStep, 50);
+              resolve(true);
+            });
+          },
+          thingActionInitGradient.name
+        )
         .addAction(thingActionInitForce)
-        .addAction(thingActionInitCancel);
+        .setActionHandler(
+          (input: Color) => {
+            return new Promise((resolve, reject) => {
+                unicorn.invokeAction('cancel');
+                unicorn.writeProperty('color', input);
+                resolve();
+            });
+          },
+          thingActionInitForce.name
+        )
+        .addAction(thingActionInitCancel)
+        .setActionHandler(
+          () => {
+            return new Promise((resolve, reject) => {
+              if (gradientTimer) {
+                console.log('>> canceling timer');
+                clearInterval(gradientTimer);
+                gradientTimer = null;
+              }
+              resolve();
+            });
+          },
+          thingActionInitCancel.name
+        );
   });
 }
 
