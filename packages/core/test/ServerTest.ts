@@ -155,7 +155,7 @@ class WoTServerTest {
             name : "otherthing"
         });
         // .then(thing => {
-            let initp : WoT.ThingPropertyInit = {
+            let initp : WoT.ThingProperty = {
                 name: "number", 
                 writable: true, 
                 type: JSON.stringify({ "type": "number" }),
@@ -176,7 +176,7 @@ class WoTServerTest {
             name : "thing3"
         });
         // .then(thing => {
-            let initp : WoT.ThingPropertyInit = {
+            let initp : WoT.ThingProperty = {
                 name: "prop1",
                 writable: true,
                 type: JSON.stringify({ "type": "number" }),
@@ -198,7 +198,7 @@ class WoTServerTest {
             name : "thing4"
         });
         // .then(thing => {
-            let initp : WoT.ThingPropertyInit = {
+            let initp : WoT.ThingProperty = {
                 name: "prop1", 
                 writable: true,
                 type: JSON.stringify({ "type": "number" }), 
@@ -223,7 +223,7 @@ class WoTServerTest {
             name : "thing5"
         });
         //.then(thing => {
-            let initp : WoT.ThingPropertyInit = {
+            let initp : WoT.ThingProperty = {
                 name: "prop1",
                 writable: true, 
                 type: JSON.stringify({ "type": "number" }), 
@@ -250,7 +250,7 @@ class WoTServerTest {
             name : "thing6"
         });
         //.then(thing => {
-            let inita : WoT.ThingActionInit = {
+            let inita : WoT.ThingAction = {
                 name: "action1",
                 inputDataDescription: JSON.stringify({ "type": "number" }),
                 outputDataDescription: JSON.stringify({ "type": "number" }),
@@ -283,7 +283,7 @@ class WoTServerTest {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.produce({
             name : "thing6b"
         });
-        let inita : WoT.ThingActionInit = {
+        let inita : WoT.ThingAction = {
             name: "action1", 
             inputDataDescription: JSON.stringify({ "type": "number" }), 
             outputDataDescription: JSON.stringify({ "type": "number" }), 
@@ -307,7 +307,7 @@ class WoTServerTest {
 
     @test "should be able to add an action and invoke it locally in ActionInit (based on WoT.ThingDescription)"() {
         let thing : WoT.ExposedThing = WoTServerTest.WoT.produce('{\"@context\": [\"https://w3c.github.io/wot/w3c-wot-td-context.jsonld\"],\"@type\": [\"Thing\"],\"name\": \"thing6b_\"}');
-        let inita : WoT.ThingActionInit = {
+        let inita : WoT.ThingAction = {
             name: "action1", 
             inputDataDescription: JSON.stringify({ "type": "number" }), 
             outputDataDescription: JSON.stringify({ "type": "number" }), 
@@ -332,7 +332,7 @@ class WoTServerTest {
             name : "thing7"
         });
         // .then(thing => {
-            let inita : WoT.ThingActionInit = {
+            let inita : WoT.ThingAction = {
                 name: "action1",
                 inputDataDescription: JSON.stringify({ "type": "number" }),
                 outputDataDescription: JSON.stringify({ "type": "number" }),
