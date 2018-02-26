@@ -120,13 +120,13 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     // define how to expose and run the Thing
 
     /** @inheritDoc */
-    register(directory: USVString): Promise<void> {
+    register(directory?: USVString): Promise<void> {
         return new Promise<void>((resolve, reject) => {    
         });
     }
 
     /** @inheritDoc */
-    unregister(directory: USVString): Promise<void> {
+    unregister(directory?: USVString): Promise<void> {
         return new Promise<void>((resolve, reject) => {    
         });
     }
@@ -149,30 +149,9 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
         });
     }
 
-    // /**
-    //  * Retrive the ExposedThing description for this object
-    //  */
-    // getDescription(): Object {
-    //     //this is downright madness - TODO clean it up soon
-    //     return JSON.parse(
-    //         TD.serializeTD(
-    //             TDGenerator.generateTD(this, this.srv)
-    //         )
-    //     )
-    // }
-
-    // updateTD(): void {
-    //     this.td = TD.serializeTD(TDGenerator.generateTD(this, this.srv));
-    // }
-
-    // updateTDAndInform(): void {
-    //     // TODO update TD properly
-    //     // this.updateTD(); // fails!?!?!
-    //     this.observablesTDChange.next(this.td);
-    // }
 
     /** @inheritDoc */
-    addProperty(property: WoT.ThingPropertyInit): ExposedThing {
+    addProperty(property: WoT.ThingProperty): ExposedThing {
         // propertyName: string, valueType: Object, initialValue?: any
 
         console.log(`ExposedThing '${this.td.name}' adding Property '${property.name}'`);
@@ -203,7 +182,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     }
 
     /** @inheritDoc */
-    addAction(action: WoT.ThingActionInit): ExposedThing {
+    addAction(action: WoT.ThingAction): ExposedThing {
         // actionName: string, inputType?: Object, outputType?: Object
 
         console.log(`ExposedThing '${this.td.name}' adding Action '${action.name}'`);
@@ -235,7 +214,7 @@ export default class ExposedThing extends ConsumedThing implements WoT.ExposedTh
     /**
      * declare a new eventsource for the ExposedThing
      */
-    addEvent(event: WoT.ThingEventInit): ExposedThing { 
+    addEvent(event: WoT.ThingEvent): ExposedThing { 
         // eventName: string
         let newEvent = new TD.Interaction();
         newEvent.pattern = TD.InteractionPattern.Event;

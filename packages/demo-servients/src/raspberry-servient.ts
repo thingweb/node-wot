@@ -72,14 +72,14 @@ function main() {
     let thing = WoT.produce(template);
     unicorn = thing;
 
-    let thingPropertyInitBrightness : WoT.ThingPropertyInit;
+    let thingPropertyInitBrightness : WoT.ThingProperty;
       thingPropertyInitBrightness.name = 'brightness';
       thingPropertyInitBrightness.value = 50;
       thingPropertyInitBrightness.type = `{ type: "integer", minimum: 0, maximum: 255 }`;
       thingPropertyInitBrightness.writable = true;
 
 
-      let thingPropertyInitColor : WoT.ThingPropertyInit;
+      let thingPropertyInitColor : WoT.ThingProperty;
       thingPropertyInitColor.name = 'color';
       thingPropertyInitColor.value = { r: 0, g: 0, b: 0 };
       thingPropertyInitColor.type = `{ type: "object",
@@ -92,7 +92,7 @@ function main() {
       thingPropertyInitColor.writable = true;
 
 
-      let thingActionInitGradient : WoT.ThingActionInit;
+      let thingActionInitGradient : WoT.ThingAction;
       thingActionInitGradient.name = 'gradient';
       thingActionInitGradient.inputDataDescription = `{
           type: "array",
@@ -108,7 +108,7 @@ function main() {
         }`;
 
         
-      let thingActionInitForce : WoT.ThingActionInit;
+      let thingActionInitForce : WoT.ThingAction;
       thingActionInitForce.name = 'forceColor';
       thingActionInitForce.inputDataDescription = `{ type: "object",
           properties: {
@@ -118,7 +118,7 @@ function main() {
           }
         }`;
 
-      let thingActionInitCancel : WoT.ThingActionInit;
+      let thingActionInitCancel : WoT.ThingAction;
       thingActionInitCancel.name = 'cancel';
 
       unicorn

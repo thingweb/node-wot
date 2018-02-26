@@ -42,6 +42,8 @@ interface ClientAndLink {
 
 export default class ConsumedThing implements WoT.ConsumedThing {
 
+    public readonly name: string;
+
     protected readonly td: ThingDescription;
     protected readonly srv: Servient;
     private clients: Map<string, ProtocolClient> = new Map();
@@ -52,6 +54,7 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     constructor(servient: Servient, td: ThingDescription) {
         this.srv = servient
         this.td = td;
+        this.name = td.name;
         console.info(`ConsumedThing '${td.name}' created`);
     }
 
