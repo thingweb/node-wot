@@ -8,7 +8,7 @@
     "url": "https://github.com/thingweb/node-wot.git"
   },
   "devDependencies": {
-    "lerna": "2.1.1",
+    "lerna": "2.9.0",
     "lerna-run": "0.0.2"
   },
   "dependencies": {},

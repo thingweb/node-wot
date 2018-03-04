@@ -148,7 +148,7 @@ export default class CoapServer implements ProtocolServer {
       } else if (req.method === 'POST') {
         requestHandler.onInvoke({ mediaType: mediaType, body: req.payload })
           .then(content => {
-            // Actions may have a void return (no outputData)
+            // Actions may have a void return (no output)
             if (content.body === null) {
               res.code = '2.04';
             } else {

@@ -17,7 +17,7 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-export { default as ThingDescription } from './thing-description'
+export { default as Thing } from './thing-description'
 export { default as TDRepository } from './td-repository'
 export * from './thing-description'
 export * from './td-parser'

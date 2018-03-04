@@ -23,7 +23,7 @@ import WoTImpl from "./wot-impl";
 import ExposedThing from "./exposed-thing";
 import { ProtocolClientFactory, ProtocolServer, ResourceListener, ProtocolClient } from "./resource-listeners/protocol-interfaces"
 import { default as ContentSerdes, ContentCodec } from "./content-serdes";
-import { ThingDescription } from "@node-wot/td-tools";
+import { Thing } from "@node-wot/td-tools";
 import * as TD from "@node-wot/td-tools";
 import * as Helpers from "./helpers";
 
@@ -47,11 +47,15 @@ export default class Servient {
             "filename" : filename,
             "displayErrors" : true
         };
-        script.runInContext(context,options);
+        try {
+            script.runInContext(context, options);
+        } catch(err) {
+            console.error(`Servient caught error in '${filename}': ${err}`);
+        }
     }
 
-    /** runs the script in priviledged context (dangerous) - means here: scripts can require */
-    public runPriviledgedScript(code : string, filename = 'script') {
+    /** runs the script in privileged context (dangerous) - means here: scripts can require */
+    public runPrivilegedScript(code : string, filename = 'script') {
         let script = new vm.Script(code);
         let context = vm.createContext({
             'WoT': new WoTImpl(this),
@@ -64,7 +68,11 @@ export default class Servient {
             "filename" : filename,
             "displayErrors" : true
         };
-        script.runInContext(context, options);
+        try {
+            script.runInContext(context, options);
+        } catch(err) {
+            console.error(`Servient caught error in privileged '${filename}': ${err}`);
+        }
     }
 
     /** add a new codec to support a mediatype */
@@ -77,7 +85,7 @@ export default class Servient {
         return ContentSerdes.getSupportedMediaTypes();
     }
 
-    public chooseLink(links: Array<TD.InteractionLink>): string {
+    public chooseLink(links: Array<TD.InteractionForm>): string {
         // TODO add an effective way of choosing a link
         // @mkovatsc order of ClientFactories added could decide priority
         return (links.length > 0) ? links[0].href : "nope://none";
@@ -133,15 +141,15 @@ export default class Servient {
         return Array.from(this.clientFactories.keys());
     }
 
-    public addThingFromTD(thing: ThingDescription): boolean {
+    public addThingFromTD(thing: Thing): boolean {
         // TODO loop through all properties and add properties
         // TODO loop through all actions and add actions
         return false;
     }
 
     public addThing(thing: ExposedThing): boolean {
-        if (!this.things.has(thing.getThingName())) {
-            this.things.set(thing.getThingName(), thing);
+        if (!this.things.has(thing.name)) {
+            this.things.set(thing.name, thing);
             return true;
         } else {
             return false;

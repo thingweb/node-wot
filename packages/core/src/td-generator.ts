@@ -19,86 +19,60 @@
 
 import Servient from "./servient"
 import ExposedThing from "./exposed-thing"
-import {ThingDescription} from "@node-wot/td-tools"
+import { Thing } from "@node-wot/td-tools"
 import * as TD from "@node-wot/td-tools"
 import * as Helpers from "./helpers";
 
 
-//@h0ru5: temporarely moved here to avoid circular dependencies
-
-/** Based on the current definition of things'S/servient's  a TD represent is
+/** Copies TD members from Thing and adds Servient metadata (security, form)
 * generated
 * @param thing
 * @param servient
 */
-export function generateTD(thing : ExposedThing, servient : Servient ) : ThingDescription {
+export function generateTD(thing: ExposedThing, servient: Servient): Thing {
 
-    console.log(`generateTD() \n\`\`\`\n${thing}\n\`\`\``);
+  // FIXME necessary to create a copy? security and binding data needs to be filled in...
+  // Could pass Thing data and binding data separately to serializeTD()?
+  let genTD: Thing = new Thing();
+  genTD.semanticType = thing.semanticType.slice(0);
+  genTD.name = thing.name;
+  genTD.id = thing.id;
+  // TODO security
+  genTD.security = { description: "node-wot development Servient, no security" };
+  genTD.metadata = thing.metadata.slice(0);
+  genTD.interaction = thing.interaction.slice(0);
+  genTD.link = thing.link.slice(0);
 
-    /* new td model instance */
-    let genTD:ThingDescription = new ThingDescription()
+  // fill in binding data
+  console.log(`generateTD() found ${genTD.interaction.length} Interaction${genTD.interaction.length == 1 ? "" : "s"}`);
+  for (let interaction of genTD.interaction) {
 
-    console.log(`generateTD() assign name ${thing.getThingName()}`);
-    genTD.name = thing.getThingName()
+    // reset as slice() does not make a deep copy
+    interaction.form = [];
 
-    /* assign all interactions from ExposedThing */
-    genTD.interaction = thing.getInteractions()
+    // a form is generated for each address, supported protocol, and mediatype
+    for (let address of Helpers.getAddresses()) {
+      for (let server of servient.getServers()) {
+        for (let type of servient.getSupportedMediaTypes()) {
 
-    console.log(`generateTD() found ${genTD.interaction.length} Interaction${genTD.interaction.length==1?"":"s"}`);
-    for (let interaction of genTD.interaction) {
+          /* if server is online !==-1 assign the href information */
+          if (server.getPort() !== -1) {
+            let href: string = server.scheme + "://" + address + ":" + server.getPort() + "/" + thing.name;
 
-      // empty semantic type array
-      interaction.semanticTypes = []
-      // assign interaction pattern to the rdf @type
-      /* now done in td-parser.ts after split in pattern and semanticTypes
-      if (interaction.pattern === TD.InteractionPattern.Property) {
-        interaction.semanticTypes.push("Property");
-      } else if(interaction.pattern === TD.InteractionPattern.Action) {
-        interaction.semanticTypes.push("Action");
-      } else if (interaction.pattern === TD.InteractionPattern.Event) {
-        interaction.semanticTypes.push("Event");
-      }
-      */
-
-      // link counter
-      let l = 0;
-
-      // for each address, supported protocol, and media type an intreaction resouce is generated
-      for (let address of Helpers.getAddresses()) {
-        for (let server of servient.getServers()) {
-          for (let type of servient.getSupportedMediaTypes()) {
-
-            /* if server is online !==-1 assign the href information */
-            if(server.getPort() !== -1) {
-              let href:string = server.scheme + "://" + address + ":" + server.getPort() + "/" + thing.getThingName();
-
-              /* depending of the resource pattern, uri is constructed */
-              if (interaction.pattern === TD.InteractionPattern.Property) {
-                interaction.link[l] = new TD.InteractionLink();
-                interaction.link[l].href = href + "/properties/" + interaction.name;
-                interaction.link[l].mediaType = type;
-              }
-              else if (interaction.pattern === TD.InteractionPattern.Action) {
-                interaction.link[l] = new TD.InteractionLink();
-                interaction.link[l].href = href + "/actions/" + interaction.name;
-                interaction.link[l].mediaType = type;
-              }
-              if (interaction.pattern === TD.InteractionPattern.Event) {
-                interaction.link[l] = new TD.InteractionLink();
-                interaction.link[l].href = href + "/events/" + interaction.name;
-                interaction.link[l].mediaType = type;
-              }
-              // TODO debug-level
-              console.log(`generateTD() assigns href '${interaction.link[l].href}' to Interaction '${interaction.name}'`);
-              ++l;
+            /* depending of the resource pattern, uri is constructed */
+            if (interaction.pattern === TD.InteractionPattern.Property) {
+              interaction.form.push(new TD.InteractionForm(href + "/properties/" + interaction.name, type));
+            } else if (interaction.pattern === TD.InteractionPattern.Action) {
+              interaction.form.push(new TD.InteractionForm(href + "/actions/" + interaction.name, type));
+            } else if (interaction.pattern === TD.InteractionPattern.Event) {
+              interaction.form.push(new TD.InteractionForm(href + "/events/" + interaction.name, type));
             }
+            console.debug(`generateTD() assigns href '${interaction.form[interaction.form.length - 1].href}' to Interaction '${interaction.name}'`);
           }
         }
       }
-
-      // reset counter for next iteration
-      l = 0;
     }
+  }
 
-    return genTD;
+  return genTD;
 }

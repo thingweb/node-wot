@@ -30,26 +30,24 @@ import ContentSerdes from "../content-serdes";
 export default class ActionResourceListener extends BasicResourceListener implements ResourceListener {
 
     private readonly thing : ExposedThing;
-    private readonly description : TD.Interaction;
     private readonly name : string;
 
-    constructor(thing: ExposedThing, action: TD.Interaction) {
+    constructor(thing: ExposedThing, name: string) {
         super();
         this.thing = thing;
-        this.description = action;
-        this.name = action.name;
+        this.name = name;
     }
 
     public onInvoke(value: Content): Promise<Content> {
         let param = ContentSerdes.bytesToValue(value);
-        return this.thing.invokeAction(this.name, param).then((value) => {
+        return this.thing.invokeAction(this.name, param).then((output) => {
             // TODO do assertion with this.description and spit warning?
-            if (value === undefined) {
-                // action without outputData - skip ContentSerdes
+            if (output === undefined) {
+                // action without output - skip ContentSerdes
                 return { mediaType: null, body: null };
                 // TODO set status code (TODO) to 2.04
             } else {
-                return ContentSerdes.valueToBytes(value);
+                return ContentSerdes.valueToBytes(output);
             }
         });
     }

@@ -75,18 +75,19 @@ function main() {
     let thingPropertyInitBrightness : WoT.ThingProperty;
       thingPropertyInitBrightness.name = 'brightness';
       thingPropertyInitBrightness.value = 50;
-      thingPropertyInitBrightness.type = `{ type: "integer", minimum: 0, maximum: 255 }`;
+      thingPropertyInitBrightness.schema = `{ "type": "integer", "minimum": 0, "maximum": 255 }`;
       thingPropertyInitBrightness.writable = true;
 
 
       let thingPropertyInitColor : WoT.ThingProperty;
       thingPropertyInitColor.name = 'color';
       thingPropertyInitColor.value = { r: 0, g: 0, b: 0 };
-      thingPropertyInitColor.type = `{ type: "object",
-          field: [
-            { name: "r", type: "integer", minimum: 0, maximum: 255 },
-            { name: "g", type: "integer", minimum: 0, maximum: 255 },
-            { name: "b", type: "integer", minimum: 0, maximum: 255 }
+      thingPropertyInitColor.schema = `{
+          "type": "object",
+          "field": [
+            { "name": "r", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
+            { "name": "g", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
+            { "name": "b", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } }
           ]
         }`;
       thingPropertyInitColor.writable = true;
@@ -94,28 +95,29 @@ function main() {
 
       let thingActionInitGradient : WoT.ThingAction;
       thingActionInitGradient.name = 'gradient';
-      thingActionInitGradient.inputDataDescription = `{
+      thingActionInitGradient.inputSchema = `{
           type: "array",
           item: {
             type: "object",
             field: [
-              { name: "r", type: "integer", minimum: 0, maximum: 255 },
-              { name: "g", type: "integer", minimum: 0, maximum: 255 },
-              { name: "b", type: "integer", minimum: 0, maximum: 255 }
+              { "name": "r", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
+              { "name": "g", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
+              { "name": "b", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } }
             ]
           },
-          minItems: 2
+          "minItems": 2
         }`;
 
         
       let thingActionInitForce : WoT.ThingAction;
       thingActionInitForce.name = 'forceColor';
-      thingActionInitForce.inputDataDescription = `{ type: "object",
-          properties: {
-            r: { type: "integer", minimum: 0, maximum: 255 },
-            g: { type: "integer", minimum: 0, maximum: 255 },
-            b: { type: "integer", minimum: 0, maximum: 255 }
-          }
+      thingActionInitForce.inputSchema = `{
+          "type": "object",
+          "field": [
+            { "name": "r", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
+            { "name": "g", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
+            { "name": "b", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } }
+          ]
         }`;
 
       let thingActionInitCancel : WoT.ThingAction;

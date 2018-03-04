@@ -173,7 +173,7 @@ export default class HttpServer implements ProtocolServer {
           console.log(`HttpServer on port ${this.getPort()} completed body '${body}'`);
           requestHandler.onInvoke({ mediaType: mediaType, body: Buffer.concat(body) })
             .then(content => {
-              // Actions may have a void return (no outputData)
+              // Actions may have a void return (no output)
               if (content.body === null) {
                 res.writeHead(204);
               } else {

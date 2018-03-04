@@ -19,7 +19,6 @@
 
 import * as WoT from "wot-typescript-definitions";
 
-import { ThingDescription } from "@node-wot/td-tools";
 import * as TD from "@node-wot/td-tools";
 
 import Servient from "./servient";
@@ -34,82 +33,97 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 
-interface ClientAndLink {
+interface ClientAndForm {
     client: ProtocolClient
-    link: TD.InteractionLink
+    form: TD.InteractionForm
 }
 
+export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
 
-export default class ConsumedThing implements WoT.ConsumedThing {
+    protected readonly td: WoT.ThingDescription;
 
+    public readonly context: (string | Object)[];
     public readonly name: string;
+    public readonly id: string;
+    public readonly semanticType: Array<WoT.SemanticType>;
+    public readonly metadata: Array<WoT.SemanticMetadata>;
+    public readonly security: any;
+    public readonly interaction: TD.Interaction[];
+    public readonly link: Array<any>;
 
-    protected readonly td: ThingDescription;
     protected readonly srv: Servient;
     private clients: Map<string, ProtocolClient> = new Map();
     protected observablesEvent: Map<string, Subject<any>> = new Map();
     protected observablesPropertyChange: Map<string, Subject<any>> = new Map();
     protected observablesTDChange: Subject<any> = new Subject<any>();
 
-    constructor(servient: Servient, td: ThingDescription) {
+    constructor(servient: Servient, td: WoT.ThingDescription) {
+
         this.srv = servient
+        // cache original TD
         this.td = td;
-        this.name = td.name;
-        console.info(`ConsumedThing '${td.name}' created`);
-    }
 
-    // lazy singleton for ProtocolClient per scheme
-    private getClientFor(links: TD.InteractionLink[]): ClientAndLink {
-        if (links.length === 0) {
-            throw new Error("ConsumedThing '${this.name}' has no links for this interaction");
-        }
+        // apply TD to Thing with normalized URIs (base resolved)
+        let tdObj = TD.parseTDString(td, true);
 
-        let schemes = links.map(link => Helpers.extractScheme(link.href))
-        let cacheIdx = schemes.findIndex(scheme => this.clients.has(scheme))
-
-        if (cacheIdx !== -1) {
-            // from cache
-            console.log(`ConsumedThing '${this.td.name}' chose cached client for '${schemes[cacheIdx]}'`);
-            let client = this.clients.get(schemes[cacheIdx]);
-            let link = links[cacheIdx];
-            return { client: client, link: link };
-        } else {
-            // new client
-            console.log(`ConsumedThing '${this.td.name}' has no client in cache (${cacheIdx})`);
-            let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme));
-            if (srvIdx === -1) throw new Error(`ConsumedThing '${this.td.name}' missing ClientFactory for '${schemes}'`);
-            let client = this.srv.getClientFor(schemes[srvIdx]);
-            if (client) {
-                console.log(`ConsumedThing '${this.td.name}' got new client for '${schemes[srvIdx]}'`);
-                if (this.td.security) {
-                    console.warn("ConsumedThing applying security metadata");
-                    console.dir(this.td.security);
-                    client.setSecurity(this.td.security);
-                }
-                this.clients.set(schemes[srvIdx], client);
-                let link = links[srvIdx];
-                return { client: client, link: link }
-            } else {
-                throw new Error(`ConsumedThing '${this.td.name}' could not get client for '${schemes[srvIdx]}'`);
-            }
-        }
-    }
-
-    private findInteraction(name: string, type: TD.InteractionPattern) {
-        let res = this.td.interaction.filter((ia) => ia.pattern === type && ia.name === name)
-        return (res.length > 0) ? res[0] : null;
+        this.context = tdObj.context;
+        this.semanticType = tdObj.semanticType;
+        this.name = tdObj.name;
+        this.id = tdObj.id;
+        this.security = tdObj.security;
+        this.metadata = tdObj.metadata;
+        this.interaction = tdObj.interaction;
+        this.link = tdObj.link;
     }
 
     /**
      * Returns the Thing Description of the Thing.
      */
     getThingDescription(): WoT.ThingDescription {
-        // TODO shall we implement some caching?
-        return TD.serializeTD(this.td);
+        // returning cached version
+        return this.td;
     }
 
-    getThingName() : string {
-        return this.td.name;
+    // lazy singleton for ProtocolClient per scheme
+    private getClientFor(forms: TD.InteractionForm[]): ClientAndForm {
+        if (forms.length === 0) {
+            throw new Error("ConsumedThing '${this.name}' has no links for this interaction");
+        }
+
+        let schemes = forms.map(link => Helpers.extractScheme(link.href))
+        let cacheIdx = schemes.findIndex(scheme => this.clients.has(scheme))
+
+        if (cacheIdx !== -1) {
+            // from cache
+            console.log(`ConsumedThing '${this.name}' chose cached client for '${schemes[cacheIdx]}'`);
+            let client = this.clients.get(schemes[cacheIdx]);
+            let form = forms[cacheIdx];
+            return { client: client, form: form };
+        } else {
+            // new client
+            console.log(`ConsumedThing '${this.name}' has no client in cache (${cacheIdx})`);
+            let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme));
+            if (srvIdx === -1) throw new Error(`ConsumedThing '${this.name}' missing ClientFactory for '${schemes}'`);
+            let client = this.srv.getClientFor(schemes[srvIdx]);
+            if (client) {
+                console.log(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
+                if (this.security) {
+                    console.warn("ConsumedThing applying security metadata");
+                    console.dir(this.security);
+                    client.setSecurity(this.security);
+                }
+                this.clients.set(schemes[srvIdx], client);
+                let form = forms[srvIdx];
+                return { client: client, form: form }
+            } else {
+                throw new Error(`ConsumedThing '${this.name}' could not get client for '${schemes[srvIdx]}'`);
+            }
+        }
+    }
+
+    private findInteraction(name: string, type: TD.InteractionPattern) {
+        let res = this.interaction.filter((ia) => ia.pattern === type && ia.name === name)
+        return (res.length > 0) ? res[0] : null;
     }
 
     /**
@@ -120,20 +134,20 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         return new Promise<any>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.InteractionPattern.Property);
             if (!property) {
-                reject(new Error(`ConsumedThing '${this.td.name}' cannot find Property '${propertyName}'`));
+                reject(new Error(`ConsumedThing '${this.name}' cannot find Property '${propertyName}'`));
             } else {
-                let {client, link} = this.getClientFor(property.link);
+                let { client, form } = this.getClientFor(property.form);
                 if (!client) {
-                    reject(new Error(`ConsumedThing '${this.td.name}' did not get suitable client for ${link.href}`));
+                    reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${form.href}`));
                 } else {
-                    console.info(`ConsumedThing '${this.td.name}' reading ${link.href}`);
-                    client.readResource(link.href).then( (content) => {
-                        if (!content.mediaType) content.mediaType = link.mediaType;
+                    console.info(`ConsumedThing '${this.name}' reading ${form.href}`);
+                    client.readResource(form.href).then((content) => {
+                        if (!content.mediaType) content.mediaType = form.mediaType;
                         //console.log(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
                         let value = ContentSerdes.bytesToValue(content);
                         resolve(value);
                     })
-                    .catch(err => { console.log("Failed to read because " + err); });
+                        .catch(err => { console.log("Failed to read because " + err); });
                 }
             }
         });
@@ -148,22 +162,31 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         return new Promise<void>((resolve, reject) => {
             let property = this.findInteraction(propertyName, TD.InteractionPattern.Property);
             if (!property) {
-                reject(new Error(`ConsumedThing '${this.td.name}' cannot find Property '${propertyName}'`));
+                reject(new Error(`ConsumedThing '${this.name}' cannot find Property '${propertyName}'`));
             } else {
-                let {client, link} = this.getClientFor(property.link);
+                let { client, form } = this.getClientFor(property.form);
                 if (!client) {
-                    reject(new Error(`ConsumedThing '${this.td.name}' did not get suitable client for ${link.href}`));
+                    reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${form.href}`));
                 } else {
-                    console.info(`ConsumedThing '${this.td.name}' writing ${link.href} with '${newValue}'`);
-                    let payload = ContentSerdes.valueToBytes(newValue,link.mediaType)
-                    resolve(client.writeResource(link.href, payload));
-                    
-                    if(this.observablesPropertyChange.get(propertyName)) {
+                    console.info(`ConsumedThing '${this.name}' writing ${form.href} with '${newValue}'`);
+                    let payload = ContentSerdes.valueToBytes(newValue, form.mediaType)
+                    resolve(client.writeResource(form.href, payload));
+
+                    if (this.observablesPropertyChange.get(propertyName)) {
                         this.observablesPropertyChange.get(propertyName).next(newValue);
                     };
                 }
             }
         });
+    }
+
+    onPropertyChange(name: string): Observable<any> {
+        if (!this.observablesPropertyChange.get(name)) {
+            console.log("Create propertyChange observable for " + name);
+            this.observablesPropertyChange.set(name, new Subject());
+        }
+
+        return this.observablesPropertyChange.get(name).asObservable();
     }
 
     /** invokes an action on the target thing
@@ -174,20 +197,19 @@ export default class ConsumedThing implements WoT.ConsumedThing {
         return new Promise<any>((resolve, reject) => {
             let action = this.findInteraction(actionName, TD.InteractionPattern.Action);
             if (!action) {
-                reject(new Error(`ConsumedThing '${this.td.name}' cannot find Action '${actionName}'`));
+                reject(new Error(`ConsumedThing '${this.name}' cannot find Action '${actionName}'`));
             } else {
-                let {client, link} = this.getClientFor(action.link);
+                let { client, form } = this.getClientFor(action.form);
                 if (!client) {
-                    reject(new Error(`ConsumedThing '${this.td.name}' did not get suitable client for ${link.href}`));
+                    reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${form.href}`));
                 } else {
-                    console.info(`ConsumedThing '${this.td.name}' invoking ${link.href} with '${parameter}'`);
-                    // TODO #5 client expects Buffer; ConsumedThing would have the necessary TD valueType rule...
+                    console.info(`ConsumedThing '${this.name}' invoking ${form.href} with '${parameter}'`);
 
-                    let mediaType = link.mediaType;
-                    let input = ContentSerdes.valueToBytes(parameter, link.mediaType.toString());
+                    let mediaType = form.mediaType;
+                    let input = ContentSerdes.valueToBytes(parameter, form.mediaType.toString());
 
-                    client.invokeResource(link.href, input).then( (output) => {
-                        if (!output.mediaType) output.mediaType = link.mediaType;
+                    client.invokeResource(form.href, input).then((output) => {
+                        if (!output.mediaType) output.mediaType = form.mediaType;
                         //console.log(`ConsumedThing decoding '${output.mediaType}' in invokeAction`);
                         let value = ContentSerdes.bytesToValue(output);
                         resolve(value);
@@ -198,25 +220,16 @@ export default class ConsumedThing implements WoT.ConsumedThing {
     }
 
     onEvent(name: string): Observable<any> {
-        if(!this.observablesEvent.get(name)) {
-            console.log("Create event observable for " +  name);
+        if (!this.observablesEvent.get(name)) {
+            console.log("Create event observable for " + name);
             this.observablesEvent.set(name, new Subject());
         }
 
-        return this.observablesEvent.get(name);
-    }
-
-    onPropertyChange(name: string): Observable<any> {
-        if(!this.observablesPropertyChange.get(name)) {
-            console.log("Create propertyChange observable for " +  name);
-            this.observablesPropertyChange.set(name, new Subject());
-        }
-
-        return this.observablesPropertyChange.get(name);
+        return this.observablesEvent.get(name).asObservable();
     }
 
     onTDChange(): Observable<any> {
-        return this.observablesTDChange;
+        return this.observablesTDChange.asObservable();
     }
 
 }

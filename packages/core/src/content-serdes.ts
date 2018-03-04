@@ -117,7 +117,7 @@ export class ContentSerdes {
     if (!this.instance) {
       this.instance = new ContentSerdes();
       this.instance.addCodec(new JsonCodec());
-       this.instance.addCodec(new TextCodec());
+      //this.instance.addCodec(new TextCodec());
     }
     return this.instance;
   }

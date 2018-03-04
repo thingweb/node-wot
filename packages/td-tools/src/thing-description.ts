@@ -18,11 +18,8 @@
  */
 
 // global W3C WoT Scripting API definitions
-import _ from "wot-typescript-definitions";
-// import * as WoT from 'wot-typescript-definitions';
+import WoT from "wot-typescript-definitions";
 
-// import { JsonMember, JsonObject } from 'typedjson-npm';
-// import {Type, Expose, Exclude} from "class-transformer";
 import "reflect-metadata";
 
 /** Internet Media Types */
@@ -33,9 +30,8 @@ import "reflect-metadata";
 
 } */
 
-export const  DEFAULT_HTTP_CONTEXT : string = "http://w3c.github.io/wot/w3c-wot-td-context.jsonld" ;
+export const DEFAULT_HTTP_CONTEXT : string = "http://w3c.github.io/wot/w3c-wot-td-context.jsonld" ;
 export const DEFAULT_HTTPS_CONTEXT : string = "https://w3c.github.io/wot/w3c-wot-td-context.jsonld";
-
 export const DEFAULT_THING_TYPE : string = "Thing";
 
 /** Interaction pattern */
@@ -46,8 +42,7 @@ export enum InteractionPattern {
 }
 
 /**
- * Internal links information of an Interaction
- * NOTE must be declared before Interaction for TypedJSON
+ * node-wot definition for security metadata
  */
 export class ThingSecurity {
   public mode: string;
@@ -56,29 +51,31 @@ export class ThingSecurity {
 }
 
 /**
- * Internal links information of an Interaction
- * NOTE must be declared before Interaction for TypedJSON
+ * node-wot definition for form / binding metadata
  */
-export class InteractionLink {
+export class InteractionForm {
 
   /** relativ or absulut URI path of the Interaction resource */
   public href: string;
 
   /** used mediaType of the interacion resources */
   public mediaType: string;
+
+  constructor(href?: string, mediaType?: string) {
+    if (href) this.href = href;
+    if (mediaType) this.mediaType = mediaType;
+  }
 }
 
 /**
- * Internal data structure for an Interaction
- * NOTE must be declared before ThingDescription for TypedJSON
+ * node-wot definition for Interactions
  */
 export class Interaction {
   /** @ type information of the Interaction */
-  /* TODO Should be public semanticTypes: Array<WoT.SemanticType>; */
-  public semanticTypes: Array<string>;
+  /* TODO Should be public semanticType: Array<WoT.SemanticType>; */
+  public semanticType: Array<string>;
 
   public metadata: Array<WoT.SemanticMetadata>;
-  // public metadata: Array<string>
 
   /** name/identifier of the Interaction */
   public name: string;
@@ -86,8 +83,8 @@ export class Interaction {
   /** type of the Interaction (action, property, event) */
   public pattern: InteractionPattern;
 
-  /** link information of the Interaction resources */
-  public link: Array<InteractionLink>;
+  /** form information of the Interaction resources */
+  public form: Array<InteractionForm>;
 
   /** writable flag for the Property */
   public writable: boolean;
@@ -95,17 +92,17 @@ export class Interaction {
   /** observable flag for the Property */
   public observable: boolean;
 
-  // TODO: how to handle types internally?
-  /** JSON Schema for input */
-  public inputData: any;
-
-  /** JSON Schema for output */
-  public outputData: any;
+  /** Property/Event schema */
+  public schema: any;
+  /** Action input schema */
+  public inputSchema: any;
+  /** Action output schema */
+  public outputSchema: any;
 
   constructor() {
-    this.semanticTypes = [];
+    this.semanticType = [];
     this.metadata = [];
-    this.link = [];
+    this.form = [];
   }
 }
 
@@ -117,62 +114,64 @@ export class PrefixedContext {
     this.prefix = prefix;
     this.context = context;
   }
-
 }
 
 /**
- * structured type representing a TD for internal usage
- * NOTE must be defined after Interaction and InteractionLink
+ * node-wot definition for instantiated Thing Descriptions (Things)
  */
-export default class ThingDescription {
+export default class Thing {
+
+  /** @context information of the TD */
+  public context: Array<string | object>
 
   /** @ type information, usually 'Thing' */
-  /* TODO Should be public semanticTypes: Array<WoT.SemanticType>; */
-  public semanticType: Array<WoT.SemanticType>; // Array<string>;
+  public semanticType: Array<WoT.SemanticType>;
 
+  /** container for all custom metadata */
   public metadata: Array<WoT.SemanticMetadata>;
-
-  /** unique identifier (a URI, includes URN) */
-  public id: string;
 
   /** human-readable name of the Thing */
   public name: string;
+
+  /** unique identifier (a URI, includes URN) */
+  public id: string;
 
   /** security metadata */
   public security: Object;
 
   /** base URI of the Interaction resources */
-  public base: string;
+  public base?: string;
 
   /** Interactions of this Thing */
   public interaction: Array<Interaction>;
 
-  /** @context information of the TD */
-  public context: Array<string | object>
+  /** Web links to other Things or metadata */
+  public link?: Array<any>;
 
-  public getSimpleContexts() :  Array<string> {
+  /*
+  public getSimpleContexts(): Array<string> {
     // @DAPE: Shall we cache created list?
-    let contexts : Array<string> = [];
-    if(this.context != null) {
-      for(let cnt of this.context) {
-        if(typeof cnt == "string") {
-          let c : string = cnt as string;
+    let contexts: Array<string> = [];
+    if (this.context != null) {
+      for (let cnt of this.context) {
+        if (typeof cnt == "string") {
+          let c: string = cnt as string;
           contexts.push(c);
         }
       }
     }
     return contexts;
-  } 
+  }
 
-  public getPrefixedContexts() :  Array<PrefixedContext> {
+  public getPrefixedContexts(): Array<PrefixedContext> {
     // @DAPE: Shall we cache created list?
-    let contexts : Array<PrefixedContext> = [];
-    if(this.context != null) {
-      for(let cnt of this.context) {
-        if(typeof cnt == "object") {
-          let c : any = cnt as any;
+    let contexts: Array<PrefixedContext> = [];
+    if (this.context != null) {
+      for (let cnt of this.context) {
+        if (typeof cnt == "object") {
+          let c: any = cnt as any;
           let keys = Object.keys(c);
-          for(let pfx of keys) {
+          for (let pfx of keys) {
             let v = c[pfx];
             contexts.push(new PrefixedContext(pfx, v));
           }
@@ -180,12 +179,14 @@ export default class ThingDescription {
       }
     }
     return contexts;
-  } 
+  }
+  */
 
   constructor() {
-    this.context = [DEFAULT_HTTP_CONTEXT];
+    this.context = [DEFAULT_HTTPS_CONTEXT];
     this.semanticType = []; // DEFAULT_THING_TYPE
-    this.interaction = [];
     this.metadata = [];
+    this.interaction = [];
+    this.link = []
   }
 }

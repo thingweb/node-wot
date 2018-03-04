@@ -43,9 +43,9 @@ export default class DefaultServient extends Servient {
         }
     }
 
-    public readonly config : any = DefaultServient.defaultServientConf;
+    public readonly config: any = DefaultServient.defaultServientConf;
 
-    public constructor(config? : any) {
+    public constructor(config?: any) {
         super();
 
         Object.assign(this.config, config);
@@ -57,7 +57,7 @@ export default class DefaultServient extends Servient {
         this.addClientFactory(new HttpClientFactory(this.config.http.proxy));
         this.addClientFactory(new HttpsClientFactory(this.config.http.proxy));
         this.addClientFactory(new CoapClientFactory());
-        
+
         // loads credentials from the configuration
         this.addCredentials(this.config.credentials);
     }
@@ -67,46 +67,55 @@ export default class DefaultServient extends Servient {
      */
     public start(): Promise<WoTFactory> {
 
-        return new Promise<WoTFactory>( (resolve, reject) => {
-            super.start().then( WoT => {
+        return new Promise<WoTFactory>((resolve, reject) => {
+            super.start().then(WoT => {
                 console.info("DefaultServient started");
-    
+
                 // TODO think about builder pattern that starts with produce() ends with expose(), which exposes/publishes the Thing
-                let thing = WoT.produce({ name: "servient" })
-                                .addAction({ name: "log",
-                                    inputDataDescription: `{ type: "string" }`,
-                                    outputDataDescription: `{ type: "string" }`
-                                })
-                                .setActionHandler(
-                                    (msg : any) => {
-                                        return new Promise((resolve, reject) => {
-                                            console.info(msg);
-                                            resolve(`logged '${msg}`);
-                                        });
-                                      },
-                                    "log"
-                                )
-                                .addAction({ name: "shutdown",
-                                    // FIXME define input/outputTypes as optional
-                                    inputDataDescription: null,
-                                    outputDataDescription: `{ type: "string" }`
-                                })
-                                .setActionHandler(
-                                    () => {
-                                        return new Promise((resolve, reject) => {
-                                            console.info("shutting down by remote");
-                                            this.shutdown();
-                                            resolve();
-                                        });
-                                      },
-                                    "shutdown"
-                                );
-    
+                let thing = WoT.produce(`{
+                    "name": "servient",
+                    "description": "node-wot CLI Servient",
+                    "system": "${process.arch}"
+                }`)
+                    .addProperty({
+                        name: "things",
+                        schema: `{ "type": "array", "items": { "type": "string" } }`,
+                    })
+                    .addAction({
+                        name: "log",
+                        inputSchema: `{ "type": "string" }`,
+                        outputSchema: `{ "type": "string" }`
+                    })
+                    .setActionHandler(
+                        (msg: any) => {
+                            return new Promise((resolve, reject) => {
+                                console.info(msg);
+                                resolve(`logged '${msg}`);
+                            });
+                        },
+                        "log"
+                    )
+                    .addAction({
+                        name: "shutdown",
+                        outputSchema: `{ "type": "string" }`
+                    })
+                    .setActionHandler(
+                        () => {
+                            return new Promise((resolve, reject) => {
+                                console.info("shutting down by remote");
+                                this.shutdown();
+                                resolve();
+                            });
+                        },
+                        "shutdown"
+                    );
+
                 if (this.config.servient.scriptAction) {
                     thing
-                        .addAction({ name: "runScript",
-                            inputDataDescription: `{ type: "string" }`,
-                            outputDataDescription: `{ type: "string" }`
+                        .addAction({
+                            name: "runScript",
+                            inputSchema: `{ "type": "string" }`,
+                            outputSchema: `{ "type": "string" }`
                         })
                         .setActionHandler(
                             (script: string) => {
@@ -114,7 +123,7 @@ export default class DefaultServient extends Servient {
                                     console.log("runnig script", script);
                                     resolve(this.runScript(script));
                                 });
-                              },
+                            },
                             "runScript"
                         );
                 }
@@ -122,7 +131,10 @@ export default class DefaultServient extends Servient {
                 // pass WoTFactory on
                 resolve(WoT);
 
-            }).catch( err => reject(err));
+            }).catch(err => {
+                console.trace(`error building CLI Management Thing: ${err}`);
+                reject(err)
+            });
         });
     }
 }

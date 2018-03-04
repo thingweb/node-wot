@@ -60,7 +60,7 @@ const runScripts = function(srv : DefaultServient, scripts : Array<string>) : vo
             } else {
                 // limit printout to first line
                 console.info(`WoT-Servient running script '${data.substr(0, data.indexOf("\n"))}...'`);
-                srv.runPriviledgedScript(data);
+                srv.runPrivilegedScript(data, fname);
             }
         });
     });

@@ -143,25 +143,25 @@ class TrapClientFactory implements ProtocolClientFactory {
 }
 
 let myThingDesc = {
-    "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+    "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
     "@type": ["Thing"],
     "name": "aThing",
     "interaction": [
         {
             "@type": ["Property"],
             "name": "aProperty",
-            "outputData": { "type": "number" },
+            "schema": { "type": "number" },
             "writable": false,
-            "link": [
+            "form": [
                 { "href": "test://host/athing/properties/aproperty", "mediaType": "application/json" }
             ]
         },
         {
             "@type": ["Action"],
             "name": "anAction",
-            "outputData": { "type": "number" },
-            "inputData": { "type": "number" },
-            "link": [
+            "inputSchema": { "type": "number" },
+            "outputSchema": { "type": "number" },
+            "form": [
                 { "href": "test://host/athing/actions/anaction", "mediaType": "application/json" }
             ]
         }
@@ -235,9 +235,7 @@ class WoTClientTest {
                 return { mediaType : "application/json", body: new Buffer("42") };
             }
         );
-
-
-        // JSON.stringify(myThingDesc)
+        
         WoTClientTest.WoT.fetch("data://" + "tdFoo")
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);

@@ -30,14 +30,12 @@ import ContentSerdes from "../content-serdes";
 export default class PropertyResourceListener extends BasicResourceListener implements ResourceListener {
 
     private readonly thing : ExposedThing;
-    private readonly description : TD.Interaction;
     private readonly name : string;
 
-    constructor(thing : ExposedThing, property : TD.Interaction) {
+    constructor(thing : ExposedThing, name: string) {
         super();
         this.thing = thing;
-        this.description = property;
-        this.name = property.name;
+        this.name = name;
     }
 
     public onRead() : Promise<Content> {

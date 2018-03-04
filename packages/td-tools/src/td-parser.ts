@@ -17,37 +17,36 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-import ThingDescription from './thing-description';
-
+import Thing from './thing-description';
 import * as TD from './thing-description';
 
 // import {plainToClass, classToPlain} from "class-transformer";
 import "reflect-metadata";
 
 
-function stringToThingDescription(tdJson: string) : ThingDescription {
+function stringToThingDescription(tdJson: string): Thing {
   let tdPlain = JSON.parse(tdJson);
-  let td: ThingDescription = new ThingDescription();
+  let td: Thing = new Thing();
 
   for (var fieldNameRoot in tdPlain) {
     if (tdPlain.hasOwnProperty(fieldNameRoot)) {
-        switch(fieldNameRoot) {
+      switch (fieldNameRoot) {
         case "@context":
-          if(typeof tdPlain[fieldNameRoot] === "string" && (
-              tdPlain[fieldNameRoot] === TD.DEFAULT_HTTP_CONTEXT ||
-              tdPlain[fieldNameRoot] === TD.DEFAULT_HTTPS_CONTEXT
+          if (typeof tdPlain[fieldNameRoot] === "string" && (
+            tdPlain[fieldNameRoot] === TD.DEFAULT_HTTP_CONTEXT ||
+            tdPlain[fieldNameRoot] === TD.DEFAULT_HTTPS_CONTEXT
           )) {
             // default set in constructor already
-          } else if(Array.isArray(tdPlain[fieldNameRoot])) {
+          } else if (Array.isArray(tdPlain[fieldNameRoot])) {
             for (let contextEntry of tdPlain[fieldNameRoot]) {
-              if(typeof contextEntry === "string" && (
+              if (typeof contextEntry === "string" && (
                 contextEntry === TD.DEFAULT_HTTP_CONTEXT ||
                 contextEntry === TD.DEFAULT_HTTPS_CONTEXT
               )) {
                 // default set in constructor already
-              } else if(typeof contextEntry === "string") {
+              } else if (typeof contextEntry === "string") {
                 td.context.push(contextEntry);
-              } else if(typeof contextEntry === "object") {
+              } else if (typeof contextEntry === "object") {
                 td.context.push(contextEntry);
               } else {
                 console.error("@context field entry of array of unknown type");
@@ -57,137 +56,158 @@ function stringToThingDescription(tdJson: string) : ThingDescription {
             console.error("@context field neither of type array nor string");
           }
           break;
-        case "name":
-          if(typeof tdPlain[fieldNameRoot] === "string") {
-            td.name = tdPlain[fieldNameRoot];
-          } else {
-            console.error("name field not of type string");
-          }
-          break;
-        case "base":
-          if(typeof tdPlain[fieldNameRoot] === "string") {
-            td.base = tdPlain[fieldNameRoot];
-          } else {
-            console.error("base field not of type string");
-          }
-          break;
-        case "@type": 
-          if(typeof tdPlain[fieldNameRoot] === "string" && tdPlain[fieldNameRoot] === TD.DEFAULT_THING_TYPE) {
+        case "@type":
+          if (typeof tdPlain[fieldNameRoot] === "string" && tdPlain[fieldNameRoot] === TD.DEFAULT_THING_TYPE) {
             // default, additional @types to "Thing" only
-          } else if(Array.isArray(tdPlain[fieldNameRoot])) {
+          } else if (Array.isArray(tdPlain[fieldNameRoot])) {
             for (let typeEntry of tdPlain[fieldNameRoot]) {
-              if(typeof typeEntry === "string" && typeEntry === TD.DEFAULT_THING_TYPE ) {
-                // default, additional @types to "Thing" only
-              } else if(typeof tdPlain[fieldNameRoot] === "string") {
-                td.semanticType.push(typeEntry);
+              if (typeof typeEntry === "string") {
+                if (typeEntry === TD.DEFAULT_THING_TYPE) {
+                  // default, additional @types to "Thing" only
+                } else {
+                  let st: WoT.SemanticType = {
+                    name: typeEntry,
+                    context: "TODO"
+                    // ,
+                    // prefix: "p"
+                  };
+                  td.semanticType.push(st);
+                }
               }
             }
           } else {
             console.error("@type field neither of type array nor string");
           }
           break;
-        case "security": 
+        case "name":
+          if (typeof tdPlain[fieldNameRoot] === "string") {
+            td.name = tdPlain[fieldNameRoot];
+          } else {
+            console.error("name field not of type string");
+          }
+          break;
+        case "@id":
+          if (typeof tdPlain[fieldNameRoot] === "string") {
+            td.id = tdPlain[fieldNameRoot];
+          } else {
+            console.error("@id field not of type string");
+          }
+          break;
+        case "base":
+          if (typeof tdPlain[fieldNameRoot] === "string") {
+            td.base = tdPlain[fieldNameRoot];
+          } else {
+            console.error("base field not of type string");
+          }
+          break;
+        case "security":
           td.security = tdPlain[fieldNameRoot];
           break;
-        case "interaction": 
-          if(Array.isArray(tdPlain[fieldNameRoot])) {
+        case "interaction":
+          if (Array.isArray(tdPlain[fieldNameRoot])) {
             for (let interactionEntry of tdPlain[fieldNameRoot]) {
-              if(typeof interactionEntry === "object") {
+              if (typeof interactionEntry === "object") {
                 let inter = new TD.Interaction();
-                td.interaction.push(inter);    
+                td.interaction.push(inter);
                 for (var fieldNameInteraction in interactionEntry) {
                   if (interactionEntry.hasOwnProperty(fieldNameInteraction)) {
-                    switch(fieldNameInteraction) {
-                    case "name":
-                      if(typeof interactionEntry[fieldNameInteraction] === "string") {
-                        inter.name = interactionEntry[fieldNameInteraction];
-                      } else {
-                        console.error("name field of interaction not of type string");
-                      }
-                      break;
-                    case "@type":
-                      if(typeof interactionEntry[fieldNameInteraction] === "string") {
-                        inter.semanticTypes.push(interactionEntry[fieldNameInteraction]);
-                      } else if(Array.isArray(interactionEntry[fieldNameInteraction])) {
-                        for (let typeInteractionEntry of interactionEntry[fieldNameInteraction]) {
-                          if(typeof typeInteractionEntry === "string") {
-                            inter.semanticTypes.push(typeInteractionEntry);
-                          } else {
-                            console.error("interaction @type field not of type string");
+                    switch (fieldNameInteraction) {
+                      case "name":
+                        if (typeof interactionEntry[fieldNameInteraction] === "string") {
+                          inter.name = interactionEntry[fieldNameInteraction];
+                        } else {
+                          console.error("name field of interaction not of type string");
+                        }
+                        break;
+                      case "@type":
+                        if (typeof interactionEntry[fieldNameInteraction] === "string") {
+                          inter.semanticType.push(interactionEntry[fieldNameInteraction]);
+                        } else if (Array.isArray(interactionEntry[fieldNameInteraction])) {
+                          for (let typeInteractionEntry of interactionEntry[fieldNameInteraction]) {
+                            if (typeof typeInteractionEntry === "string") {
+                              inter.semanticType.push(typeInteractionEntry);
+                            } else {
+                              console.error("interaction @type field not of type string");
+                            }
                           }
-                        } 
-                      } else {
-                        console.error("@type field of interaction neither of type array nor string");
-                      }
-                      break;
-                    case "outputData":
-                      inter.outputData = interactionEntry[fieldNameInteraction];
-                      break;
-                    case "writable":
-                      if(typeof interactionEntry[fieldNameInteraction] === "boolean") {
-                        inter.writable = interactionEntry[fieldNameInteraction];
-                      } else {
-                        console.error("writable field of interaction not of type boolean");
-                      }
-                      break;
-                    case "observable":
-                      if(typeof interactionEntry[fieldNameInteraction] === "boolean") {
-                        inter.observable = interactionEntry[fieldNameInteraction];
-                      } else {
-                        console.error("observable field of interaction not of type boolean");
-                      }
-                      break;
-                    case "link": /* link replaced by form */
-                    case "form":
-                      // InteractionLink
-                      if(Array.isArray(interactionEntry[fieldNameInteraction])) {
-                        for (let formInteractionEntry of interactionEntry[fieldNameInteraction]) {
-                          if(typeof formInteractionEntry === "object") {
-                            let interLink = new TD.InteractionLink();
-                            inter.link.push(interLink);
-                            for (var fieldNameForm in formInteractionEntry) {
-                              if (formInteractionEntry.hasOwnProperty(fieldNameForm)) {
-                                switch(fieldNameForm) {
-                                case "href":
-                                  if(typeof formInteractionEntry[fieldNameForm] === "string") {
-                                    interLink.href = formInteractionEntry[fieldNameForm];
-                                  } else {
-                                    console.error("interaction form/link href field entry not of type string");
+                        } else {
+                          console.error("@type field of interaction neither of type array nor string");
+                        }
+                        break;
+                      case "schema":
+                        inter.schema = interactionEntry[fieldNameInteraction];
+                        break;
+                      case "inputSchema":
+                        inter.inputSchema = interactionEntry[fieldNameInteraction];
+                        break;
+                      case "outputSchema":
+                        inter.outputSchema = interactionEntry[fieldNameInteraction];
+                        break;
+                      case "writable":
+                        if (typeof interactionEntry[fieldNameInteraction] === "boolean") {
+                          inter.writable = interactionEntry[fieldNameInteraction];
+                        } else {
+                          console.error("writable field of interaction not of type boolean");
+                        }
+                        break;
+                      case "observable":
+                        if (typeof interactionEntry[fieldNameInteraction] === "boolean") {
+                          inter.observable = interactionEntry[fieldNameInteraction];
+                        } else {
+                          console.error("observable field of interaction not of type boolean");
+                        }
+                        break;
+                      case "link": /* link replaced by form */
+                      case "form":
+                        // InteractionForm
+                        if (Array.isArray(interactionEntry[fieldNameInteraction])) {
+                          for (let formInteractionEntry of interactionEntry[fieldNameInteraction]) {
+                            if (typeof formInteractionEntry === "object") {
+                              let form = new TD.InteractionForm();
+                              inter.form.push(form);
+                              for (var fieldNameForm in formInteractionEntry) {
+                                if (formInteractionEntry.hasOwnProperty(fieldNameForm)) {
+                                  switch (fieldNameForm) {
+                                    case "href":
+                                      if (typeof formInteractionEntry[fieldNameForm] === "string") {
+                                        form.href = formInteractionEntry[fieldNameForm];
+                                      } else {
+                                        console.error("interaction form href field entry not of type string");
+                                      }
+                                      break;
+                                    case "mediaType":
+                                      if (typeof formInteractionEntry[fieldNameForm] === "string") {
+                                        form.mediaType = formInteractionEntry[fieldNameForm];
+                                      } else {
+                                        console.error("interaction form mediaType field entry not of type string");
+                                      }
+                                      break;
+                                    default:
+                                      break;
                                   }
-                                  break;
-                                case "mediaType":
-                                  if(typeof formInteractionEntry[fieldNameForm] === "string") {
-                                    interLink.mediaType = formInteractionEntry[fieldNameForm];
-                                  } else {
-                                    console.error("interaction form/link mediaType field entry not of type string");
-                                  }
-                                  break;
-                                default:
-                                  break;
                                 }
                               }
+                            } else {
+                              console.error("interaction form field entry not of type object");
                             }
-                          } else {
-                            console.error("interaction form/link field entry not of type object");
                           }
-                        } 
-                      } else {
-                        console.error("form/link field of interaction not of type array");
-                      }
-                      break;
-                    default:
-                      // TODO prefix/context parsing metadata
-                      let md  : WoT.SemanticMetadata = {
-                        type: {
-                          name: fieldNameInteraction,
-                          context: "TODO"
-                          // ,
-                          // prefix: "p" 
-                        },
-                        value: interactionEntry[fieldNameInteraction]
-                      };
-                      inter.metadata.push(md);
-                      break;
+                        } else {
+                          console.error("form field of interaction not of type array");
+                        }
+                        break;
+                      default: // metadata
+                        // TODO prefix/context parsing metadata
+                        let md: WoT.SemanticMetadata = {
+                          type: {
+                            name: fieldNameInteraction,
+                            context: "TODO"
+                            // ,
+                            // prefix: "p" 
+                          },
+                          value: interactionEntry[fieldNameInteraction]
+                        };
+                        inter.metadata.push(md);
+                        break;
                     }
                   }
                 }
@@ -199,10 +219,12 @@ function stringToThingDescription(tdJson: string) : ThingDescription {
             console.error("interaction field not of type array");
           }
           break;
-        default:
-          // metadata
+        case "link":
+          td.link = tdPlain[fieldNameRoot];
+          break;
+        default: // metadata
           // TODO prefix/context parsing metadata
-          let md  : WoT.SemanticMetadata = {
+          let md: WoT.SemanticMetadata = {
             type: {
               name: fieldNameRoot,
               context: "TODO"
@@ -213,90 +235,121 @@ function stringToThingDescription(tdJson: string) : ThingDescription {
           };
           td.metadata.push(md);
           break;
-        }
+      }
     }
   }
 
   return td;
 }
 
-function thingDescriptionToString(td: ThingDescription) : string {
-  let tdObj : any = {};
+function thingDescriptionToString(td: Thing): string {
+  let json: any = {};
+
   // @context
-  tdObj["@context"] = td.context;
-  // name
-  tdObj.name = td.name;
-  // base
-  tdObj.base = td.base;
+  json["@context"] = td.context;
+
   // @type + "Thing"
-  tdObj["@type"] = [TD.DEFAULT_THING_TYPE];
-  for(let semType of td.semanticType) {
-    tdObj["@type"].push(semType);
+  json["@type"] = [TD.DEFAULT_THING_TYPE];
+  for (let semType of td.semanticType) {
+    json["@type"].push((semType.prefix ? semType.prefix + ":" : "") + semType.name);
   }
+
+  // name and id
+  json.name = td.name;
+  json["@id"] = td.id;
+
+  // base
+  json.base = td.base;
+
+  // metadata
+  for (let md of td.metadata) {
+    // TODO align with parsing method
+    json[md.type.name] = md.value;
+  }
+
   // security
-  tdObj.security = td.security;
+  json.security = td.security;
+
   // interaction
-  tdObj.interaction = [];
-  for(let inter of td.interaction) {
-    let interObj : any = {};
-    tdObj.interaction.push(interObj);
+  json.interaction = [];
+  for (let inter of td.interaction) {
+    let jsonInter: any = {};
 
     // name
-    interObj.name = inter.name;
-    // @type
-    if(inter.pattern == TD.InteractionPattern.Property) {
-      interObj["@type"] = ["Property"];
-    } else if(inter.pattern == TD.InteractionPattern.Action) {
-      interObj["@type"] = ["Action"];
-    } else if(inter.pattern == TD.InteractionPattern.Event) {
-      interObj["@type"] = ["Event"];
-    }
-    for(let semType of inter.semanticTypes) {
-      if(semType != "Property" && semType != "Action" && semType != "Event") {
-        interObj["@type"].push(semType);
+    jsonInter.name = inter.name;
+
+    // @type and Interaction-specific metadata
+    if (inter.pattern == TD.InteractionPattern.Property) {
+      jsonInter["@type"] = ["Property"];
+      // schema
+      if (inter.schema) {
+        jsonInter.schema = inter.schema;
+      }
+      // writable
+      jsonInter.writable = inter.writable;
+      // observable
+      jsonInter.observable = inter.observable;
+
+    } else if (inter.pattern == TD.InteractionPattern.Action) {
+      jsonInter["@type"] = ["Action"];
+      // schema
+      if (inter.inputSchema) {
+        jsonInter.inputSchema = inter.inputSchema;
+      }
+      if (inter.outputSchema) {
+        jsonInter.outputSchema = inter.outputSchema;
+      }
+
+    } else if (inter.pattern == TD.InteractionPattern.Event) {
+      jsonInter["@type"] = ["Event"];
+      // schema
+      if (inter.schema) {
+        jsonInter.schema = inter.schema;
       }
     }
-    // outputData
-    if(inter.outputData) {
-      interObj.outputData = inter.outputData;
+
+    for (let semType of inter.semanticType) {
+      //if(semType != "Property" && semType != "Action" && semType != "Event") {
+      jsonInter["@type"].push(semType);
+      //}
     }
-    // writable
-    interObj.writable = inter.writable;
-    // observable
-    interObj.observable = inter.observable;
-    // form (link)
-    interObj.form = [];
-    for(let linkEntry of inter.link) {
-      let linkEntryObj : any = {};
-      if(linkEntry.href) {
-        linkEntryObj.href = linkEntry.href;
-      }
-      if(linkEntry.mediaType) {
-        linkEntryObj.mediaType = linkEntry.mediaType;
+
+    // form
+    jsonInter.form = [];
+    for (let form of inter.form) {
+      let jsonForm: any = {};
+      if (form.href) {
+        jsonForm.href = form.href;
       } else {
-        linkEntryObj.mediaType = "application/json";
+        console.error(`No href for '${td.name}' ${inter.pattern} '${inter.name}'`);
       }
-      interObj.form.push(linkEntryObj);
+      if (form.mediaType) {
+        jsonForm.mediaType = form.mediaType;
+      } else {
+        jsonForm.mediaType = "application/json";
+      }
+      jsonInter.form.push(jsonForm);
     }
 
     // metadata
-    for(let md of inter.metadata) {
+    for (let md of inter.metadata) {
       // TODO align with parsing method
-      interObj[md.type.name] = md.value;
+      jsonInter[md.type.name] = md.value;
     }
-  }
-  // metadata
-  for(let md of td.metadata) {
-    // TODO align with parsing method
-    tdObj[md.type.name] = md.value;
+
+    json.interaction.push(jsonInter);
   }
 
-  return JSON.stringify(tdObj);
+  if (td.link.length > 0) {
+    json.link = td.link;
+  }
+
+  return JSON.stringify(json);
 }
 
-export function parseTDString(json: string, normalize?: boolean): ThingDescription {
+export function parseTDString(json: string, normalize?: boolean): Thing {
   console.log(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
-  let td: ThingDescription = stringToThingDescription(json);
+  let td: Thing = stringToThingDescription(json);
 
   if (td.security) console.log(`parseTDString() found security metadata`);
 
@@ -306,21 +359,21 @@ export function parseTDString(json: string, normalize?: boolean): ThingDescripti
   for (let interaction of td.interaction) {
 
     // moving Interaction Pattern information to 'pattern' field
-    let indexProperty = interaction.semanticTypes.indexOf(TD.InteractionPattern.Property.toString());
-    let indexAction = interaction.semanticTypes.indexOf(TD.InteractionPattern.Action.toString());
-    let indexEvent = interaction.semanticTypes.indexOf(TD.InteractionPattern.Event.toString());
+    let indexProperty = interaction.semanticType.indexOf(TD.InteractionPattern.Property.toString());
+    let indexAction = interaction.semanticType.indexOf(TD.InteractionPattern.Action.toString());
+    let indexEvent = interaction.semanticType.indexOf(TD.InteractionPattern.Event.toString());
     if (indexProperty !== -1) {
       console.log(` * Property '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Property;
-      interaction.semanticTypes.splice(indexProperty, 1);
+      interaction.semanticType.splice(indexProperty, 1);
     } else if (indexAction !== -1) {
       console.log(` * Action '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Action;
-      interaction.semanticTypes.splice(indexAction, 1);
+      interaction.semanticType.splice(indexAction, 1);
     } else if (indexEvent !== -1) {
       console.log(` * Event '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Event;
-      interaction.semanticTypes.splice(indexEvent, 1);
+      interaction.semanticType.splice(indexEvent, 1);
     } else {
       console.error(`parseTDString() found no Interaction pattern`);
     }
@@ -328,20 +381,23 @@ export function parseTDString(json: string, normalize?: boolean): ThingDescripti
     if (normalize == null || normalize) {
       /* if a base uri is used normalize all relative hrefs in links */
       if (td.base !== undefined) {
-        console.log(`parseTDString() applying base '${td.base}' to href '${interaction.link[0].href}'`);
-
-        let href: string = interaction.link[0].href;
 
         let url = require('url');
 
-        /* url modul works only for http --> so replace any protocol to
-        http and after resolving replace orign protocol back*/
-        let n: number = td.base.indexOf(':');
-        let pr: string = td.base.substr(0, n + 1); // save origin protocol
-        let uriTemp: string = td.base.replace(pr, 'http:'); // replace protocol
-        uriTemp = url.resolve(uriTemp, href) // URL resolving
-        uriTemp = uriTemp.replace('http:', pr); // replace protocol back to origin
-        interaction.link[0].href = uriTemp;
+        for (let form of interaction.form) {
+          console.log(`parseTDString() applying base '${td.base}' to '${form.href}'`);
+
+          let href: string = form.href;
+
+          /* url modul works only for http --> so replace any protocol to
+             http and after resolving replace orign protocol back */
+          let n: number = td.base.indexOf(':');
+          let scheme: string = td.base.substr(0, n + 1); // save origin protocol
+          let uriTemp: string = td.base.replace(scheme, 'http:'); // replace protocol
+          uriTemp = url.resolve(uriTemp, href) // URL resolving
+          uriTemp = uriTemp.replace('http:', scheme); // replace protocol back to origin
+          form.href = uriTemp;
+        }
       }
     }
   }
@@ -349,14 +405,9 @@ export function parseTDString(json: string, normalize?: boolean): ThingDescripti
   return td;
 }
 
-export function serializeTD(td: ThingDescription): string {
+export function serializeTD(td: Thing): string {
 
-  // merging Interaction Pattern with semantic annotations
-  for (let interaction of td.interaction) {
-    interaction.semanticTypes.unshift(interaction.pattern.toString());
-  }
-
-  let json : string = thingDescriptionToString(td);
+  let json: string = thingDescriptionToString(td);
 
   console.log(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
 

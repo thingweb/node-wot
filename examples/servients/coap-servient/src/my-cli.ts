@@ -60,7 +60,7 @@ const runScripts = function(srv : CoapServient, scripts : Array<string>) : void 
             } else {
                 // limit printout to first line
                 console.info(`my-cli running script '${data.substr(0, data.indexOf("\n"))}...'`);
-                srv.runPriviledgedScript(data);
+                srv.runPrivilegedScript(data);
             }
         });
     });
