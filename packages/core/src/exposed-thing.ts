@@ -78,7 +78,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
     }
 
     public getInteractions(): Array<TD.Interaction> {
-        // returns a copy
+        // returns a copy -- FIXME: not a deep copy
         return this.interaction.slice(0);
     }
 

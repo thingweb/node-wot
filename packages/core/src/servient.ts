@@ -31,11 +31,12 @@ export default class Servient {
     private servers: Array<ProtocolServer> = [];
     private clientFactories: Map<string, ProtocolClientFactory> = new Map<string, ProtocolClientFactory>();
     private things: Map<string, ExposedThing> = new Map<string, ExposedThing>();
-    private listeners : Map<string,ResourceListener> = new Map<string,ResourceListener>();
-    private credentialStore : Map<string, any> = new Map<string, any>();
+    private listeners: Map<string, ResourceListener> = new Map<string, ResourceListener>();
+    private offeredMediaTypes: Array<string> = [ContentSerdes.DEFAUT]
+    private credentialStore: Map<string, any> = new Map<string, any>();
 
     /** runs the script in a new sandbox */
-    public runScript(code : string, filename = 'script') {
+    public runScript(code: string, filename = 'script') {
         let script = new vm.Script(code);
         let context = vm.createContext({
             'WoT': new WoTImpl(this),
@@ -44,45 +45,52 @@ export default class Servient {
             'setTimeout': setTimeout
         });
         let options = {
-            "filename" : filename,
-            "displayErrors" : true
+            "filename": filename,
+            "displayErrors": true
         };
         try {
             script.runInContext(context, options);
-        } catch(err) {
+        } catch (err) {
             console.error(`Servient caught error in '${filename}': ${err}`);
         }
     }
 
     /** runs the script in privileged context (dangerous) - means here: scripts can require */
-    public runPrivilegedScript(code : string, filename = 'script') {
+    public runPrivilegedScript(code: string, filename = 'script') {
         let script = new vm.Script(code);
         let context = vm.createContext({
             'WoT': new WoTImpl(this),
             'console': console,
             'setInterval': setInterval,
             'setTimeout': setTimeout,
-            'require' : require
+            'require': require
         });
         let options = {
-            "filename" : filename,
-            "displayErrors" : true
+            "filename": filename,
+            "displayErrors": true
         };
         try {
             script.runInContext(context, options);
-        } catch(err) {
+        } catch (err) {
             console.error(`Servient caught error in privileged '${filename}': ${err}`);
         }
     }
 
     /** add a new codec to support a mediatype */
-    public addMediaType(codec : ContentCodec) : void {
+    public addMediaType(codec: ContentCodec, offered: boolean = false): void {
         ContentSerdes.addCodec(codec);
+        if (offered) this.offeredMediaTypes.push(codec.getMediaType());
     }
 
     /** retun all media types that this servient supports */
-    public getSupportedMediaTypes() : Array<string> {
+    public getSupportedMediaTypes(): Array<string> {
         return ContentSerdes.getSupportedMediaTypes();
+    }
+
+    /** return only the media types that should be offered in the TD */
+    public getOffereddMediaTypes(): Array<string> {
+        // return a copy
+        return this.offeredMediaTypes.slice(0);
     }
 
     public chooseLink(links: Array<TD.InteractionForm>): string {
@@ -91,14 +99,14 @@ export default class Servient {
         return (links.length > 0) ? links[0].href : "nope://none";
     }
 
-    public addResourceListener(path : string, resourceListener : ResourceListener) {
+    public addResourceListener(path: string, resourceListener: ResourceListener) {
         // TODO debug-level
         console.log(`Servient adding ${resourceListener.constructor.name} '${path}'`);
-        this.listeners.set(path,resourceListener);
-        this.servers.forEach(srv => srv.addResource(path,resourceListener));
+        this.listeners.set(path, resourceListener);
+        this.servers.forEach(srv => srv.addResource(path, resourceListener));
     }
 
-    public removeResourceListener(path : string) {
+    public removeResourceListener(path: string) {
         // TODO debug-level
         console.log(`Servient removing ResourceListener '${path}'`);
         this.listeners.delete(path);
@@ -107,11 +115,12 @@ export default class Servient {
 
     public addServer(server: ProtocolServer): boolean {
         this.servers.push(server);
-        this.listeners.forEach((listener,path) => server.addResource(path,listener));
+        this.listeners.forEach((listener, path) => server.addResource(path, listener));
         return true;
     }
 
-    public getServers() : Array<ProtocolServer> {
+    public getServers(): Array<ProtocolServer> {
+        // return a copy -- FIXME: not a deep copy
         return this.servers.slice(0);
     }
 
@@ -119,7 +128,7 @@ export default class Servient {
         this.clientFactories.set(clientFactory.scheme, clientFactory);
     }
 
-    public hasClientFor(scheme: string) : boolean {
+    public hasClientFor(scheme: string): boolean {
         // TODO debug-level
         console.log(`Servient checking for '${scheme}' scheme in ${this.clientFactories.size} ClientFactories`);
         return this.clientFactories.has(scheme);
@@ -137,7 +146,7 @@ export default class Servient {
         }
     }
 
-    public getClientSchemes() : string[] {
+    public getClientSchemes(): string[] {
         return Array.from(this.clientFactories.keys());
     }
 
@@ -181,10 +190,10 @@ export default class Servient {
 
         return new Promise<WoT.WoTFactory>((resolve, reject) => {
             Promise.all(serverStatus)
-                .then( () => {
+                .then(() => {
                     resolve(new WoTImpl(this));
                 })
-                .catch( err => {
+                .catch(err => {
                     reject(err);
                 });
         });

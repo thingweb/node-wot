@@ -40,8 +40,8 @@ export function generateTD(thing: ExposedThing, servient: Servient): Thing {
   // TODO security
   genTD.security = { description: "node-wot development Servient, no security" };
   genTD.metadata = thing.metadata.slice(0);
-  genTD.interaction = thing.interaction.slice(0);
-  genTD.link = thing.link.slice(0);
+  genTD.interaction = thing.interaction.slice(0); // FIXME: not a deep copy
+  genTD.link = thing.link.slice(0); // FIXME: not a deep copy
 
   // fill in binding data
   console.debug(`generateTD() found ${genTD.interaction.length} Interaction${genTD.interaction.length == 1 ? "" : "s"}`);
@@ -53,7 +53,7 @@ export function generateTD(thing: ExposedThing, servient: Servient): Thing {
     // a form is generated for each address, supported protocol, and mediatype
     for (let address of Helpers.getAddresses()) {
       for (let server of servient.getServers()) {
-        for (let type of servient.getSupportedMediaTypes()) {
+        for (let type of servient.getOffereddMediaTypes()) {
 
           /* if server is online !==-1 assign the href information */
           if (server.getPort() !== -1) {
