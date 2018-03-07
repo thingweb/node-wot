@@ -29,8 +29,8 @@ import ContentSerdes from "../content-serdes";
  */
 export default class PropertyResourceListener extends BasicResourceListener implements ResourceListener {
 
+    public readonly name : string;
     private readonly thing : ExposedThing;
-    private readonly name : string;
 
     constructor(thing : ExposedThing, name: string) {
         super();
