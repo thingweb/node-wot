@@ -131,16 +131,16 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
             let state = this.interactionStates[actionName];
             if (state) {
                 // TODO debug-level
-                console.log(`ExposedThing '${this.name}' Action state of '${actionName}':`, state);
+                console.debug(`ExposedThing '${this.name}' Action state of '${actionName}':`, state);
 
                 if (state.handlers.length) {
                     let handler = state.handlers[0];
                     resolve(handler(parameter));
                 } else {
-                    reject(new Error("No handler for " + actionName + " on " + this.name));
+                    reject(new Error(`ExposedThing '${this.name}' has no action handler for '${actionName}'`));
                 }
             } else {
-                reject(new Error("No action " + actionName + " on " + this.name));
+                reject(new Error(`ExposedThing '${this.name}' has no Action '${actionName}'`));
             }
         });
     }
@@ -307,11 +307,11 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
     setActionHandler(action: WoT.ActionHandler, actionName?: string): WoT.ExposedThing {
         // TODO if actionName not set it is a default handler
         if (actionName) {
-            console.info("set action handler for " + actionName);
+            console.log(`ExposedThing '${this.name}' setting action Handler for '${actionName}'`);
             if (this.interactionStates[actionName]) {
                 this.interactionStates[actionName].handlers.push(action);
             } else {
-                throw Error("Unknown action " + actionName);
+                throw Error(`ExposedThing '${this.name}' cannot set action handler for unknown '${actionName}'`);
             }
         } else {
             throw Error("Not yet implemented to set any actionHandler");
@@ -333,11 +333,11 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
     setPropertyWriteHandler(writeHandler: WoT.PropertyWriteHandler, propertyName?: string): WoT.ExposedThing {
         // TODO if propertyName not set it is a default handler
         if (propertyName) {
-            console.info("set onWrite handler for " + propertyName);
+            console.log(`ExposedThing '${this.name}' setting write handler for '${propertyName}'`);
             if (this.interactionStates[propertyName]) {
                 this.interactionStates[propertyName].handlers.push(writeHandler);
             } else {
-                throw Error("Unknown property " + propertyName);
+                throw Error(`ExposedThing '${this.name}' cannot set write handler for unknown '${propertyName}'`);
             }
         } else {
             throw Error("Not yet implemented to set any propertyWriteHandler");

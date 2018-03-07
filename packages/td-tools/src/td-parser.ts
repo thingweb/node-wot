@@ -348,12 +348,12 @@ function thingDescriptionToString(td: Thing): string {
 }
 
 export function parseTDString(json: string, normalize?: boolean): Thing {
-  console.log(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
+  console.debug(`parseTDString() parsing\n\`\`\`\n${json}\n\`\`\``);
   let td: Thing = stringToThingDescription(json);
 
   if (td.security) console.log(`parseTDString() found security metadata`);
 
-  console.log(`parseTDString() found ${td.interaction.length} Interaction${td.interaction.length === 1 ? '' : 's'}`);
+  console.debug(`parseTDString() found ${td.interaction.length} Interaction${td.interaction.length === 1 ? '' : 's'}`);
   // for each interaction assign the Interaction type (Property, Action, Event)
   // and, if "base" is given, normalize each Interaction link
   for (let interaction of td.interaction) {
@@ -363,15 +363,15 @@ export function parseTDString(json: string, normalize?: boolean): Thing {
     let indexAction = interaction.semanticType.indexOf(TD.InteractionPattern.Action.toString());
     let indexEvent = interaction.semanticType.indexOf(TD.InteractionPattern.Event.toString());
     if (indexProperty !== -1) {
-      console.log(` * Property '${interaction.name}'`);
+      console.debug(` * Property '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Property;
       interaction.semanticType.splice(indexProperty, 1);
     } else if (indexAction !== -1) {
-      console.log(` * Action '${interaction.name}'`);
+      console.debug(` * Action '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Action;
       interaction.semanticType.splice(indexAction, 1);
     } else if (indexEvent !== -1) {
-      console.log(` * Event '${interaction.name}'`);
+      console.debug(` * Event '${interaction.name}'`);
       interaction.pattern = TD.InteractionPattern.Event;
       interaction.semanticType.splice(indexEvent, 1);
     } else {
@@ -385,7 +385,7 @@ export function parseTDString(json: string, normalize?: boolean): Thing {
         let url = require('url');
 
         for (let form of interaction.form) {
-          console.log(`parseTDString() applying base '${td.base}' to '${form.href}'`);
+          console.debug(`parseTDString() applying base '${td.base}' to '${form.href}'`);
 
           let href: string = form.href;
 
@@ -409,7 +409,7 @@ export function serializeTD(td: Thing): string {
 
   let json: string = thingDescriptionToString(td);
 
-  console.log(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
+  console.debug(`serializeTD() produced\n\`\`\`\n${json}\n\`\`\``);
 
   return json;
 }

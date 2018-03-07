@@ -44,7 +44,7 @@ export function generateTD(thing: ExposedThing, servient: Servient): Thing {
   genTD.link = thing.link.slice(0);
 
   // fill in binding data
-  console.log(`generateTD() found ${genTD.interaction.length} Interaction${genTD.interaction.length == 1 ? "" : "s"}`);
+  console.debug(`generateTD() found ${genTD.interaction.length} Interaction${genTD.interaction.length == 1 ? "" : "s"}`);
   for (let interaction of genTD.interaction) {
 
     // reset as slice() does not make a deep copy
