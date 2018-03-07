@@ -42,13 +42,19 @@ export default class PropertyResourceListener extends BasicResourceListener impl
         return this.thing
             .readProperty(this.name)
             .then((value) => {
-                let bytes = ContentSerdes.valueToBytes(value); // TODO where to get media type
+                let bytes = ContentSerdes.valueToBytes(value);
                 return Promise.resolve(bytes);
             });
     }
 
     public onWrite(input : Content) : Promise<void> {
-        let value = ContentSerdes.bytesToValue(input); // TODO where to get media type
+        let value;
+        // FIXME: Better way than creating Promise only for reject in catch?
+        try {
+            value = ContentSerdes.bytesToValue(input);
+        } catch(err) {
+            return new Promise<void>( (resolve, reject) => { reject(err); })
+        }
         return this.thing.writeProperty(this.name, value);
     }
 }

@@ -38,8 +38,14 @@ export default class ActionResourceListener extends BasicResourceListener implem
         this.name = name;
     }
 
-    public onInvoke(value: Content): Promise<Content> {
-        let param = ContentSerdes.bytesToValue(value);
+    public onInvoke(input: Content): Promise<Content> {
+        let param;
+        // FIXME: Better way than creating Promise only for reject in catch?
+        try {
+            param = ContentSerdes.bytesToValue(input);
+        } catch(err) {
+            return new Promise<Content>( (resolve, reject) => { reject(err); })
+        }
         return this.thing.invokeAction(this.name, param).then((output) => {
             // TODO do assertion with this.description and spit warning?
             if (output === undefined) {

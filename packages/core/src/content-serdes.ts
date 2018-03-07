@@ -109,7 +109,9 @@ class TextCodec implements ContentCodec {
 export class ContentSerdes {
   private static instance: ContentSerdes;
 
-  public static readonly DEFAULT: string = 'application/json';
+  public static readonly DEFAULT: string = "application/json";
+  // provide DEFAULT also on instance
+  public readonly DEFAUT: string = ContentSerdes.DEFAULT;
   private codecs: Map<string, ContentCodec> = new Map();
   private constructor() { }
 
@@ -117,7 +119,7 @@ export class ContentSerdes {
     if (!this.instance) {
       this.instance = new ContentSerdes();
       this.instance.addCodec(new JsonCodec());
-      //this.instance.addCodec(new TextCodec());
+      this.instance.addCodec(new TextCodec());
     }
     return this.instance;
   }
@@ -148,7 +150,6 @@ export class ContentSerdes {
     let isolMediaType: string = this.isolateMediaType(content.mediaType);
 
     if (!this.codecs.has(isolMediaType)) {
-      
       throw new Error(`Unsupported serialisation format: ${content.mediaType}`);
     }
     let codec = this.codecs.get(isolMediaType)
@@ -185,4 +186,5 @@ export class ContentSerdes {
   }
 }
 
+// export singleton instance
 export default ContentSerdes.get();
