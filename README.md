@@ -55,9 +55,9 @@ wot-servient
 
 # e.g., Windows CMD shell (Counter Example)
 # expose
-# node packages\node-wot-servient-examples\dist\command-line-tool\wot-servient.js  examples\scripts\counter.js
+# node packages\cli\dist\cli.js  examples\scripts\counter.js
 # consume
-# node packages\node-wot-servient-examples\dist\command-line-tool\wot-servient.js  examples\scripts\counterClient.js
+# node packages\cli\dist\cli.js  examples\scripts\counterClient.js
 ```
 
 * go to http://localhost:8080/counter and you'll find a thing description.
