@@ -2,48 +2,53 @@
 const NAME_PROPERTY_COUNT = "count";
 const NAME_ACTION_INCREMENT = "increment";
 const NAME_ACTION_DECREMENT = "decrement";
+const NAME_ACTION_RESET = "reset";
 
-let thing = WoT.expose({
-		name: "counter",
-		semanticTypes : undefined,
-		metadata : undefined
+let thing = WoT.produce({
+                name: "counter"
 });
-	
+
 console.log("Created thing " + thing.name);
 
 thing.addProperty({
-	name : NAME_PROPERTY_COUNT,
-	type: JSON.stringify({ type: "integer" }),
-	initValue : 5,
-	onWrite : function(newValue, oldValue) {
-		console.log(NAME_PROPERTY_COUNT + ": " + oldValue + " -> " + newValue);
-		var message = (oldValue < newValue)? "increased" : "decreased";
-		console.log("counter " + message + " to " + newValue);
-	}
+        name : NAME_PROPERTY_COUNT,
+        schema : '{ "type": "number"}',
+        value : 0,
+        observable : true,
+        writeable : true
 })
 
 thing.addAction({
-	name : NAME_ACTION_INCREMENT,
-	action : (newValue, oldValue) => {
-		console.log("incrementing counter");
-		return thing.readProperty(NAME_PROPERTY_COUNT).then(function(count){
-			let value = count + 1;
-			thing.writeProperty(NAME_PROPERTY_COUNT, value);
-			return value;
-		})
-	}
+        name : NAME_ACTION_INCREMENT
 })
 
 thing.addAction({
-	name : NAME_ACTION_DECREMENT,
-	action : (newValue, oldValue) => {
-		console.log("decrementing counter");
-		return thing.readProperty(NAME_PROPERTY_COUNT).then(function(count){
-			let value = count - 1;
-			thing.writeProperty(NAME_PROPERTY_COUNT, value);
-			return value;
-		})
-	}
+        name : NAME_ACTION_DECREMENT
 })
+
+thing.addAction({
+        name : NAME_ACTION_RESET
+})
+
+thing.setActionHandler( () => {
+  console.log("Resetting");
+  thing.writeProperty(NAME_PROPERTY_COUNT, 0);
+  }, NAME_ACTION_RESET );
+
+thing.setActionHandler( () => {
+  console.log("Incrementing");
+  return thing.readProperty(NAME_PROPERTY_COUNT).then(function(count){
+    let value = count + 1;
+    thing.writeProperty(NAME_PROPERTY_COUNT, value);
+    })
+  }, NAME_ACTION_INCREMENT );
+
+thing.setActionHandler( () => {
+  console.log("Decrementing");
+  return thing.readProperty(NAME_PROPERTY_COUNT).then(function(count){
+    let value = count - 1;
+    thing.writeProperty(NAME_PROPERTY_COUNT, value);
+    })
+  }, NAME_ACTION_DECREMENT );
 
 thing.start();
