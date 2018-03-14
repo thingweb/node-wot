@@ -95,13 +95,13 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
 
         if (cacheIdx !== -1) {
             // from cache
-            console.log(`ConsumedThing '${this.name}' chose cached client for '${schemes[cacheIdx]}'`);
+            console.debug(`ConsumedThing '${this.name}' chose cached client for '${schemes[cacheIdx]}'`);
             let client = this.clients.get(schemes[cacheIdx]);
             let form = forms[cacheIdx];
             return { client: client, form: form };
         } else {
             // new client
-            console.log(`ConsumedThing '${this.name}' has no client in cache (${cacheIdx})`);
+            console.debug(`ConsumedThing '${this.name}' has no client in cache (${cacheIdx})`);
             let srvIdx = schemes.findIndex(scheme => this.srv.hasClientFor(scheme));
             if (srvIdx === -1) throw new Error(`ConsumedThing '${this.name}' missing ClientFactory for '${schemes}'`);
             let client = this.srv.getClientFor(schemes[srvIdx]);
@@ -140,7 +140,7 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${form.href}`));
                 } else {
-                    console.info(`ConsumedThing '${this.name}' reading ${form.href}`);
+                    console.log(`ConsumedThing '${this.name}' reading ${form.href}`);
                     client.readResource(form.href).then((content) => {
                         if (!content.mediaType) content.mediaType = form.mediaType;
                         //console.log(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
@@ -168,7 +168,7 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${form.href}`));
                 } else {
-                    console.info(`ConsumedThing '${this.name}' writing ${form.href} with '${newValue}'`);
+                    console.log(`ConsumedThing '${this.name}' writing ${form.href} with '${newValue}'`);
                     let payload = ContentSerdes.valueToBytes(newValue, form.mediaType)
                     resolve(client.writeResource(form.href, payload));
 
@@ -203,7 +203,7 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
                 if (!client) {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${form.href}`));
                 } else {
-                    console.info(`ConsumedThing '${this.name}' invoking ${form.href} with '${parameter}'`);
+                    console.log(`ConsumedThing '${this.name}' invoking ${form.href} with '${parameter}'`);
 
                     let mediaType = form.mediaType;
                     let input = ContentSerdes.valueToBytes(parameter, form.mediaType.toString());
