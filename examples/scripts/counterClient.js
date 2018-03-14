@@ -1,12 +1,13 @@
 var targetUri = "http://localhost:8080/counter";
-var targetUriProperties = "http://localhost:8080/counter/properties";
-var counterUri = "http://localhost:8080/counter/properties/count";
+// var targetUriProperties = "http://localhost:8080/counter/properties";
+// var counterUri = "http://localhost:8080/counter/properties/count";
 
-WoT.fetchTD(targetUri)
+WoT.fetch(targetUri)
 .then(function(td) {
 	let thing = WoT.consume(td);
+	console.log("TD: " + td);
 	
-	// read property
+	// read property #1
 	thing.readProperty("count")
 	.then(function(count){
 		console.log("count value is ", count);
@@ -31,6 +32,13 @@ WoT.fetchTD(targetUri)
 	thing.invokeAction("decrement")
 	.then(function(count){
 		console.log("count value after decrement is ", count);
+    })
+	.catch(err => { throw err });
+	
+	// read property #2
+	thing.readProperty("count")
+	.then(function(count){
+		console.log("count value is ", count);
     })
 	.catch(err => { throw err });
 	
