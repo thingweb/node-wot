@@ -91,7 +91,7 @@ export default class DefaultServient extends Servient {
                         (msg: any) => {
                             return new Promise((resolve, reject) => {
                                 console.info(msg);
-                                resolve(`logged '${msg}`);
+                                resolve(`logged '${msg}'`);
                             });
                         }
                     )
