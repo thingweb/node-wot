@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@node-wot/core": "0.4.0-SNAPSHOT.2",
-    "coap": "0.20.0"
+    "coap": "0.21.0"
   },
   "scripts": {
     "build": "tsc",
