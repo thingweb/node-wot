@@ -206,7 +206,7 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
                     console.log(`ConsumedThing '${this.name}' invoking ${form.href} with '${parameter}'`);
 
                     let mediaType = form.mediaType;
-                    let input = ContentSerdes.valueToBytes(parameter, form.mediaType.toString());
+                    let input = ContentSerdes.valueToBytes(parameter, form.mediaType);
 
                     client.invokeResource(form.href, input).then((output) => {
                         if (!output.mediaType) output.mediaType = form.mediaType;
