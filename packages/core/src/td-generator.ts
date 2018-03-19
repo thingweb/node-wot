@@ -38,7 +38,7 @@ export function generateTD(thing: ExposedThing, servient: Servient): Thing {
   genTD.name = thing.name;
   genTD.id = thing.id;
   // TODO security
-  genTD.security = { description: "node-wot development Servient, no security" };
+  genTD.security = [{ description: "node-wot development Servient, no security" }];
   genTD.metadata = thing.metadata.slice(0);
   genTD.interaction = thing.interaction.slice(0); // FIXME: not a deep copy
   genTD.link = thing.link.slice(0); // FIXME: not a deep copy
