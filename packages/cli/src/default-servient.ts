@@ -87,27 +87,27 @@ export default class DefaultServient extends Servient {
                         outputSchema: `{ "type": "string" }`
                     })
                     .setActionHandler(
+                        "log",
                         (msg: any) => {
                             return new Promise((resolve, reject) => {
                                 console.info(msg);
                                 resolve(`logged '${msg}`);
                             });
-                        },
-                        "log"
+                        }
                     )
                     .addAction({
                         name: "shutdown",
                         outputSchema: `{ "type": "string" }`
                     })
                     .setActionHandler(
+                        "shutdown",
                         () => {
                             return new Promise((resolve, reject) => {
                                 console.info("shutting down by remote");
                                 this.shutdown();
                                 resolve();
                             });
-                        },
-                        "shutdown"
+                        }
                     );
 
                 if (this.config.servient.scriptAction) {
@@ -118,13 +118,13 @@ export default class DefaultServient extends Servient {
                             outputSchema: `{ "type": "string" }`
                         })
                         .setActionHandler(
+                            "runScript",
                             (script: string) => {
                                 return new Promise((resolve, reject) => {
                                     console.log("runnig script", script);
                                     resolve(this.runScript(script));
                                 });
-                            },
-                            "runScript"
+                            }
                         );
                 }
 

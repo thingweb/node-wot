@@ -126,26 +126,27 @@ function main() {
       unicorn
         .addProperty(thingPropertyInitBrightness)
         .setPropertyWriteHandler(
+          thingPropertyInitBrightness.name,
           (value : any) => {
             return new Promise((resolve, reject) => {
                 setBrightness(value);
                 resolve();
             });
-          },
-          thingPropertyInitBrightness.name
+          }
         )
         .addProperty(thingPropertyInitColor)
         .setPropertyWriteHandler(
+          thingPropertyInitColor.name,
           (value : any) => {
             return new Promise((resolve, reject) => {
                 setAll(value.r, value.g, value.b);
                 resolve();
             });
-          },
-          thingPropertyInitColor.name
+          }
         )
         .addAction(thingActionInitGradient)
         .setActionHandler(
+          thingActionInitGradient.name,
           (input: Array<Color>) => {
             return new Promise((resolve, reject) => {
               if (input.length < 2) {
@@ -165,22 +166,22 @@ function main() {
               gradientTimer = setInterval(gradientStep, 50);
               resolve(true);
             });
-          },
-          thingActionInitGradient.name
+          }
         )
         .addAction(thingActionInitForce)
         .setActionHandler(
+          thingActionInitForce.name,
           (input: Color) => {
             return new Promise((resolve, reject) => {
                 unicorn.invokeAction('cancel');
                 unicorn.writeProperty('color', input);
                 resolve();
             });
-          },
-          thingActionInitForce.name
+          }
         )
         .addAction(thingActionInitCancel)
         .setActionHandler(
+          thingActionInitCancel.name,
           () => {
             return new Promise((resolve, reject) => {
               if (gradientTimer) {
@@ -190,8 +191,7 @@ function main() {
               }
               resolve();
             });
-          },
-          thingActionInitCancel.name
+          }
         );
   });
 }

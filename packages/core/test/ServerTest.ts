@@ -200,14 +200,14 @@ class WoTServerTest {
             outputSchema: JSON.stringify({ "type": "number" })
         };
         thing.addAction(inita).setActionHandler(
+            inita.name,
             (parameters: any) => {
                 return new Promise((resolve, reject) => {
                     parameters.should.be.a("number");
                     parameters.should.equal(23);
                     resolve(42);
                 });
-            },
-            inita.name
+            }
         );
 
         return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
@@ -225,14 +225,14 @@ class WoTServerTest {
         };
 
         thing.addAction(inita).setActionHandler(
+            inita.name,
             (parameters: any) => {
                 return new Promise((resolve, reject) => {
                     parameters.should.be.a("number");
                     parameters.should.equal(23);
                     resolve(42);
                 });
-            },
-            inita.name
+            }
         );
 
         return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
@@ -255,14 +255,14 @@ class WoTServerTest {
         expect(thing).to.have.property("interaction");
 
         thing.setActionHandler(
+            "action1",
             (parameters: any) => {
                 return new Promise((resolve, reject) => {
                     parameters.should.be.a("number");
                     parameters.should.equal(23);
                     resolve(42);
                 });
-            },
-            "action1"
+            }
         );
 
         return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
@@ -279,14 +279,14 @@ class WoTServerTest {
             outputSchema: `{ "type": "number" }`
         };
         thing.addAction(inita).setActionHandler(
+            inita.name,
             (parameters: any) => {
                 return new Promise((resolve, reject) => {
                     parameters.should.be.a("number");
                     parameters.should.equal(23);
                     resolve(42);
                 });
-            },
-            inita.name
+            }
         );
 
         let listener = WoTServerTest.server.getListenerFor("/thing7/actions/action1");

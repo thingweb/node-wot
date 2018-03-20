@@ -304,24 +304,24 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
     }
 
     /** @inheritDoc */
-    setActionHandler(action: WoT.ActionHandler, actionName?: string): WoT.ExposedThing {
-        // TODO if actionName not set it is a default handler
-        if (actionName) {
+    setActionHandler(actionName: string, action: WoT.ActionHandler): WoT.ExposedThing {
+        // // TODO if actionName not set it is a default handler
+        // if (actionName) {
             console.log(`ExposedThing '${this.name}' setting action Handler for '${actionName}'`);
             if (this.interactionStates[actionName]) {
                 this.interactionStates[actionName].handlers.push(action);
             } else {
                 throw Error(`ExposedThing '${this.name}' cannot set action handler for unknown '${actionName}'`);
             }
-        } else {
-            throw Error("Not yet implemented to set any actionHandler");
-        }
+        // } else {
+        //     throw Error("Not yet implemented to set any actionHandler");
+        // }
 
         return this;
     }
 
     /** @inheritDoc */
-    setPropertyReadHandler(readHandler: WoT.PropertyReadHandler, propertyName?: string): WoT.ExposedThing {
+    setPropertyReadHandler(propertyName: string, readHandler: WoT.PropertyReadHandler): WoT.ExposedThing {
         // TODO if propertyName not set it is a default handler
         // TODO set readHandler
         throw Error("Not yet implemented to set propertyReadHandler");
@@ -330,18 +330,18 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
     }
 
     /** @inheritDoc */
-    setPropertyWriteHandler(writeHandler: WoT.PropertyWriteHandler, propertyName?: string): WoT.ExposedThing {
-        // TODO if propertyName not set it is a default handler
-        if (propertyName) {
+    setPropertyWriteHandler(propertyName: string, writeHandler: WoT.PropertyWriteHandler): WoT.ExposedThing {
+        // // TODO if propertyName not set it is a default handler
+        // if (propertyName) {
             console.log(`ExposedThing '${this.name}' setting write handler for '${propertyName}'`);
             if (this.interactionStates[propertyName]) {
                 this.interactionStates[propertyName].handlers.push(writeHandler);
             } else {
                 throw Error(`ExposedThing '${this.name}' cannot set write handler for unknown '${propertyName}'`);
             }
-        } else {
-            throw Error("Not yet implemented to set any propertyWriteHandler");
-        }
+        // } else {
+        //     throw Error("Not yet implemented to set any propertyWriteHandler");
+        // }
         return this;
     }
 
