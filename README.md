@@ -67,16 +67,15 @@ wot-servient
 
 ## How to use the library
 
-This library implements the WoT Scripting API (defined in the [First Public Working Draft](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/) document). 
+This library implements the WoT Scripting API
+
+* [First Public Working Draft](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/) in [release v0.3.0](https://github.com/thingweb/node-wot/releases/tag/v0.3.0)
+  * Note: There are known differences between node-wot and FPWD (see [Issue72](https://github.com/w3c/wot-scripting-api/issues/72)).
+* [Editors Draft](w3c.github.io/wot-scripting-api/) in [master](https://github.com/thingweb/node-wot)
 
 You can also see _examples/scripts_ to have a feeling of how to script a Thing.
 
-Not everything has been succesfully implemented yet.
-
-### Known differences between node-wot and FPWD
-
-* the FPWD defines four `RequestHandler`s in the [`ExposedThing`](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/#the-exposedthing-interface) for each request type (onRetrieveProperty, onUpdateProperty, onInvokeAction, and onObserve) while node-wot uses individual `RequestHandler`s per  request type and interaction (see [Issue72](https://github.com/w3c/wot-scripting-api/issues/72)).
-
+<!---
 ### Implemented/supported
 
 * [`WoT`](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/#the-wot-object) object
@@ -112,6 +111,7 @@ Not everything has been succesfully implemented yet.
   * `start` :heavy_multiplication_x:
   * `stop` :heavy_multiplication_x:
   * `emitEvent` :heavy_multiplication_x:
+-->
 
 #### Protocol Support
 
