@@ -20,6 +20,7 @@
 /**
  * File protocol binding
  */
+import { InteractionForm } from "@node-wot/td-tools";
 import { ProtocolClient, Content } from "@node-wot/core"
 import fs = require('fs');
 
@@ -27,27 +28,27 @@ export default class FileClient implements ProtocolClient {
 
   constructor() { }
 
-  public readResource(uri: string): Promise<Content> {
+  public readResource(form: InteractionForm): Promise<Content> {
     return new Promise<Content>((resolve, reject) => {
-      let filepath = uri.split('//');
+      let filepath = form.href.split('//');
       let resource = fs.readFileSync(filepath[1], 'utf8');
       resolve({ mediaType: 'application/json', body: new Buffer(resource) });
     });
   }
 
-  public writeResource(uri: string, content: Content): Promise<any> {
+  public writeResource(form: InteractionForm, content: Content): Promise<any> {
     return;
   }
 
-  public invokeResource(uri: String, payload: Object): Promise<any> {
+  public invokeResource(form: InteractionForm, payload: Object): Promise<any> {
     return new Promise<Object>((resolve, reject) => {
-      resolve('POST_' + uri + '_' + new Date())
+      resolve('POST_' + form.href + '_' + new Date())
     })
   }
 
-  public unlinkResource(uri: string): Promise<any> {
+  public unlinkResource(form: InteractionForm): Promise<any> {
     return new Promise<Object>((resolve, reject) => {
-      resolve('DELETE_' + uri + '_' + new Date())
+      resolve('DELETE_' + form.href + '_' + new Date())
     })
   }
 

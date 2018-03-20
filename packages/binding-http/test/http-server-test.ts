@@ -14,8 +14,8 @@ import { AssetResourceListener } from "@node-wot/core";
 
 import HttpServer from "../src/http-server";
 
-@suite("HTTP implementation")
-class HttpTest {
+@suite("HTTP server implementation")
+class HttpServerTest {
 
   @test async "should start and stop a server"() {
     let httpServer = new HttpServer(58080);
@@ -77,4 +77,3 @@ class HttpTest {
     });
   }
 }
-

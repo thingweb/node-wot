@@ -141,7 +141,7 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
                     reject(new Error(`ConsumedThing '${this.name}' did not get suitable client for ${form.href}`));
                 } else {
                     console.log(`ConsumedThing '${this.name}' reading ${form.href}`);
-                    client.readResource(form.href).then((content) => {
+                    client.readResource(form).then((content) => {
                         if (!content.mediaType) content.mediaType = form.mediaType;
                         //console.log(`ConsumedThing decoding '${content.mediaType}' in readProperty`);
                         let value = ContentSerdes.bytesToValue(content);
@@ -170,7 +170,7 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
                 } else {
                     console.log(`ConsumedThing '${this.name}' writing ${form.href} with '${newValue}'`);
                     let payload = ContentSerdes.valueToBytes(newValue, form.mediaType)
-                    resolve(client.writeResource(form.href, payload));
+                    resolve(client.writeResource(form, payload));
 
                     if (this.observablesPropertyChange.get(propertyName)) {
                         this.observablesPropertyChange.get(propertyName).next(newValue);
@@ -208,7 +208,7 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
                     let mediaType = form.mediaType;
                     let input = ContentSerdes.valueToBytes(parameter, form.mediaType);
 
-                    client.invokeResource(form.href, input).then((output) => {
+                    client.invokeResource(form, input).then((output) => {
                         if (!output.mediaType) output.mediaType = form.mediaType;
                         //console.log(`ConsumedThing decoding '${output.mediaType}' in invokeAction`);
                         let value = ContentSerdes.bytesToValue(output);

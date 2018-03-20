@@ -59,7 +59,7 @@ export class InteractionForm {
   public href: string;
 
   /** used mediaType of the interacion resources */
-  public mediaType: string;
+  public mediaType?: string;
 
   constructor(href?: string, mediaType?: string) {
     if (href) this.href = href;

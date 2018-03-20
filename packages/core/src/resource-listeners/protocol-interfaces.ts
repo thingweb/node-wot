@@ -17,19 +17,21 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
+ import { InteractionForm } from "@node-wot/td-tools";
+
 export interface ProtocolClient {
 
   /** this client is requested to perform a "read" on the resource with the given URI */
-  readResource(uri: string): Promise<Content>;
+  readResource(form: InteractionForm): Promise<Content>;
 
   /** this cliet is requested to perform a "write" on the resource with the given URI  */
-  writeResource(uri: string, content: Content): Promise<void>;
+  writeResource(form: InteractionForm, content: Content): Promise<void>;
 
   /** this client is requested to perform an "invoke" on the resource with the given URI */
-  invokeResource(uri: String, content: Content): Promise<Content>;
+  invokeResource(form: InteractionForm, content: Content): Promise<Content>;
 
   /** this client is requested to perform an "unlink" on the resource with the given URI */
-  unlinkResource(uri: string): Promise<void>;
+  unlinkResource(form: InteractionForm): Promise<void>;
 
   /** start the client (ensure it is ready to send requests) */
   start(): boolean;

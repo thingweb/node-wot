@@ -17,9 +17,34 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-export { default as CoapServer } from './coap-server'
-export { default as CoapClient } from './coap-client'
-export { default as CoapClientFactory } from './coap-client-factory'
-export * from './coap-server'
-export * from './coap-client'
-export * from './coap-client-factory'
+import { InteractionForm } from "@node-wot/td-tools";
+
+export { default as CoapServer } from "./coap-server";
+export { default as CoapClientFactory } from "./coap-client-factory";
+export { default as CoapClient } from "./coap-client";
+
+export * from "./coap-server";
+export * from "./coap-client-factory";
+export * from "./coap-client";
+
+export class CoapForm extends InteractionForm {
+    public "coap:methodCode"?: number; // 1=0.01=GET, 2=0.02=POST, 3=0.03=PUT, 4=0.04=DELETE
+    public "coap:options"?: Array<CoapOption> | CoapOption;
+}
+
+export class CoapOption {
+    public "coap:optionCode": number;
+    public "coap:optionValue": any;
+}
+
+export declare interface CoapRequestConfig {
+    agent?: Object,
+    hostname?: string,
+    port?: number,
+    pathname?: string,
+    query?: string,
+    observe?: boolean,
+    multicast?: boolean,
+    confirmable?: boolean,
+    method?: string
+}

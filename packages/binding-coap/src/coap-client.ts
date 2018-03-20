@@ -20,10 +20,12 @@
 /**
  * CoAP client based on coap by mcollina
  */
-import { ProtocolClient, Content } from "@node-wot/core"
 
-let coap = require('coap');
-import * as url from 'url';
+let coap = require("coap");
+import * as url from "url";
+
+import { ProtocolClient, Content } from "@node-wot/core";
+import { CoapForm, CoapRequestConfig, CoapOption } from "./coap";
 
 export default class CoapClient implements ProtocolClient {
 
@@ -31,97 +33,89 @@ export default class CoapClient implements ProtocolClient {
   private readonly agent: any = new coap.Agent();
 
   constructor() {
-    // Intentionally blank.
+    // Intentionally blank
   }
 
   public toString(): string {
-    return '[CoapClient]';
+    return "[CoapClient]";
   }
 
-  public readResource(uri: string): Promise<Content> {
+  public readResource(form: CoapForm): Promise<Content> {
     return new Promise<Content>((resolve, reject) => {
-      let options: CoapRequestConfig = this.uriToOptions(uri);
 
-      // TODO get explicit binding from TD
-      options.method = 'GET';
+      let req = this.generateRequest(form, "GET");
 
-      console.log(`CoapClient sending GET to ${uri}`);
-      let req = this.agent.request(options);
-      req.on('response', (res: any) => {
-        console.log(`CoapClient received ${res.code} from ${uri}`);
-        console.debug(`CoapClient received Content-Format: ${res.headers['Content-Format']}`);
+      console.log(`CoapClient sending ${req.statusCode} to ${form.href}`);
+
+      req.on("response", (res: any) => {
+        console.log(`CoapClient received ${res.code} from ${form.href}`);
+        console.debug(`CoapClient received Content-Format: ${res.headers["Content-Format"]}`);
         console.debug(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
-        let mediaType = res.headers['Content-Format'];
+        let mediaType = res.headers["Content-Format"];
         resolve({ mediaType: mediaType, body: res.payload });
       });
-      req.on('error', (err: Error) => reject(err));
+      req.on("error", (err: Error) => reject(err));
       req.end();
     });
   }
 
-  public writeResource(uri: string, content: Content): Promise<any> {
+  public writeResource(form: CoapForm, content: Content): Promise<any> {
     return new Promise<void>((resolve, reject) => {
 
-      let options: CoapRequestConfig = this.uriToOptions(uri);
+      let req = this.generateRequest(form, "PUT");
 
-      // TODO get explicit binding from TD
-      options.method = 'PUT';
+      // TODO set Content-FOrmat
 
-      console.log(`CoapClient sending PUT to ${uri}`);
-      let req = this.agent.request(options);
-      req.on('response', (res: any) => {
-        console.log(`CoapClient received ${res.code} from ${uri}`);
+      console.log(`CoapClient sending ${req.statusCode} to ${form.href}`);
+
+      req.on("response", (res: any) => {
+        console.log(`CoapClient received ${res.code} from ${form.href}`);
         console.debug(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
         resolve();
       });
-      req.on('error', (err: Error) => reject(err));
-      req.setOption('Content-Format', content.mediaType);
+      req.on("error", (err: Error) => reject(err));
+      req.setOption("Content-Format", content.mediaType);
       req.write(content.body);
       req.end();
     });
   }
 
-  public invokeResource(uri: string, content?: Content): Promise<Content> {
+  public invokeResource(form: CoapForm, content?: Content): Promise<Content> {
     return new Promise<Content>((resolve, reject) => {
 
-      let options: CoapRequestConfig = this.uriToOptions(uri);
+      let req = this.generateRequest(form, "POST");
 
-      // TODO get explicit binding from TD
-      options.method = 'POST';
+      console.log(`CoapClient sending ${req.statusCode} to ${form.href}`);
 
-      console.log(`CoapClient sending GET to ${uri}`);
-      let req = this.agent.request(options);
-      req.on('response', (res: any) => {
-        console.log(`CoapClient received ${res.code} from ${uri}`);
-        console.debug(`CoapClient received Content-Format: ${res.headers['Content-Format']}`);
+      req.on("response", (res: any) => {
+        console.log(`CoapClient received ${res.code} from ${form.href}`);
+        console.debug(`CoapClient received Content-Format: ${res.headers["Content-Format"]}`);
         console.debug(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
-        let mediaType = res.headers['Content-Format'];
+        let mediaType = res.headers["Content-Format"];
         resolve({ mediaType: mediaType, body: res.payload });
       });
-      req.on('error', (err: Error) => reject(err));
+      req.on("error", (err: Error) => reject(err));
       if (content) {
-        req.setOption('Content-Format', content.mediaType);
+        req.setOption("Content-Format", content.mediaType);
         req.write(content.body);
       }
       req.end();
     });
   }
 
-  public unlinkResource(uri: string): Promise<any> {
+  public unlinkResource(form: CoapForm): Promise<any> {
     return new Promise<void>((resolve, reject) => {
-      let options: CoapRequestConfig = this.uriToOptions(uri);
 
-      // TODO get explicit binding from TD
-      options.method = 'DELETE';
+      let req = this.generateRequest(form, "DELETE");
 
-      console.log(`CoapClient sending DELETE to ${uri}`);
-      let req = this.agent.request(options);
-      req.on('response', (res: any) => {
-        console.log(`CoapClient received ${res.code} from ${uri}`);
+      console.log(`CoapClient sending ${req.statusCode} to ${form.href}`);
+
+      req.on("response", (res: any) => {
+        console.log(`CoapClient received ${res.code} from ${form.href}`);
         console.debug(`CoapClient received headers: ${JSON.stringify(res.headers)}`);
         resolve();
       });
-      req.on('error', (err: Error) => reject(err));
+      req.on("error", (err: Error) => reject(err));
       req.end();
     });
   }
@@ -134,7 +128,7 @@ export default class CoapClient implements ProtocolClient {
     // FIXME coap does not provide proper API to close Agent
     return true;
   }
-  public setSecurity = (metadata : any) => true;
+  public setSecurity = (metadata: any) => true;
 
   private uriToOptions(uri: string): CoapRequestConfig {
     let requestUri = url.parse(uri);
@@ -154,17 +148,45 @@ export default class CoapClient implements ProtocolClient {
     return options;
   }
 
+  private generateRequest(form: CoapForm, dflt: string): any {
 
-}
+    let options: CoapRequestConfig = this.uriToOptions(form.href);
 
-declare interface CoapRequestConfig {
-  agent?: Object,
-  hostname?: string,
-  port?: number,
-  pathname?: string,
-  query?: string,
-  observe?: boolean,
-  multicast?: boolean,
-  confirmable?: boolean,
-  method?: string
+    options.method = dflt;
+
+    if (typeof form["coap:methodCode"] === "number") {
+      console.log("CoapClient got Form 'methodCode'", form["coap:methodCode"]);
+      switch (form["coap:methodCode"]) {
+        case 1: options.method = "GET"; break;
+        case 2: options.method = "POST"; break;
+        case 3: options.method = "PUT"; break;
+        case 4: options.method = "DELETE"; break;
+        default: console.warn("CoapClient got invalid 'methodCode', using default", options.method);
+      }
+    }
+
+    let req = this.agent.request(options);
+
+    console.log(`CoapClient applying from`);
+    console.dir(form);
+
+    // apply form data
+    if (typeof form.mediaType === "string") {
+      console.log("CoapClient got Form 'mediaType'", form.mediaType);
+      req.setOption("Accept", form.mediaType);
+    }
+    if (Array.isArray(form["coap:options"])) {
+      console.log("CoapClient got Form 'options'", form["coap:options"]);
+      let options = form["coap:options"] as Array<CoapOption>;
+      for (let option of options) {
+        req.setOption(option["coap:optionCode"], option["coap:optionValue"]);
+      }
+    } else if (typeof form["coap:options"] === "object") {
+      console.warn("CoapClient got Form SINGLE-ENTRY 'options'", form["coap:options"]);
+      let option = form["coap:options"] as CoapOption;
+      req.setHeader(option["coap:optionCode"], option["coap:optionValue"]);
+    }
+
+    return req;
+  }
 }

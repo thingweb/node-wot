@@ -22,7 +22,7 @@
  */
 
 import BasicResourceListener from "./basic-resource-listener";
-import {Content,ResourceListener} from "./protocol-interfaces"
+import { Content, ResourceListener } from "./protocol-interfaces";
 
 export default class AssetResourceListener extends BasicResourceListener implements ResourceListener {
 

@@ -13,8 +13,8 @@ import CoapServer from "../src/coap-server";
 
 const coap = require("coap");
 
-@suite("CoAP implementation")
-class CoapTest {
+@suite("CoAP server implementation")
+class CoapServerTest {
 
     @test async "should start and stop a server"() {
         let coapServer = new CoapServer(56831);

@@ -47,11 +47,11 @@ export default class WoTImpl implements WoT.WoTFactory {
 
 
     /** @inheritDoc */
-    fetch(url: USVString): Promise<WoT.ThingDescription> {
+    fetch(uri: USVString): Promise<WoT.ThingDescription> {
         return new Promise<WoT.ThingDescription>((resolve, reject) => {
-            let client = this.srv.getClientFor(Helpers.extractScheme(url));
-            console.info(`WoTImpl consuming TD from ${url} with ${client}`);
-            client.readResource(url)
+            let client = this.srv.getClientFor(Helpers.extractScheme(uri));
+            console.info(`WoTImpl consuming TD from ${uri} with ${client}`);
+            client.readResource(new TD.InteractionForm(uri, "application/ld+json"))
                 .then((content) => {
                     if (content.mediaType !== "application/ld+json") {
                         console.warn(`WoTImpl parsing TD from '${content.mediaType}' media type`);

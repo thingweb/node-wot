@@ -17,6 +17,8 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
+import { InteractionForm } from "@node-wot/td-tools";
+
 export { default as HttpServer } from './http-server'
 export { default as HttpClient } from './http-client'
 export { default as HttpClientFactory } from './http-client-factory'
@@ -25,3 +27,13 @@ export * from './http-server'
 export * from './http-client'
 export * from './http-client-factory'
 export * from './https-client-factory'
+
+export class HttpForm extends InteractionForm {
+    public "http:methodName"?: string; // "GET", "PUT", "POST", "DELETE"
+    public "http:headers"?: Array<HttpHeader> | HttpHeader;
+}
+
+export class HttpHeader {
+    public "http:fieldName": number;
+    public "http:fieldValue": any;
+}

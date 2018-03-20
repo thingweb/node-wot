@@ -26,6 +26,7 @@ import * as https from "https";
 import * as url from "url";
 
 import { ProtocolClient, Content } from "@node-wot/core";
+import { HttpForm, HttpHeader } from "./http";
 
 export default class HttpClient implements ProtocolClient {
 
@@ -71,15 +72,15 @@ export default class HttpClient implements ProtocolClient {
     return `[HttpClient]`;
   }
 
-  public readResource(uri: string): Promise<Content> {
+  public readResource(form: HttpForm): Promise<Content> {
     return new Promise<Content>((resolve, reject) => {
-      let options: http.RequestOptions = this.uriToOptions(uri);
+      
+      let req = this.generateRequest(form, "GET");
 
-      // TODO get explicit binding from TD
-      options.method = 'GET';
-      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
-      let req = this.provider.request(options, (res : https.IncomingMessage) => {
-        console.log(`HttpClient received ${res.statusCode} from ${options.path}`);
+      console.log(`HttpClient sending ${req.method} to ${form.href}`);
+        
+      req.on("response", (res: https.IncomingMessage) => {
+        console.log(`HttpClient received ${res.statusCode} from ${form.href}`);
         let mediaType: string = this.getContentType(res);
         //console.log(`HttpClient received Content-Type: ${mediaType}`);
         //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
@@ -89,25 +90,23 @@ export default class HttpClient implements ProtocolClient {
           resolve({ mediaType: mediaType, body: Buffer.concat(body) });
         });
       });
-      req.on('error', (err : any) => reject(err));
+      req.on("error", (err : any) => reject(err));
       req.end();
     });
   }
 
-  public writeResource(uri: string, content: Content): Promise<any> {
+  public writeResource(form: HttpForm, content: Content): Promise<any> {
     return new Promise<void>((resolve, reject) => {
 
-      let options: http.RequestOptions = this.uriToOptions(uri);
+      let req = this.generateRequest(form, "PUT");
 
-      // TODO get explicit binding from TD
-      options.method = 'PUT';
-      // do not reset headers array
-      options.headers["Content-Type"] = content.mediaType;
-      options.headers["Content-Length"] = content.body.byteLength;
+      req.setHeader("Content-Type", content.mediaType);
+      req.setHeader("Content-Length", content.body.byteLength);
 
-      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
-      let req = this.provider.request(options, (res : https.IncomingMessage) => {
-        console.log(`HttpClient received ${res.statusCode} from ${uri}`);
+      console.log(`HttpClient sending ${req.method} with '${req.getHeader("Content-Type")}' to ${form.href}`);
+        
+      req.on("response", (res : https.IncomingMessage) => {
+        console.log(`HttpClient received ${res.statusCode} from ${form.href}`);
         //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         // Although 204 without payload is expected, data must be read 
         // to complete request (http blocks socket otherwise)
@@ -124,21 +123,20 @@ export default class HttpClient implements ProtocolClient {
     });
   }
 
-  public invokeResource(uri: string, content?: Content): Promise<Content> {
+  public invokeResource(form: HttpForm, content?: Content): Promise<Content> {
     return new Promise<Content>((resolve, reject) => {
 
-      let options: http.RequestOptions = this.uriToOptions(uri);
+      let req = this.generateRequest(form, "POST");
 
-      // TODO get explicit binding from TD
-      options.method = 'POST';
       if (content) {
-        // do not reset headers array
-        options.headers["Content-Type"] = content.mediaType;
-        options.headers["Content-Length"] = content.body.byteLength;
+        req.setHeader("Content-Type", content.mediaType);
+        req.setHeader("Content-Length", content.body.byteLength);
       }
-      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
-      let req = this.provider.request(options, (res : https.IncomingMessage) => {
-        console.log(`HttpClient received ${res.statusCode} from ${uri}`);
+
+      console.log(`HttpClient sending ${req.method} with '${req.getHeader("Content-Type")}' to ${form.href}`);
+        
+      req.on("response", (res : https.IncomingMessage) => {
+        console.log(`HttpClient received ${res.statusCode} from ${form.href}`);
         let mediaType: string = this.getContentType(res);        
         //console.log(`HttpClient received Content-Type: ${mediaType}`);
         //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
@@ -148,7 +146,7 @@ export default class HttpClient implements ProtocolClient {
           resolve({ mediaType: mediaType, body: Buffer.concat(body) });
         });
       });
-      req.on('error', (err : any) => reject(err));
+      req.on("error", (err : any) => reject(err));
       if (content) {
         req.write(content.body);
       }
@@ -156,16 +154,19 @@ export default class HttpClient implements ProtocolClient {
     });
   }
 
-  public unlinkResource(uri: string): Promise<any> {
+  public unlinkResource(form: HttpForm): Promise<any> {
     return new Promise<void>((resolve, reject) => {
-      let options: http.RequestOptions = this.uriToOptions(uri);
+      let options: http.RequestOptions = this.uriToOptions(form.href);
 
-      // TODO get explicit binding from TD
       options.method = 'DELETE';
 
-      console.log(`HttpClient sending ${options.method} ${options.path} to ${options.hostname}:${options.port}`);
-      let req = this.provider.request(options, (res : https.IncomingMessage) => {
-        console.log(`HttpClient received ${res.statusCode} from ${uri}`);
+      let req = this.provider.request(options);
+      this.generateRequest(form, req);
+
+      console.log(`HttpClient sending ${req.method} to ${form.href}`);
+        
+      req.on("response", (res : https.IncomingMessage) => {
+        console.log(`HttpClient received ${res.statusCode} from ${form.href}`);
         //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         // Although 204 without payload is expected, data must be read
         //  to complete request (http blocks socket otherwise)
@@ -250,5 +251,46 @@ export default class HttpClient implements ProtocolClient {
 
     return options;
   }
+  private generateRequest(form: HttpForm, dflt: string): any {
 
+    let options: http.RequestOptions = this.uriToOptions(form.href);
+
+    options.method = dflt;
+
+    if (typeof form["http:methodName"] === "string") {
+      console.log("HttpClient got Form 'methodName'", form["http:methodName"]);
+      switch (form["http:methodName"]) {
+        case "GET": options.method = "GET"; break;
+        case "POST": options.method = "POST"; break;
+        case "PUT": options.method = "PUT"; break;
+        case "DELETE": options.method = "DELETE"; break;
+        case "PATCH": options.method = "PATCH"; break;
+        default: console.warn("HttpClient got invalid 'methodName', using default", options.method);
+      }
+    }
+      
+    let req = this.provider.request(options);
+
+    console.log(`HttpClient applying from`);
+    console.dir(form);
+
+    // apply form data
+    if (typeof form.mediaType === "string") {
+      console.log("HttpClient got Form 'mediaType'", form.mediaType);
+      req.setHeader("Accept", form.mediaType);
+    }
+    if (Array.isArray(form["http:headers"])) {
+      console.log("HttpClient got Form 'headers'", form["http:headers"]);
+      let headers = form["http:headers"] as Array<HttpHeader>;
+      for (let option of headers) {
+        req.setHeader(option["http:fieldName"], option["http:fieldValue"]);
+      }
+    } else if (typeof form["http:headers"] === "object") {
+      console.warn("HttpClient got Form SINGLE-ENTRY 'headers'", form["http:headers"]);
+      let option = form["http:headers"] as HttpHeader;
+      req.setHeader(option["http:fieldName"], option["http:fieldValue"]);
+    }
+
+    return req;
+  }
 }
