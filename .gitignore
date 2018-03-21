@@ -50,9 +50,11 @@ src/**/*.js
 packages/*
 !packages/td-tools
 !packages/core
+!packages/iotcs-csl-js
 !packages/binding-file
 !packages/binding-http
 !packages/binding-coap
+!packages/binding-oracle
 !packages/cli
 !packages/demo-servients
 !packages/integration-tests
