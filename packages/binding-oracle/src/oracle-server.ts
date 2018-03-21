@@ -25,7 +25,7 @@ import * as url from "url";
 import { ContentSerdes, Content} from "@node-wot/core";
 import { ProtocolServer, ResourceListener, PropertyResourceListener, ActionResourceListener } from "@node-wot/core"
 
-const dcl = require("iotcs-cls-js");
+const dcl = require("iotcs-csl-js");
 
 export default class OracleServer implements ProtocolServer {
 

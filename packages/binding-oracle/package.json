@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@node-wot/core": "0.4.0-SNAPSHOT.3",
-    "iotcs-cls-js": "18.1.5"
+    "iotcs-csl-js": "18.1.5"
   },
   "scripts": {
     "build": "tsc",
