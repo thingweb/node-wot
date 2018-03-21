@@ -29,41 +29,40 @@ import { expect, should } from "chai";
 // should must be called to augment all variables
 should();
 
+import { InteractionForm } from "@node-wot/td-tools";
 import Servient from "../src/servient";
-import {ProtocolClient,ProtocolClientFactory,Content} from "../src/resource-listeners/protocol-interfaces"
-
-// import fs = require('fs');
+import { ProtocolClient, ProtocolClientFactory, Content } from "../src/resource-listeners/protocol-interfaces"
 
 class TDDataClient implements ProtocolClient {
 
-        public readResource(uri : string) : Promise<Content> {
-            // Note: this is not a "real" DataClient! Instead it just reports the same TD in any case
-            let c : Content= { mediaType: "application/json", body :  new Buffer(JSON.stringify(myThingDesc)) };
-            return Promise.resolve(c);
-        }
-    
-        public writeResource(uri : string, content: Content) : Promise<void> {
-            return Promise.reject("writeResource not implemented");
-        }
-    
-        public invokeResource(uri : String, content: Content) : Promise<Content> {
-            return Promise.reject("invokeResource not implemented");
-        }
-    
-        public unlinkResource(uri : string) : Promise<void> {
-            return Promise.reject("unlinkResource not implemented");
-        }
-    
-        public start(): boolean {
-            return true;
-        }
-    
-        public stop(): boolean {
-            return true;
-        }
-
-        public setSecurity = (metadata : any) => false;
+    public readResource(uri: InteractionForm): Promise<Content> {
+        // Note: this is not a "real" DataClient! Instead it just reports the same TD in any case
+        let c: Content = { mediaType: "application/json", body: new Buffer(JSON.stringify(myThingDesc)) };
+        return Promise.resolve(c);
     }
+
+    public writeResource(uri: InteractionForm, content: Content): Promise<void> {
+        return Promise.reject("writeResource not implemented");
+    }
+
+    public invokeResource(uri: InteractionForm, content: Content): Promise<Content> {
+        return Promise.reject("invokeResource not implemented");
+    }
+
+    public unlinkResource(uri: InteractionForm): Promise<void> {
+        return Promise.reject("unlinkResource not implemented");
+    }
+
+    public start(): boolean {
+        return true;
+    }
+
+    public stop(): boolean {
+        return true;
+    }
+
+    public setSecurity = (metadata: any) => false;
+}
 
 class TDDataClientFactory implements ProtocolClientFactory {
 
@@ -71,15 +70,15 @@ class TDDataClientFactory implements ProtocolClientFactory {
 
     client = new TDDataClient();
 
-    public getClient() : ProtocolClient {
+    public getClient(): ProtocolClient {
         return this.client;
     }
 
-    public init() : boolean {
+    public init(): boolean {
         return true;
     }
 
-    public destroy() : boolean {
+    public destroy(): boolean {
         return true;
     }
 }
@@ -93,19 +92,19 @@ class TrapClient implements ProtocolClient {
         this.trap = callback
     }
 
-    public readResource(uri : string) : Promise<Content> {
+    public readResource(uri: InteractionForm): Promise<Content> {
         return Promise.resolve(this.trap(uri));
     }
 
-    public writeResource(uri : string, content: Content) : Promise<void> {
+    public writeResource(uri: InteractionForm, content: Content): Promise<void> {
         return Promise.resolve(this.trap(uri, content));
     }
 
-    public invokeResource(uri : String, content: Content) : Promise<Content> {
+    public invokeResource(uri: InteractionForm, content: Content): Promise<Content> {
         return Promise.resolve(this.trap(uri, content));
     }
 
-    public unlinkResource(uri : string) : Promise<void> {
+    public unlinkResource(uri: InteractionForm): Promise<void> {
         return Promise.resolve(this.trap(uri));
     }
 
@@ -116,8 +115,8 @@ class TrapClient implements ProtocolClient {
     public stop(): boolean {
         return true;
     }
-    
-    public setSecurity = (metadata : any) => false;
+
+    public setSecurity = (metadata: any) => false;
 }
 
 class TrapClientFactory implements ProtocolClientFactory {
@@ -125,19 +124,19 @@ class TrapClientFactory implements ProtocolClientFactory {
     public scheme: string = "test";
     client = new TrapClient();
 
-    public setTrap(callback : Function) {
+    public setTrap(callback: Function) {
         this.client.setTrap(callback);
     }
 
-    public getClient() : ProtocolClient {
+    public getClient(): ProtocolClient {
         return this.client;
     }
 
-    public init() : boolean {
+    public init(): boolean {
         return true;
     }
 
-    public destroy() : boolean {
+    public destroy(): boolean {
         return true;
     }
 }
@@ -179,36 +178,30 @@ class WoTClientTest {
     // static tdFileUri : string = "td.json";
 
     static before() {
-        this.servient = new Servient()
+        this.servient = new Servient();
         this.clientFactory = new TrapClientFactory();
         this.servient.addClientFactory(this.clientFactory);
         this.servient.addClientFactory(new TDDataClientFactory());
-        this.servient.start().then( WoTfactory => { this.WoT = WoTfactory; } );
+        this.servient.start().then(WoTfactory => { this.WoT = WoTfactory; });
 
-        console.log("starting test suite")
+        console.log("starting test suite");
     }
 
     static after() {
-        console.log("finishing test suite")
-        this.servient.shutdown()
-
-        // // delete temporary file 
-        // fs.unlink(this.tdFileUri, (err) => {
-        //     if (err) throw err;
-        //     console.log('Successfully deleted TD file');
-        // });
+        console.log("finishing test suite");
+        this.servient.shutdown();
     }
 
-    getThingName(ct : WoT.ConsumedThing ) : string {
-        let td : WoT.ThingDescription = ct.getThingDescription();
+    getThingName(ct: WoT.ConsumedThing): string {
+        let td: WoT.ThingDescription = ct.getThingDescription();
         return JSON.parse(td).name;
     }
 
-    @test "read a value"(done : Function) {
+    @test "read a value"(done: Function) {
         // let the client return 42
         WoTClientTest.clientFactory.setTrap(
             () => {
-                return { mediaType : "application/json", body: new Buffer("42") };
+                return { mediaType: "application/json", body: new Buffer("42") };
             }
         );
 
@@ -228,14 +221,14 @@ class WoTClientTest {
             .catch(err => { throw err })
     }
 
-    @test "observe a value"(done : Function) {
+    @test "observe a value"(done: Function) {
         // let the client return 42
         WoTClientTest.clientFactory.setTrap(
             () => {
-                return { mediaType : "application/json", body: new Buffer("42") };
+                return { mediaType: "application/json", body: new Buffer("42") };
             }
         );
-        
+
         WoTClientTest.WoT.fetch("data://" + "tdFoo")
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
@@ -246,7 +239,7 @@ class WoTClientTest {
                 let subscription = thing.onPropertyChange("aProperty").subscribe(
                     x => {
                         console.log('onNext: %s', x);
-                        if(x == 123) {
+                        if (x == 123) {
                             done();
                         }
                     },
@@ -269,13 +262,13 @@ class WoTClientTest {
                 expect(value).not.to.be.null;
                 // done(); 
             })
-            .catch(err => { throw err })
+            .catch(err => { throw err });
     }
 
-    @test "write a value"(done : Function) {
+    @test "write a value"(done: Function) {
         //verify the value transmitted
         WoTClientTest.clientFactory.setTrap(
-            (uri : string, content : Content) => {
+            (uri: string, content: Content) => {
                 expect(content.body.toString()).to.equal("23");
             }
         )
@@ -289,13 +282,13 @@ class WoTClientTest {
                 return thing.writeProperty("aProperty", 23);
             })
             .then(() => done())
-            .catch(err => { throw err })
+            .catch(err => { done(err) });
     }
 
-    @test "call an action"(done : Function) {
+    @test "call an action"(done: Function) {
         //an action
         WoTClientTest.clientFactory.setTrap(
-            (uri : string, content : Content) => {
+            (uri: string, content: Content) => {
                 expect(content.body.toString()).to.equal("23");
                 return { mediaType: "application/json", body: new Buffer("42") };
             }
@@ -314,6 +307,6 @@ class WoTClientTest {
                 expect(result).to.equal(42);
                 done();
             })
-            .catch(err => { done(err) })
+            .catch(err => { done(err) });
     }
 }
