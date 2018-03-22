@@ -44,7 +44,8 @@ let tdSample1 = `{
         "href" : "coap://mytemp.example.com:5683/temp",
         "mediaType": "application/json"
       }],
-      "writable": false
+      "writable": false,
+      "observable": false
     }
   ]
 }`;
@@ -62,7 +63,8 @@ let tdSample2 = `{
         "href" : "coap://mytemp.example.com:5683/temp",
         "mediaType": "application/json"
       }],
-      "writable": true
+      "writable": true,
+      "observable": true
     }
   ]
 }`;
@@ -78,6 +80,7 @@ let tdSample3 = `{
       "name": "temperature",
       "schema":  { "type": "number" },
       "writable": true,
+      "observable": false,
       "form": [{
         "href" : "temp",
         "mediaType": "application/json"
@@ -88,6 +91,7 @@ let tdSample3 = `{
       "name": "temperature2",
       "schema": { "type": "number" },
       "writable": false,
+      "observable": false,
       "form": [{
         "href" : "./temp",
         "mediaType": "application/json"
@@ -98,6 +102,7 @@ let tdSample3 = `{
       "name": "humidity",
       "schema": { "type": "number" },
       "writable": false,
+      "observable": false,
       "form": [{
         "href" : "/humid",
         "mediaType": "application/json"

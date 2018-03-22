@@ -286,10 +286,17 @@ function thingDescriptionToString(td: Thing): string {
         jsonInter.schema = inter.schema;
       }
       // writable
-      jsonInter.writable = inter.writable;
+      if(inter.writable == true) {
+        jsonInter.writable = inter.writable;
+      } else {
+        jsonInter.writable = false;
+      }
       // observable
-      jsonInter.observable = inter.observable;
-
+      if(inter.observable == true) {
+        jsonInter.observable = inter.observable;
+      } else {
+        jsonInter.observable = false;
+      }
     } else if (inter.pattern == TD.InteractionPattern.Action) {
       jsonInter["@type"] = ["Action"];
       // schema
