@@ -25,8 +25,8 @@ class ProtocolsTest {
 
         let asset = new AssetResourceListener("test");
 
-        httpServer.addResource("/", asset );
-        coapServer.addResource("/", asset );
+        httpServer.addResource("/", asset);
+        coapServer.addResource("/", asset);
         
         httpServer.start();
         coapServer.start();

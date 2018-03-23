@@ -233,7 +233,7 @@ export default class OracleServer implements ProtocolServer {
             if (this.resources[resName] instanceof PropertyResourceListener) {
               let content = await this.resources[resName].onRead();
               // FIXME: csl is not a low-level server and does not expect bytes
-              attributes[resName] = ContentSerdes.get().bytesToValue(content);
+              attributes[resName] = ContentSerdes.get().contentToValue(content);
             }
           }
 

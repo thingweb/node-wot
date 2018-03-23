@@ -16,25 +16,29 @@
  * publicity pertaining to the work without specific, written prior permission. Title
  * to copyright in this work will at all times remain with copyright holders.
  */
-import {ResourceListener,Content} from "./protocol-interfaces"
+import { ResourceListener, Content } from "./protocol-interfaces"
 
 export default class BasicResourceListener implements ResourceListener {
 
     constructor() { }
 
-    public onRead() : Promise<Content> {
+    public getType(): string {
+        return "Basic";
+    }
+
+    public onRead(): Promise<Content> {
         return Promise.reject(new Error("Method Not Allowed"));
     }
 
-    public onWrite(content : Content) : Promise<void> {
+    public onWrite(content: Content): Promise<void> {
         return Promise.reject(new Error("Method Not Allowed"));
     }
 
-    public onInvoke(content : Content) : Promise<Content> {
+    public onInvoke(content: Content): Promise<Content> {
         return Promise.reject(new Error("Method Not Allowed"));
     }
 
-    public onUnlink() : Promise<void> {
+    public onUnlink(): Promise<void> {
         return Promise.reject(new Error("Method Not Allowed"));
     }
 }

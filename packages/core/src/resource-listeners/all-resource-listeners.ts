@@ -17,7 +17,9 @@
  * to copyright in this work will at all times remain with copyright holders.
  */
 
-export { default as ActionResourceListener } from "./action-resource-listener";
 export { default as PropertyResourceListener } from "./property-resource-listener";
+export { default as ActionResourceListener } from "./action-resource-listener";
+export { default as EventResourceListener } from "./event-resource-listener";
 export { default as TDResourceListener } from "./td-resource-listener"
 export { default as AssetResourceListener } from "./asset-resource-listener";
+export { default as BasicResourceListener } from "./basic-resource-listener";

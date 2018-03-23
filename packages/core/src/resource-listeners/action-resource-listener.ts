@@ -38,11 +38,15 @@ export default class ActionResourceListener extends BasicResourceListener implem
         this.name = name;
     }
 
+    public getType(): string {
+        return "Action";
+    }
+
     public onInvoke(input: Content): Promise<Content> {
         let param;
         // FIXME: Better way than creating Promise only for reject in catch?
         try {
-            param = ContentSerdes.bytesToValue(input);
+            param = ContentSerdes.contentToValue(input);
         } catch(err) {
             return new Promise<Content>( (resolve, reject) => { reject(err); })
         }
@@ -53,7 +57,7 @@ export default class ActionResourceListener extends BasicResourceListener implem
                 return { mediaType: null, body: null };
                 // TODO set status code (TODO) to 2.04
             } else {
-                return ContentSerdes.valueToBytes(output);
+                return ContentSerdes.valueToContent(output);
             }
         });
     }

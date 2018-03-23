@@ -28,7 +28,7 @@ export default Servient;
 export { Servient };
 
 // ResourceListener & Content
-export {ResourceListener,Content} from "./resource-listeners/protocol-interfaces";
+export { ResourceListener, Content } from "./resource-listeners/protocol-interfaces";
 
 // ResourceListener Implementations
 export * from "./resource-listeners/all-resource-listeners";

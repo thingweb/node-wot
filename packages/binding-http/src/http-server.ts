@@ -24,7 +24,8 @@
 import * as http from "http";
 import * as url from "url";
 
-import { ProtocolServer, ResourceListener, ContentSerdes } from "@node-wot/core";
+import TDResourceListener, { ProtocolServer, ResourceListener, ContentSerdes } from "@node-wot/core";
+import { PropertyResourceListener, ActionResourceListener, EventResourceListener } from "@node-wot/core";
 
 export default class HttpServer implements ProtocolServer {
 
@@ -101,7 +102,6 @@ export default class HttpServer implements ProtocolServer {
   }
 
   private handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
-    console.log(`HttpServer on port ${this.getPort()} received ${req.method} ${req.url} from ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
 
     res.on('finish', () => {
       console.log(`HttpServer on port ${this.getPort()} replied with ${res.statusCode} to ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
@@ -122,27 +122,32 @@ export default class HttpServer implements ProtocolServer {
     let requestHandler = this.resources[requestUri.pathname];
     let contentTypeHeader: string | string[] = req.headers["content-type"];
     let mediaType: string = Array.isArray(contentTypeHeader) ? contentTypeHeader[0] : contentTypeHeader;
+
+    console.log(`HttpServer on port ${this.getPort()} received ${req.method} ${requestUri.pathname} from ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
+    
     // FIXME must be rejected with 415 Unsupported Media Type, guessing not allowed -> debug/testing flag
-    if (!mediaType || mediaType.length == 0) {
-      console.warn(`HttpServer on port ${this.getPort()} got no Media Type from '${requestUri.pathname}'`);
+    if ((req.method === "PUT" || req.method === "POST") && (!mediaType || mediaType.length == 0)) {
+      console.warn(`HttpServer on port ${this.getPort()} got no Media Type for ${req.method}`);
       mediaType = ContentSerdes.DEFAULT;
     }
 
     if (requestHandler === undefined) {
       res.writeHead(404);
       res.end("Not Found");
+
     } else if ( (req.method === "PUT" || req.method === "POST")
               && ContentSerdes.get().getSupportedMediaTypes().indexOf(ContentSerdes.get().isolateMediaType(mediaType))<0) {
       res.writeHead(415);
       res.end("Unsupported Media Type");
+
     } else {
-      if (req.method === "GET") {
+      if (req.method === "GET" && (requestHandler.getType()==="Property" || requestHandler.getType()==="Asset" ||(requestHandler.getType()==="TD"))) {
         requestHandler.onRead()
           .then(content => {
             if (!content.mediaType) {
               console.warn(`HttpServer on port ${this.getPort()} got no Media Type from ${req.socket.remoteAddress} port ${req.socket.remotePort}`);
             } else {
-              res.setHeader('Content-Type', content.mediaType);
+              res.setHeader("Content-Type", content.mediaType);
             }
             res.writeHead(200);
             res.end(content.body);
@@ -152,7 +157,8 @@ export default class HttpServer implements ProtocolServer {
             res.writeHead(500);
             res.end(err.message);
           });
-      } else if (req.method === "PUT") {
+
+      } else if (req.method === "PUT" && requestHandler.getType()==="Property" || requestHandler.getType()==="Asset") {
         let body: Array<any> = [];
         req.on("data", (data) => { body.push(data) });
         req.on("end", () => {
@@ -168,7 +174,8 @@ export default class HttpServer implements ProtocolServer {
               res.end(err.message);
             });
         });
-      } else if (req.method === "POST") {
+
+      } else if (req.method === "POST" && requestHandler.getType()==="Action") {
         let body: Array<any> = [];
         req.on("data", (data) => { body.push(data) });
         req.on("end", () => {
@@ -195,6 +202,26 @@ export default class HttpServer implements ProtocolServer {
               res.end(err.message);
             });
         });
+
+      } else if (requestHandler instanceof EventResourceListener) {
+        res.setHeader("Connection", "Keep-Alive");
+        // FIXME get supported content types from EventResourceListener
+        res.setHeader("Content-Type", ContentSerdes.DEFAULT);
+        res.writeHead(200);
+        let subscription = requestHandler.subscribe({
+          next: (content) => res.end(content.body),
+          complete: () => res.end()
+        });
+        res.on("close", () => {
+          console.warn(`HttpServer on port ${this.getPort()} lost Event connection`);
+          subscription.unsubscribe();
+        });
+        res.on("finish", () => {
+          console.warn(`HttpServer on port ${this.getPort()} closed Event connection`);
+          subscription.unsubscribe();
+        });
+        res.setTimeout(60*60*1000, () => subscription.unsubscribe());
+
       } else if (req.method === "DELETE") {
         requestHandler.onUnlink()
           .then(() => {
@@ -206,6 +233,7 @@ export default class HttpServer implements ProtocolServer {
             res.writeHead(500);
             res.end(err.message);
           });
+
       } else {
         res.writeHead(405);
         res.end("Method Not Allowed");

@@ -38,12 +38,16 @@ export default class PropertyResourceListener extends BasicResourceListener impl
         this.name = name;
     }
 
+    public getType(): string {
+        return "Property";
+    }
+
     public onRead() : Promise<Content> {
         return this.thing
             .readProperty(this.name)
             .then((value) => {
-                let bytes = ContentSerdes.valueToBytes(value);
-                return Promise.resolve(bytes);
+                let content = ContentSerdes.valueToContent(value);
+                return Promise.resolve(content);
             });
     }
 
@@ -51,7 +55,7 @@ export default class PropertyResourceListener extends BasicResourceListener impl
         let value;
         // FIXME: Better way than creating Promise only for reject in catch?
         try {
-            value = ContentSerdes.bytesToValue(input);
+            value = ContentSerdes.contentToValue(input);
         } catch(err) {
             return new Promise<void>( (resolve, reject) => { reject(err); })
         }
