@@ -20,29 +20,29 @@ class TestResourceListener extends BasicResourceListener implements ResourceList
         this.referencedVector = vector;
     }
 
-    public onRead() : Promise<Content> {
+    public onRead(): Promise<Content> {
         this.referencedVector.expect = "GET";
         return new Promise<Content>(
-            (resolve,reject) => resolve({ mediaType: ContentSerdes.DEFAULT , body: new Buffer("TEST") })
+            (resolve, reject) => resolve({ mediaType: ContentSerdes.DEFAULT, body: new Buffer("TEST") })
         );
     }
 
-    public onWrite(content : Content) : Promise<void> {
+    public onWrite(content: Content): Promise<void> {
         this.referencedVector.expect = "PUT";
-        return new Promise<void>((resolve,reject) => resolve())
+        return new Promise<void>((resolve, reject) => resolve())
     }
 
-    public onInvoke(content : Content) : Promise<Content> {
+    public onInvoke(content: Content): Promise<Content> {
         this.referencedVector.expect = "POST";
         return new Promise<Content>(
-            (resolve,reject) => resolve({ mediaType: ContentSerdes.DEFAULT, body: new Buffer("TEST") })
+            (resolve, reject) => resolve({ mediaType: ContentSerdes.DEFAULT, body: new Buffer("TEST") })
         );
     }
 
-    public onUnlink() : Promise<void> {
+    public onUnlink(): Promise<void> {
         this.referencedVector.expect = "DELETE";
         return new Promise<void>(
-            (resolve,reject) => resolve()
+            (resolve, reject) => resolve()
         );
     }
 }
@@ -55,7 +55,7 @@ class CoapClientTest {
         var testVector = { expect: "UNSET" }
 
         let coapServer = new CoapServer(56833);
-        coapServer.addResource("/", new TestResourceListener(testVector) );
+        coapServer.addResource("/", new TestResourceListener(testVector));
 
         await coapServer.start();
         expect(coapServer.getPort()).to.equal(56833);
@@ -75,7 +75,7 @@ class CoapClientTest {
         representation = await client.writeResource({
             href: "coap://localhost:56833/",
             "coap:methodCode": 2 // POST
-        }, { mediaType: ContentSerdes.DEFAULT, body: new Buffer("test") } );
+        }, { mediaType: ContentSerdes.DEFAULT, body: new Buffer("test") });
         expect(testVector.expect).to.equal("POST");
         testVector.expect = "UNSET";
 
@@ -83,7 +83,7 @@ class CoapClientTest {
         representation = await client.invokeResource({
             href: "coap://localhost:56833/",
             "coap:methodCode": 3 // PUT
-        }, { mediaType: ContentSerdes.DEFAULT, body: new Buffer("test") } );
+        }, { mediaType: ContentSerdes.DEFAULT, body: new Buffer("test") });
         expect(testVector.expect).to.equal("PUT");
         testVector.expect = "UNSET";
 
@@ -91,10 +91,10 @@ class CoapClientTest {
         representation = await client.invokeResource({
             href: "coap://localhost:56833/",
             "coap:methodCode": 4 // DELETE
-        }, { mediaType: ContentSerdes.DEFAULT, body: new Buffer("test") } );
+        }, { mediaType: ContentSerdes.DEFAULT, body: new Buffer("test") });
         expect(testVector.expect).to.equal("DELETE");
         testVector.expect = "UNSET";
-        
+
         await coapServer.stop();
     }
 }

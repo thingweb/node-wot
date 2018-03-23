@@ -132,7 +132,7 @@ export class ContentSerdes {
     return Array.from(ContentSerdes.get().codecs.keys());
   }
 
-  public bytesToValue(content: Content): any {
+  public contentToValue(content: Content): any {
 
     if (content.mediaType === undefined) {
       if (content.body.byteLength > 0) {
@@ -168,7 +168,7 @@ export class ContentSerdes {
         }
   }
 
-  public valueToBytes(value: any, mediaType = ContentSerdes.DEFAULT): Content {
+  public valueToContent(value: any, mediaType = ContentSerdes.DEFAULT): Content {
 
     if (value === undefined) console.warn("ContentSerdes valueToBytes got no value");
 

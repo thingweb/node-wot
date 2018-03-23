@@ -31,11 +31,11 @@ import {ContentCodec} from "../src/content-serdes";
 
 let checkJsonToJs = (value : any) : void => {
         let jsonBuffer = new Buffer(JSON.stringify(value));
-        expect(ContentSerdes.bytesToValue({ mediaType: "application/json", body: jsonBuffer })).to.deep.equal(value);
+        expect(ContentSerdes.contentToValue({ mediaType: "application/json", body: jsonBuffer })).to.deep.equal(value);
 }
 
 let checkJsToJson = (value: any) : void => {
-        let jsonContent = ContentSerdes.valueToBytes(value)
+        let jsonContent = ContentSerdes.valueToContent(value)
         let reparsed = JSON.parse(jsonContent.body.toString());
         expect(reparsed).to.deep.equal(value);
 }
@@ -80,11 +80,11 @@ class SerdesCodecTests {
     }
 
     @test "new codec should serialize"() {
-        ContentSerdes.valueToBytes("The meaning of Life", "text/hodor").body.toString().should.equal("Hodor")
+        ContentSerdes.valueToContent("The meaning of Life", "text/hodor").body.toString().should.equal("Hodor")
     }
 
     @test "new codec should deserialize"() {
         let buffer = new Buffer("Some actual meaningful stuff")
-        ContentSerdes.bytesToValue({ mediaType: "text/hodor", body: buffer }).should.deep.equal("Hodor")
+        ContentSerdes.contentToValue({ mediaType: "text/hodor", body: buffer }).should.deep.equal("Hodor")
     }
 }

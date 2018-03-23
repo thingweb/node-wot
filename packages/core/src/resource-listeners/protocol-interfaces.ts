@@ -73,11 +73,10 @@ export interface Content {
  *           objects and the Buffer/mediaType. Where should this go?
  */
 export interface ResourceListener {
+  // FIXME instanceof does not work to determine type
+  getType(): string;
   onRead(): Promise<Content>;
   onWrite(value: Content): Promise<void>;
   onInvoke(value: Content): Promise<Content>;
   onUnlink(): Promise<void>;
 }
-
-export { default as BasicResourceListener } from './basic-resource-listener'
-export { default as AssetResourceListener } from './asset-resource-listener'

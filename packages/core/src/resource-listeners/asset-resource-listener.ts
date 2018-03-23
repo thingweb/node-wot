@@ -35,6 +35,10 @@ export default class AssetResourceListener extends BasicResourceListener impleme
         this.asset = new Buffer(asset);
     }
 
+    public getType(): string {
+        return "Asset";
+    }
+
     public onRead() : Promise<Content> {
         console.log(`Reading asset`);
         return new Promise<Content>(
