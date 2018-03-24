@@ -204,8 +204,8 @@ export default class HttpClient implements ProtocolClient {
 
   public setSecurity(metadata: any, credentials?: any): boolean {
 
-    if (metadata.authorization == "Basic") {
-      this.authorization = "Basic " + new Buffer(credentials.user + ":" + credentials.password).toString('base64');
+    if (metadata.authorization === "Basic") {
+      this.authorization = "Basic " + new Buffer(credentials.username + ":" + credentials.password).toString('base64');
 
     } else if (metadata.authorization === "Bearer") {
       // TODO get token from metadata.as (authorization server)
@@ -218,7 +218,7 @@ export default class HttpClient implements ProtocolClient {
       this.proxyOptions = this.uriToOptions(metadata.href);
       if (metadata.proxyauthorization == "Basic") {
         this.proxyOptions.headers = {};
-        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(credentials.user + ":" + credentials.password).toString('base64');
+        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(credentials.username + ":" + credentials.password).toString('base64');
       } else if (metadata.proxyauthorization == "Bearer") {
         this.proxyOptions.headers = {};
         this.proxyOptions.headers['Proxy-Authorization'] = "Bearer " + credentials.token;
@@ -226,9 +226,11 @@ export default class HttpClient implements ProtocolClient {
 
     } else if (metadata.authorization === "SessionID") {
       // TODO this is just an idea sketch
+      console.error(`HttpClient cannot use SessionID: Not implemented`);
 
     } else {
-      console.error(`HttpClient cannot use metadata ${metadata}`);
+      console.error(`HttpClient cannot set security metadata '${metadata.authorization}'`);
+      console.dir(metadata);
       return false;
     }
 
@@ -286,7 +288,7 @@ export default class HttpClient implements ProtocolClient {
 
     let req = this.provider.request(options);
 
-    console.log(`HttpClient applying from`);
+    console.log(`HttpClient applying form`);
     //console.dir(form);
 
     // apply form data

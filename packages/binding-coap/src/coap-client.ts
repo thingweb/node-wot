@@ -167,7 +167,7 @@ export default class CoapClient implements ProtocolClient {
 
     let req = this.agent.request(options);
 
-    console.log(`CoapClient applying from`);
+    console.log(`CoapClient applying form`);
     //console.dir(form);
 
     // apply form data

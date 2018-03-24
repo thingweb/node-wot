@@ -68,7 +68,14 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
         this.semanticType = tdObj.semanticType;
         this.name = tdObj.name;
         this.id = tdObj.id;
-        this.security = tdObj.security;
+        if (Array.isArray(tdObj.security) && tdObj.security.length>=1) {
+            if (tdObj.security.length > 1) {
+                console.warn(`ConsumedThing '${this.name}' received multiple security metadata entries, selecting first`)
+            }
+            this.security = tdObj.security[0];
+        } else {
+            this.security = tdObj.security;
+        }
         this.metadata = tdObj.metadata;
         this.interaction = tdObj.interaction;
         this.link = tdObj.link;
@@ -107,8 +114,8 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
                 console.log(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
                 if (this.security) {
                     console.warn("ConsumedThing applying security metadata");
-                    console.dir(this.security);
-                    client.setSecurity(this.security);
+                    //console.dir(this.security);
+                    client.setSecurity(this.security, this.srv.getCredentials(this.id));
                 }
                 this.clients.set(schemes[srvIdx], client);
                 let form = forms[srvIdx];

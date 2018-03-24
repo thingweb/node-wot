@@ -262,9 +262,9 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 
         let subject = new Subject<Content>();
 
+        // lookup table for emitEvent()
         this.interactionObservables.set(newEvent.name, subject);
-        // TODO connection to bindings
-
+        // connection to bindings, which use ResourceListeners to subscribe/unsubscribe
         this.addResourceListener("/" + this.name + "/events/" + newEvent.name, new Rest.EventResourceListener(newEvent.name, subject));
 
         // inform TD observers
