@@ -146,6 +146,55 @@ class WoTServerTest {
         expect(await thing.readProperty("number")).to.equal(3);
     }
 
+    @test async "should be able to add a property, read it by setting read increment handler (with function)"() {
+        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthingIncRead2" });
+        let initp: WoT.ThingProperty = {
+            name: "number",
+            writable: true,
+            schema: `{ "type": "number" }`
+        };
+        let counter: number = 0;
+        thing.addProperty(initp).setPropertyReadHandler(
+            initp.name,
+            function() {
+                return new Promise((resolve, reject) => {
+                    resolve(++counter);
+                });
+            }
+        );
+
+        expect(await thing.readProperty("number")).to.equal(1);
+        expect(await thing.readProperty("number")).to.equal(2);
+        expect(await thing.readProperty("number")).to.equal(3);
+    }
+
+
+    @test async "should be able to add a property, read it by setting read increment handler (with local counter state)"() {
+        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthingIncRead3" });
+        let initp: WoT.ThingProperty = {
+            name: "number",
+            writable: true,
+            schema: `{ "type": "number" }`
+        };
+        thing.addProperty(initp).setPropertyReadHandler(
+            initp.name,
+            function() {
+                return new Promise((resolve, reject) => {
+                    // let counter: number = 0; // fails to keep state!!
+                    // var counter: number = 0; // fails to keep state also!!
+                    if (!this.counter) {
+                        this.counter = 0;
+                    }
+                    resolve(++this.counter); // ++counter
+                });
+            }
+        );
+
+        expect(await thing.readProperty("number")).to.equal(1);
+        expect(await thing.readProperty("number")).to.equal(2);
+        expect(await thing.readProperty("number")).to.equal(3);
+    }
+
     @test async "should be able to add a property, read it by setting write handler double"() {
         let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthingWrite" });
         let initp: WoT.ThingProperty = {
