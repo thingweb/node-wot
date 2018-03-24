@@ -26,25 +26,29 @@ import * as https from "https";
 import * as url from "url";
 
 import { ProtocolClient, Content } from "@node-wot/core";
-import { HttpForm, HttpHeader } from "./http";
+import { HttpForm, HttpHeader, HttpConfig } from "./http";
 
 export default class HttpClient implements ProtocolClient {
 
   private readonly agent: http.Agent;
-  private readonly provider : any;
-  private proxyOptions : http.RequestOptions = null;
-  private authorization : string = null;
+  private readonly provider: any;
+  private proxyOptions: http.RequestOptions = null;
+  private authorization: string = null;
+  private allowSelfSigned: boolean = false;
 
-  constructor(proxy : any = null, secure = false) {
+  constructor(config: HttpConfig = null, secure = false) {
+
     // config proxy by client side (not from TD)
-    if (proxy!==null && proxy.href!==null) {
-      this.proxyOptions = this.uriToOptions(proxy.href);
-      if (proxy.authorization == "Basic") {
-        this.proxyOptions.headers = { };
-        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(proxy.user+":"+proxy.password).toString('base64');
-      } else if (proxy.authorization == "Bearer") {
-        this.proxyOptions.headers = { };
-        this.proxyOptions.headers['Proxy-Authorization'] = "Bearer " + proxy.token;
+    if (config!==null && config.proxy && config.proxy.href) {
+      this.proxyOptions = this.uriToOptions(config.proxy.href);
+      if (config.proxy.authorization === "Basic") {
+        if (!config.proxy.username || !config.proxy.password) console.warn(`HttpClient client configured for Basic proxy auth, but no username/password given`);
+        this.proxyOptions.headers = {};
+        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(config.proxy.username + ":" + config.proxy.password).toString('base64');
+      } else if (config.proxy.authorization === "Bearer") {
+        if (!config.proxy.token) console.warn(`HttpClient client configured for Bearer proxy auth, but no token given`);
+        this.proxyOptions.headers = {};
+        this.proxyOptions.headers['Proxy-Authorization'] = "Bearer " + config.proxy.token;
       }
       // security for hop to proxy
       if (this.proxyOptions.protocol === "https") {
@@ -52,17 +56,24 @@ export default class HttpClient implements ProtocolClient {
       }
       console.info(`HttpClient using ${secure ? "secure " : ""}proxy ${this.proxyOptions.hostname}:${this.proxyOptions.port}`);
     }
+
+    // config certificate checks
+    if (config!==null && config.allowSelfSigned!==undefined) {
+      this.allowSelfSigned = config.allowSelfSigned;
+      console.warn(`HttpClient allowing self-signed/untrusted certificates -- USE FOR TESTING ONLY`);
+    }
+
     // using one client impl for both HTTP and HTTPS
-    this.agent = secure ? new https.Agent({ keepAlive: true }) : new http.Agent({ keepAlive: true });
+    this.agent = secure ? new https.Agent({ keepAlive: true, }) : new http.Agent({ keepAlive: true });
     this.provider = secure ? https : http;
   }
 
-  private getContentType(res : http.IncomingMessage) : string {
-    let header : string | string[] = res.headers['content-type']; // note: node http uses lower case here
-    if(Array.isArray(header)) {
+  private getContentType(res: http.IncomingMessage): string {
+    let header: string | string[] = res.headers['content-type']; // note: node http uses lower case here
+    if (Array.isArray(header)) {
       // this should never be the case as only cookie headers are returned as array
       // but anyways...
-      return (header.length > 0) ? header[0] : ""; 
+      return (header.length > 0) ? header[0] : "";
     } else {
       return header;
     }
@@ -74,11 +85,11 @@ export default class HttpClient implements ProtocolClient {
 
   public readResource(form: HttpForm): Promise<Content> {
     return new Promise<Content>((resolve, reject) => {
-      
+
       let req = this.generateRequest(form, "GET");
 
       console.log(`HttpClient sending ${req.method} to ${form.href}`);
-        
+
       req.on("response", (res: https.IncomingMessage) => {
         console.log(`HttpClient received ${res.statusCode} from ${form.href}`);
         let mediaType: string = this.getContentType(res);
@@ -90,7 +101,7 @@ export default class HttpClient implements ProtocolClient {
           resolve({ mediaType: mediaType, body: Buffer.concat(body) });
         });
       });
-      req.on("error", (err : any) => reject(err));
+      req.on("error", (err: any) => reject(err));
       req.end();
     });
   }
@@ -104,8 +115,8 @@ export default class HttpClient implements ProtocolClient {
       req.setHeader("Content-Length", content.body.byteLength);
 
       console.log(`HttpClient sending ${req.method} with '${req.getHeader("Content-Type")}' to ${form.href}`);
-        
-      req.on("response", (res : https.IncomingMessage) => {
+
+      req.on("response", (res: https.IncomingMessage) => {
         console.log(`HttpClient received ${res.statusCode} from ${form.href}`);
         //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         // Although 204 without payload is expected, data must be read 
@@ -117,7 +128,7 @@ export default class HttpClient implements ProtocolClient {
           resolve();
         });
       });
-      req.on('error', (err : any) => reject(err));
+      req.on('error', (err: any) => reject(err));
       req.write(content.body);
       req.end();
     });
@@ -134,10 +145,10 @@ export default class HttpClient implements ProtocolClient {
       }
 
       console.log(`HttpClient sending ${req.method} with '${req.getHeader("Content-Type")}' to ${form.href}`);
-        
-      req.on("response", (res : https.IncomingMessage) => {
+
+      req.on("response", (res: https.IncomingMessage) => {
         console.log(`HttpClient received ${res.statusCode} from ${form.href}`);
-        let mediaType: string = this.getContentType(res);        
+        let mediaType: string = this.getContentType(res);
         //console.log(`HttpClient received Content-Type: ${mediaType}`);
         //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         let body: Array<any> = [];
@@ -146,7 +157,7 @@ export default class HttpClient implements ProtocolClient {
           resolve({ mediaType: mediaType, body: Buffer.concat(body) });
         });
       });
-      req.on("error", (err : any) => reject(err));
+      req.on("error", (err: any) => reject(err));
       if (content) {
         req.write(content.body);
       }
@@ -164,8 +175,8 @@ export default class HttpClient implements ProtocolClient {
       this.generateRequest(form, req);
 
       console.log(`HttpClient sending ${req.method} to ${form.href}`);
-        
-      req.on("response", (res : https.IncomingMessage) => {
+
+      req.on("response", (res: https.IncomingMessage) => {
         console.log(`HttpClient received ${res.statusCode} from ${form.href}`);
         //console.log(`HttpClient received headers: ${JSON.stringify(res.headers)}`);
         // Although 204 without payload is expected, data must be read
@@ -177,7 +188,7 @@ export default class HttpClient implements ProtocolClient {
           resolve();
         });
       });
-      req.on('error', (err : any) => reject(err));
+      req.on('error', (err: any) => reject(err));
       req.end();
     });
   }
@@ -192,30 +203,30 @@ export default class HttpClient implements ProtocolClient {
   }
 
   public setSecurity(metadata: any, credentials?: any): boolean {
-    
+
     if (metadata.authorization == "Basic") {
-      this.authorization = "Basic " + new Buffer(credentials.user+":"+credentials.password).toString('base64');
-      
-    } else if (metadata.authorization==="Bearer") {
+      this.authorization = "Basic " + new Buffer(credentials.user + ":" + credentials.password).toString('base64');
+
+    } else if (metadata.authorization === "Bearer") {
       // TODO get token from metadata.as (authorization server)
       this.authorization = "Bearer " + credentials.token;
-    
-    } else if (metadata.authorization==="Proxy" && metadata.href!==null) {
+
+    } else if (metadata.authorization === "Proxy" && metadata.href !== null) {
       if (this.proxyOptions !== null) {
         console.info(`HttpClient overriding client-side proxy with security metadata 'Proxy'`);
       }
       this.proxyOptions = this.uriToOptions(metadata.href);
       if (metadata.proxyauthorization == "Basic") {
-        this.proxyOptions.headers = { };
-        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(credentials.user+":"+credentials.password).toString('base64');
+        this.proxyOptions.headers = {};
+        this.proxyOptions.headers['Proxy-Authorization'] = "Basic " + new Buffer(credentials.user + ":" + credentials.password).toString('base64');
       } else if (metadata.proxyauthorization == "Bearer") {
-        this.proxyOptions.headers = { };
+        this.proxyOptions.headers = {};
         this.proxyOptions.headers['Proxy-Authorization'] = "Bearer " + credentials.token;
       }
-    
-    } else if (metadata.authorization==="SessionID") {
+
+    } else if (metadata.authorization === "SessionID") {
       // TODO this is just an idea sketch
-    
+
     } else {
       console.error(`HttpClient cannot use metadata ${metadata}`);
       return false;
@@ -225,16 +236,16 @@ export default class HttpClient implements ProtocolClient {
     return true;
   }
 
-  private uriToOptions(uri: string): http.RequestOptions {
+  private uriToOptions(uri: string): https.RequestOptions {
     let requestUri = url.parse(uri);
-    let options: http.RequestOptions = {};
+    let options: https.RequestOptions = {};
     options.agent = this.agent;
 
-    if (this.proxyOptions!=null) {
+    if (this.proxyOptions != null) {
       options.hostname = this.proxyOptions.hostname;
       options.port = this.proxyOptions.port;
       options.path = uri;
-      options.headers = { };
+      options.headers = {};
       // copy header fields for Proxy-Auth etc.
       for (let hf in this.proxyOptions.headers) options.headers[hf] = this.proxyOptions.headers[hf];
       options.headers["Host"] = requestUri.hostname;
@@ -242,11 +253,15 @@ export default class HttpClient implements ProtocolClient {
       options.hostname = requestUri.hostname;
       options.port = parseInt(requestUri.port, 10);
       options.path = requestUri.path;
-      options.headers = { };
+      options.headers = {};
     }
-    
-    if (this.authorization!==null) {
+
+    if (this.authorization !== null) {
       options.headers["Authorization"] = this.authorization;
+    }
+
+    if (this.allowSelfSigned === true) {
+      options.rejectUnauthorized = false;
     }
 
     return options;
@@ -268,7 +283,7 @@ export default class HttpClient implements ProtocolClient {
         default: console.warn("HttpClient got invalid 'methodName', using default", options.method);
       }
     }
-      
+
     let req = this.provider.request(options);
 
     console.log(`HttpClient applying from`);

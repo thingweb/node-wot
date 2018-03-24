@@ -39,7 +39,8 @@ export default class DefaultServient extends Servient {
             scriptAction: false
         },
         http: {
-            port: 8080
+            port: 8080,
+            selfSigned: false
         }
     }
 
@@ -54,8 +55,8 @@ export default class DefaultServient extends Servient {
         let httpServer = (typeof this.config.http.port === "number") ? new HttpServer(this.config.http.port) : new HttpServer();
         this.addServer(httpServer);
         this.addClientFactory(new FileClientFactory());
-        this.addClientFactory(new HttpClientFactory(this.config.http.proxy));
-        this.addClientFactory(new HttpsClientFactory(this.config.http.proxy));
+        this.addClientFactory(new HttpClientFactory(this.config.http));
+        this.addClientFactory(new HttpsClientFactory(this.config.http));
         this.addClientFactory(new CoapClientFactory());
 
         // loads credentials from the configuration
