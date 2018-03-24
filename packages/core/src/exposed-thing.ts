@@ -118,8 +118,12 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
                 let oldValue = state.value;
                 state.value = newValue;
 
-                // calls all handlers
-                state.writeHandlers.forEach(handler => handler.apply(this, [newValue, oldValue]))
+                // call handler
+                if (state.writeHandler != null) {
+                    state.writeHandler.apply(this, [newValue, oldValue]);
+                } else {
+                    state.value = newValue;
+                }
 
                 resolve(newValue);
             } else {
@@ -139,8 +143,8 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
                 // TODO debug-level
                 console.debug(`ExposedThing '${this.name}' Action state of '${actionName}':`, state);
 
-                if (state.handlers.length) {
-                    let handler = state.handlers[0];
+                if (state.handler != null) {
+                    let handler = state.handler;
                     resolve(handler(parameter));
                 } else {
                     reject(new Error(`ExposedThing '${this.name}' has no action handler for '${actionName}'`));
@@ -314,7 +318,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
         console.log(`ExposedThing '${this.name}' setting action Handler for '${actionName}'`);
         let state = this.actionStates.get(actionName);
         if (state) {
-            state.handlers.push(action);
+            state.handler = action;
         } else {
             throw Error(`ExposedThing '${this.name}' cannot set action handler for unknown '${actionName}'`);
         }
@@ -336,7 +340,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
         console.log(`ExposedThing '${this.name}' setting write handler for '${propertyName}'`);
         let state = this.propertyStates.get(propertyName);
         if (state) {
-            state.writeHandlers.push(writeHandler);
+            state.writeHandler = writeHandler;
         } else {
             throw Error(`ExposedThing '${this.name}' cannot set write handler for unknown '${propertyName}'`);
         }
@@ -348,16 +352,16 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 class PropertyState {
     constructor() {
         this.value = null;
-        this.writeHandlers = [];
-        this.readHandlers = [];
+        this.writeHandler = null;
+        this.readHandler = null;
     }
     public value: any;
-    public writeHandlers: Array<Function>;
-    public readHandlers: Array<Function>;
+    public writeHandler: Function;
+    public readHandler: Function;
 }
 class ActionState {
     constructor() {
-        this.handlers = [];
+        this.handler = null;
     }
-    public handlers: Array<Function>;
+    public handler: Function;
 }
