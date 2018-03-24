@@ -99,7 +99,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 
                 // call read handler (if any)
                 if (state.readHandler != null) {
-                    state.value = state.readHandler.apply(this, []);
+                    state.value = state.readHandler.apply(this);
                 }
 
                 resolve(state.value);
@@ -118,12 +118,11 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
         return new Promise<void>((resolve, reject) => {
             let state = this.propertyStates.get(propertyName);
             if (state) {
-                let oldValue = state.value;
                 state.value = newValue;
 
                 // call write handler (if any)
                 if (state.writeHandler != null) {
-                    state.value = state.writeHandler.apply(this, [newValue, oldValue]); 
+                    state.value = state.writeHandler.apply(this, [newValue]); 
                 }
 
                 resolve(state.value);
