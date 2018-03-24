@@ -14,7 +14,6 @@
   "main": "dist/http.js",
   "types": "dist/http.d.ts",
   "devDependencies": {
-    "@node-wot/td-tools": "0.4.0-SNAPSHOT.3",
     "@types/chai": "4.0.4",
     "@types/node": "8.0.28",
     "@types/request-promise": "4.1.41",

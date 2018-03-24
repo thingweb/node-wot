@@ -9,7 +9,8 @@
   },
   "devDependencies": {
     "lerna": "2.9.0",
-    "lerna-run": "0.0.2"
+    "lerna-run": "0.0.2",
+    "del-cli": "1.1.0"
   },
   "dependencies": {},
   "scripts": {
@@ -18,11 +19,11 @@
     "build": "lerna run build",
     "pretest": "npm run build",
     "test": "lerna run test",
-    "prelink": "npm run build",
+    "prelink": "npm run build && npm run unlock",
     "link": "lerna-run npm link",
     "codestyle": "lerna run codestyle",
     "clean": "lerna clean",
-    "unlock": "lerna-run rm package-lock.json",
+    "unlock": "lerna-run del package-lock.json",
     "publish": "lerna publish --force-publish=*"
   }
 }
