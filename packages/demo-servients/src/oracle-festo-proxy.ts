@@ -33,6 +33,9 @@ import { HttpServer } from "@node-wot/binding-http";
 import { CoapClientFactory } from "@node-wot/binding-coap";
 import { FileClientFactory } from "@node-wot/binding-file";
 
+console.debug = () => {};
+console.log = () => {};
+
 let servient = new Servient();
 
 servient.addServer(new HttpServer());

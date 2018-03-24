@@ -272,7 +272,7 @@ export default class HttpClient implements ProtocolClient {
     let req = this.provider.request(options);
 
     console.log(`HttpClient applying from`);
-    console.dir(form);
+    //console.dir(form);
 
     // apply form data
     if (typeof form.mediaType === "string") {

@@ -27,7 +27,6 @@ import ExposedThing from "./exposed-thing";
 import ConsumedThing from "./consumed-thing";
 import * as Helpers from "./helpers";
 
-
 export default class WoTImpl implements WoT.WoTFactory {
     private srv: Servient;
 
@@ -45,12 +44,11 @@ export default class WoTImpl implements WoT.WoTFactory {
         });
     }
 
-
     /** @inheritDoc */
     fetch(uri: USVString): Promise<WoT.ThingDescription> {
         return new Promise<WoT.ThingDescription>((resolve, reject) => {
             let client = this.srv.getClientFor(Helpers.extractScheme(uri));
-            console.info(`WoTImpl consuming TD from ${uri} with ${client}`);
+            console.info(`WoTImpl fetching TD from '${uri}' with ${client}`);
             client.readResource(new TD.InteractionForm(uri, "application/ld+json"))
                 .then((content) => {
                     if (content.mediaType !== "application/ld+json") {
@@ -63,10 +61,11 @@ export default class WoTImpl implements WoT.WoTFactory {
         });
     }
 
-
     /** @inheritDoc */
     consume(td: WoT.ThingDescription): WoT.ConsumedThing {
-        return new ConsumedThing(this.srv, td) as WoT.ConsumedThing;
+        let newThing = new ConsumedThing(this.srv, td);
+        console.info(`WoTImpl consuming TD ${newThing.id ? "'"+newThing.id+"'" : "without @id"} for ConsumedThing '${newThing.name}'`);
+        return newThing;
     }
 
     /**
@@ -100,11 +99,11 @@ export default class WoTImpl implements WoT.WoTFactory {
             throw new Error("WoTImpl could not create Thing because of unknown model argument " + model);
         }
 
-        console.info(`WoTImpl producing new ExposedThing`);
         let newThing = new ExposedThing(this.srv, td);
+        console.info(`WoTImpl producing new ExposedThing '${newThing.name}'`);
 
         if (this.srv.addThing(newThing)) {
-            return newThing as WoT.ExposedThing;
+            return newThing;
         } else {
             throw new Error("Thing already exists: " + newThing.name);
         }

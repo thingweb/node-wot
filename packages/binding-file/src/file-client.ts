@@ -28,6 +28,10 @@ export default class FileClient implements ProtocolClient {
 
   constructor() { }
 
+  public toString() {
+    return "[FileClient]";
+  }
+
   public readResource(form: InteractionForm): Promise<Content> {
     return new Promise<Content>((resolve, reject) => {
       let filepath = form.href.split('//');
@@ -42,13 +46,13 @@ export default class FileClient implements ProtocolClient {
 
   public invokeResource(form: InteractionForm, payload: Object): Promise<any> {
     return new Promise<Object>((resolve, reject) => {
-      resolve('POST_' + form.href + '_' + new Date())
+      resolve('FileClient POST_' + form.href + '_' + new Date())
     })
   }
 
   public unlinkResource(form: InteractionForm): Promise<any> {
     return new Promise<Object>((resolve, reject) => {
-      resolve('DELETE_' + form.href + '_' + new Date())
+      resolve('FileClient DELETE_' + form.href + '_' + new Date())
     })
   }
 

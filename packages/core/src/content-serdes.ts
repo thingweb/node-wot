@@ -170,7 +170,7 @@ export class ContentSerdes {
 
   public valueToContent(value: any, mediaType = ContentSerdes.DEFAULT): Content {
 
-    if (value === undefined) console.warn("ContentSerdes valueToBytes got no value");
+    if (value === undefined) console.warn("ContentSerdes valueToContent got no value");
 
     console.debug(`ContentSerdes serializing to ${mediaType}`);
     // choose codec based on mediaType
