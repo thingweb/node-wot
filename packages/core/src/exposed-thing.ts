@@ -97,7 +97,10 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
             let state = this.propertyStates.get(propertyName);
             if (state) {
 
-                // TODO calls all handlers
+                // call read handler (if any)
+                if (state.readHandler != null) {
+                    state.value = state.readHandler.apply(this, []);
+                }
 
                 resolve(state.value);
             } else {
@@ -118,14 +121,12 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
                 let oldValue = state.value;
                 state.value = newValue;
 
-                // call handler
+                // call write handler (if any)
                 if (state.writeHandler != null) {
-                    state.writeHandler.apply(this, [newValue, oldValue]);
-                } else {
-                    state.value = newValue;
+                    state.value = state.writeHandler.apply(this, [newValue, oldValue]); 
                 }
 
-                resolve(newValue);
+                resolve(state.value);
             } else {
                 reject(new Error("No property called " + propertyName));
             }
@@ -328,11 +329,14 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 
     /** @inheritDoc */
     setPropertyReadHandler(propertyName: string, readHandler: WoT.PropertyReadHandler): WoT.ExposedThing {
-        // TODO if propertyName not set it is a default handler
-        // TODO set readHandler
-        throw Error("Not yet implemented to set propertyReadHandler");
-
-        //return this;
+        console.log(`ExposedThing '${this.name}' setting read handler for '${propertyName}'`);
+        let state = this.propertyStates.get(propertyName);
+        if (state) {
+            state.readHandler = readHandler;
+        } else {
+            throw Error(`ExposedThing '${this.name}' cannot set read handler for unknown '${propertyName}'`);
+        }
+        return this;
     }
 
     /** @inheritDoc */

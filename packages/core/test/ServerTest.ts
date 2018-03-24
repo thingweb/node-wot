@@ -123,6 +123,58 @@ class WoTServerTest {
         expect(value2).to.equal(5);
     }
 
+
+    @test async "should be able to add a property, read it by setting read increment handler"() {
+        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthingIncRead" });
+        let initp: WoT.ThingProperty = {
+            name: "number",
+            writable: true,
+            schema: `{ "type": "number" }`
+        };
+        let counter: number = 0;
+        thing.addProperty(initp).setPropertyReadHandler(
+            initp.name,
+            () => {
+                return new Promise((resolve, reject) => {
+                    resolve(++counter);
+                });
+            }
+        );
+
+        expect(await thing.readProperty("number")).to.equal(1);
+        expect(await thing.readProperty("number")).to.equal(2);
+        expect(await thing.readProperty("number")).to.equal(3);
+    }
+
+    @test async "should be able to add a property, read it by setting write handler double"() {
+        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthingWrite" });
+        let initp: WoT.ThingProperty = {
+            name: "number",
+            writable: true,
+            schema: `{ "type": "number" }`
+        };
+        thing.addProperty(initp);
+        let initp2: WoT.ThingProperty = {
+            name: "number2",
+            writable: true,
+            schema: `{ "type": "number" }`
+        };
+        thing.addProperty(initp2);
+        thing.setPropertyWriteHandler(
+            initp.name,
+            (value: any) => {
+                return new Promise((resolve, reject) => {
+                    thing.writeProperty(initp2.name, value*2);
+                    resolve(value);
+                });
+            }
+        );
+
+        expect(await thing.writeProperty("number", 12)).to.equal(12);
+        expect(await thing.readProperty("number2")).to.equal(24);
+    }
+
+
     // FIXME What listeners?!
     @test.skip "should be able to add a property, assign it via listener and read it locally"() {
         let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "thing3" });
