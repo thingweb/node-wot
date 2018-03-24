@@ -11,8 +11,7 @@
   ],
   "main": "dist/raspberry-servient.js",
   "bin": {
-    "raspberry-servient": "dist/raspberry-servient.js",
-    "oracle-servient": "dist/oracle-servient.js"
+    "raspberry-servient": "dist/raspberry-servient.js"
   },
   "devDependencies": {
     "@types/node": "9.4.1",
