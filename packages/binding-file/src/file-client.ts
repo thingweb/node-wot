@@ -23,6 +23,7 @@
 import { InteractionForm } from "@node-wot/td-tools";
 import { ProtocolClient, Content } from "@node-wot/core"
 import fs = require('fs');
+import path = require('path');
 
 export default class FileClient implements ProtocolClient {
 
@@ -36,7 +37,26 @@ export default class FileClient implements ProtocolClient {
     return new Promise<Content>((resolve, reject) => {
       let filepath = form.href.split('//');
       let resource = fs.readFileSync(filepath[1], 'utf8');
-      resolve({ mediaType: 'application/json', body: new Buffer(resource) });
+      let extension = path.extname(filepath[1]);
+      console.debug(`FileClient found '${extension}' extension`);
+      let mediaType = "application/octet-stream";
+      switch (extension) {
+        case ".txt":
+        case ".log":
+        case ".ini":
+        case ".cfg":
+          mediaType = "text/plain";
+          break;
+        case ".json":
+          mediaType = "application/json";
+          break;
+        case ".jsonld":
+          mediaType = "application/ld+json";
+          break;
+        default:
+          console.warn(`FileClient cannot determine media type of '${form.href}'`);
+      }
+      resolve({ mediaType: mediaType, body: new Buffer(resource) });
     });
   }
 
