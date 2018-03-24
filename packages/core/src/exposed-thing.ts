@@ -28,10 +28,11 @@ import * as TDGenerator from "./td-generator"
 import * as Rest from "./resource-listeners/all-resource-listeners";
 import { ResourceListener } from "./resource-listeners/protocol-interfaces";
 import { Content, ContentSerdes } from "./content-serdes";
+import { Action } from "rxjs/scheduler/Action";
 
 export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT.ConsumedThing, WoT.ExposedThing {
-
-    private interactionStates: Map<string, InteractionState> = new Map<string, InteractionState>();
+    private propertyStates: Map<string, PropertyState> = new Map<string, PropertyState>();
+    private actionStates: Map<string, ActionState> = new Map<string, ActionState>();
     private interactionObservables: Map<string, Subject<Content>> = new Map<string, Subject<Content>>();
     private restListeners: Map<string, ResourceListener> = new Map<string, ResourceListener>();
 
@@ -45,15 +46,17 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
             // reset forms in case already set via ThingModel
             inter.form = [];
 
-            let state = new InteractionState();
-            state.value = null;
-            state.handlers = [];
+            // let state = new InteractionState();
+            // state.value = null;
+            // state.handlers = [];
 
-            this.interactionStates.set(inter.name, state);
+            // this.interactionStates.set(inter.name, state);
 
             if (inter.pattern === TD.InteractionPattern.Property) {
+                this.propertyStates.set(inter.name, new PropertyState());
                 this.addResourceListener("/" + this.name + "/properties/" + inter.name, new Rest.PropertyResourceListener(this, inter.name));
             } else if (inter.pattern === TD.InteractionPattern.Action) {
+                this.actionStates.set(inter.name, new ActionState());
                 this.addResourceListener("/" + this.name + "/actions/" + inter.name, new Rest.ActionResourceListener(this, inter.name));
             } else if (inter.pattern === TD.InteractionPattern.Event) {
                 // TODO connection to bindings
@@ -91,7 +94,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
      */
     public readProperty(propertyName: string): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            let state = this.interactionStates.get(propertyName);
+            let state = this.propertyStates.get(propertyName);
             if (state) {
 
                 // TODO calls all handlers
@@ -110,13 +113,13 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
      */
     public writeProperty(propertyName: string, newValue: any): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            let state = this.interactionStates.get(propertyName);
+            let state = this.propertyStates.get(propertyName);
             if (state) {
                 let oldValue = state.value;
                 state.value = newValue;
 
                 // calls all handlers
-                state.handlers.forEach(handler => handler.apply(this, [newValue, oldValue]))
+                state.writeHandlers.forEach(handler => handler.apply(this, [newValue, oldValue]))
 
                 resolve(newValue);
             } else {
@@ -131,7 +134,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
     */
     public invokeAction(actionName: string, parameter?: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            let state = this.interactionStates.get(actionName);
+            let state = this.actionStates.get(actionName);
             if (state) {
                 // TODO debug-level
                 console.debug(`ExposedThing '${this.name}' Action state of '${actionName}':`, state);
@@ -204,11 +207,11 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
         this.interaction.push(newProp);
 
         // FIXME does it makes sense to push the state to the ResourceListener?
-        let propState = new InteractionState();
-        propState.value = property.value;
-        propState.handlers = [];
-
-        this.interactionStates.set(newProp.name, propState);
+        let state = new PropertyState();
+        if(property.value) {
+            state.value = property.value
+        }
+        this.propertyStates.set(newProp.name, state);
         this.addResourceListener("/" + this.name + "/properties/" + newProp.name, new Rest.PropertyResourceListener(this, newProp.name));
 
         // inform TD observers
@@ -236,10 +239,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 
         this.interaction.push(newAction);
 
-        let actionState = new InteractionState();
-        actionState.handlers = [];
-
-        this.interactionStates.set(newAction.name, actionState);
+        this.actionStates.set(newAction.name, new ActionState());
         this.addResourceListener("/" + this.name + "/actions/" + newAction.name, new Rest.ActionResourceListener(this, newAction.name));
 
         // inform TD observers
@@ -277,7 +277,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
     removeProperty(propertyName: string): WoT.ExposedThing {
         this.interactionObservables.get(propertyName).complete();
         this.interactionObservables.delete(propertyName);
-        this.interactionStates.delete(propertyName);
+        this.propertyStates.delete(propertyName);
         this.removeResourceListener(this.name + "/properties/" + propertyName);
 
         // inform TD observers
@@ -288,7 +288,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 
     /** @inheritDoc */
     removeAction(actionName: string): WoT.ExposedThing {
-        this.interactionStates.delete(actionName);
+        this.actionStates.delete(actionName);
         this.removeResourceListener(this.name + "/actions/" + actionName);
 
         // inform TD observers
@@ -312,7 +312,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
     /** @inheritDoc */
     setActionHandler(actionName: string, action: WoT.ActionHandler): WoT.ExposedThing {
         console.log(`ExposedThing '${this.name}' setting action Handler for '${actionName}'`);
-        let state = this.interactionStates.get(actionName);
+        let state = this.actionStates.get(actionName);
         if (state) {
             state.handlers.push(action);
         } else {
@@ -334,9 +334,9 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
     /** @inheritDoc */
     setPropertyWriteHandler(propertyName: string, writeHandler: WoT.PropertyWriteHandler): WoT.ExposedThing {
         console.log(`ExposedThing '${this.name}' setting write handler for '${propertyName}'`);
-        let state = this.interactionStates.get(propertyName);
+        let state = this.propertyStates.get(propertyName);
         if (state) {
-            state.handlers.push(writeHandler);
+            state.writeHandlers.push(writeHandler);
         } else {
             throw Error(`ExposedThing '${this.name}' cannot set write handler for unknown '${propertyName}'`);
         }
@@ -345,8 +345,19 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 
 }
 
-class InteractionState {
+class PropertyState {
+    constructor() {
+        this.value = null;
+        this.writeHandlers = [];
+        this.readHandlers = [];
+    }
     public value: any;
-    public handlers: Array<Function> = [];
-    public path: string;
+    public writeHandlers: Array<Function>;
+    public readHandlers: Array<Function>;
+}
+class ActionState {
+    constructor() {
+        this.handlers = [];
+    }
+    public handlers: Array<Function>;
 }
