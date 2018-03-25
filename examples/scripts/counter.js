@@ -18,13 +18,6 @@ thing.addProperty({
 	writeable : true
 })
 
-thing.setPropertyWriteHandler( 
-	NAME_PROPERTY_COUNT,
-	(value) => {
-		console.log("Setting '" + NAME_PROPERTY_COUNT + "' value to " + value);
-	}
-);
-
 thing.addAction({
     name : NAME_ACTION_INCREMENT
 })
