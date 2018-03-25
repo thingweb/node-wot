@@ -209,7 +209,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 
         // FIXME does it makes sense to push the state to the ResourceListener?
         let state = new PropertyState();
-        if(property.value) {
+        if(property.value != null) {
             state.value = property.value;
             console.log(`ExposedThing '${this.name}' sets initial property '${property.name}' to '${state.value}'`);
         }
