@@ -28,7 +28,6 @@ import * as TDGenerator from "./td-generator"
 import * as Rest from "./resource-listeners/all-resource-listeners";
 import { ResourceListener } from "./resource-listeners/protocol-interfaces";
 import { Content, ContentSerdes } from "./content-serdes";
-import { Action } from "rxjs/scheduler/Action";
 
 export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT.ConsumedThing, WoT.ExposedThing {
     private propertyStates: Map<string, PropertyState> = new Map<string, PropertyState>();
@@ -45,12 +44,6 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 
             // reset forms in case already set via ThingModel
             inter.form = [];
-
-            // let state = new InteractionState();
-            // state.value = null;
-            // state.handlers = [];
-
-            // this.interactionStates.set(inter.name, state);
 
             if (inter.pattern === TD.InteractionPattern.Property) {
                 this.propertyStates.set(inter.name, new PropertyState());
@@ -96,10 +89,9 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
         return new Promise<any>((resolve, reject) => {
             let state = this.propertyStates.get(propertyName);
             if (state) {
-
                 // call read handler (if any)
                 if (state.readHandler != null) {
-                    state.value = state.readHandler.apply(this);
+                    state.value = state.readHandler.apply(state.that);
                 }
 
                 resolve(state.value);
@@ -118,11 +110,11 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
         return new Promise<void>((resolve, reject) => {
             let state = this.propertyStates.get(propertyName);
             if (state) {
-                state.value = newValue;
-
                 // call write handler (if any)
                 if (state.writeHandler != null) {
-                    state.value = state.writeHandler.apply(this, [newValue]); 
+                    state.value = state.writeHandler.apply(state.that, [newValue]); 
+                } else {
+                    state.value = newValue;
                 }
 
                 resolve(state.value);
@@ -353,18 +345,26 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 }
 
 class PropertyState {
+    public that: Function;
+    public value: any;
+    
+    public writeHandler: Function;
+    public readHandler: Function;
+
     constructor() {
+        this.that = new Function();
         this.value = null;
         this.writeHandler = null;
         this.readHandler = null;
     }
-    public value: any;
-    public writeHandler: Function;
-    public readHandler: Function;
+
 }
+
 class ActionState {
+    public that: Function;
+    public handler: Function;
     constructor() {
+        this.that = new Function();
         this.handler = null;
     }
-    public handler: Function;
 }

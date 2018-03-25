@@ -180,12 +180,15 @@ class WoTServerTest {
             initp.name,
             function() {
                 return new Promise((resolve, reject) => {
+                    // TODO: figure out a way to provide a common scope that can be used for consecutive handler calls
                     // let counter: number = 0; // fails to keep state!!
                     // var counter: number = 0; // fails to keep state also!!
+                    // resolve(++counter);
                     if (!this.counter) {
+                        // init counter the first time
                         this.counter = 0;
                     }
-                    resolve(++this.counter); // ++counter
+                    resolve(++this.counter);
                 });
             }
         );
@@ -221,6 +224,49 @@ class WoTServerTest {
 
         expect(await thing.writeProperty("number", 12)).to.equal(12);
         expect(await thing.readProperty("number2")).to.equal(24);
+
+        thing.setPropertyWriteHandler(
+            initp.name,
+            function(value: any) {
+                return new Promise((resolve, reject) => {
+                    thing.writeProperty(initp2.name, value*2);
+                    resolve(value);
+                });
+            }
+        );
+
+        expect(await thing.writeProperty("number", 13)).to.equal(13);
+        expect(await thing.readProperty("number2")).to.equal(26);
+    }
+
+    @test async "should be able to add a property, read it by setting write handler with reading old value"() {
+        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthingReadWrite" });
+        let initp: WoT.ThingProperty = {
+            name: "number",
+            writable: true,
+            schema: `{ "type": "number" }`,
+            value : 2
+        };
+        thing.addProperty(initp);
+        // set handler that writes newValue as oldValue+request
+        thing.setPropertyWriteHandler(
+            initp.name,
+            (value: any) => {
+                return new Promise((resolve, reject) => {
+                    thing.readProperty(initp.name).then(
+                         (oldValue) => {
+                            resolve(oldValue + value);
+                         }
+                    );
+                });
+            }
+        );
+
+        expect(await thing.writeProperty("number", 1)).to.equal(3); // 2 + 1 = 3
+        expect(await thing.readProperty("number")).to.equal(3);
+
+        expect(await thing.writeProperty("number", 2)).to.equal(5); // 3 + 2 = 5
+        expect(await thing.readProperty("number")).to.equal(5);
     }
 
 
