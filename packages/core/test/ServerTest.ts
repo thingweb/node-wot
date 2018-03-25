@@ -155,9 +155,10 @@ class WoTServerTest {
             value: 10
         };
         thing.addProperty(initp);
-        let value1 = await thing.readProperty("number");
-        expect(value1).to.equal(10);
-        await thing.writeProperty("number", 5);
+        let value0 = await thing.readProperty("number");
+        expect(value0).to.equal(10);
+        let value1 = await thing.writeProperty("number", 5);
+        expect(value1).to.equal(5);
         let value2 = await thing.readProperty("number");
         expect(value2).to.equal(5);
     }
