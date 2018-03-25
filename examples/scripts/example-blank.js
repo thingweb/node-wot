@@ -19,10 +19,10 @@ try {
     schema: '{ "type": "number" }'
   });
   // add server functionality
-  thing.setActionHandler( () => {
+  thing.setActionHandler("reset", () => {
     console.log("Resetting maximum");
     thing.writeProperty("max", 0.0);
-  }, "reset");
+  });
   
   thing.start();
   
