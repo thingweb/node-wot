@@ -107,6 +107,45 @@ class WoTServerTest {
         expect(thing).to.have.property("interaction");
     }
 
+    @test async "should be able to add a property with default value 0"() {
+        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthing100" });
+        let initp: WoT.ThingProperty = {
+            name: "number",
+            writable: true,
+            schema: `{ "type": "number" }`,
+            value: 0
+        };
+        thing.addProperty(initp);
+        let value1 = await thing.readProperty("number");
+        expect(value1).to.equal(0);
+    }
+
+
+    @test async "should be able to add a property with default value XYZ"() {
+        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthing101" });
+        let initp: WoT.ThingProperty = {
+            name: "string",
+            writable: true,
+            schema: `{ "type": "string" }`,
+            value: "XYZ"
+        };
+        thing.addProperty(initp);
+        let value1 = await thing.readProperty("string");
+        expect(value1).to.equal("XYZ");
+    }
+
+    @test async "should be able to add a property without any default value"() {
+        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthing102" });
+        let initp: WoT.ThingProperty = {
+            name: "number",
+            writable: true,
+            schema: `{ "type": "number" }`
+        };
+        thing.addProperty(initp);
+        let value1 = await thing.readProperty("number");
+        expect(value1).to.equal(null);
+    }
+
     @test async "should be able to add a property, read it and write it locally"() {
         let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthing" });
         let initp: WoT.ThingProperty = {
