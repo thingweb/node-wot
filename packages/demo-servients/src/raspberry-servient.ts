@@ -73,7 +73,7 @@ function main() {
 
 try {
 
-    let template: WoT.ThingTemplate = { name: "unicorn" };
+    let template: WoT.ThingTemplate = { name: "Unicorn" };
 
     let thing = WoT.produce(template);
     unicorn = thing;
