@@ -56,6 +56,11 @@ let gradVector: Color;
 // main logic after connecting to UnicornHat daemon
 function main() {
 
+  // init hardware
+  setBrightness(100);
+  setAll(0, 0, 0);
+  console.info("UnicornHAT initilized");
+
   let servient = new Servient();
 
   servient.addServer(new HttpServer());
@@ -66,62 +71,67 @@ function main() {
   
     console.info("RaspberryServient started");
 
-    let template : WoT.ThingTemplate;
-    template.name = "unicorn"; 
+try {
+
+    let template: WoT.ThingTemplate = { name: "unicorn" };
 
     let thing = WoT.produce(template);
     unicorn = thing;
 
-    let thingPropertyInitBrightness : WoT.ThingProperty;
-      thingPropertyInitBrightness.name = 'brightness';
-      thingPropertyInitBrightness.value = 50;
-      thingPropertyInitBrightness.schema = `{ "type": "integer", "minimum": 0, "maximum": 255 }`;
-      thingPropertyInitBrightness.writable = true;
+    let thingPropertyInitBrightness: WoT.ThingProperty = {
+      name: "brightness",
+      value: 100,
+      schema: `{ "type": "integer", "minimum": 0, "maximum": 255 }`,
+      writable: true
+    };
 
 
-      let thingPropertyInitColor : WoT.ThingProperty;
-      thingPropertyInitColor.name = 'color';
-      thingPropertyInitColor.value = { r: 0, g: 0, b: 0 };
-      thingPropertyInitColor.schema = `{
+    let thingPropertyInitColor: WoT.ThingProperty = {
+      name: "color",
+      value: { r: 0, g: 0, b: 0 },
+      schema: `{
           "type": "object",
           "field": [
             { "name": "r", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
             { "name": "g", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
             { "name": "b", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } }
           ]
-        }`;
-      thingPropertyInitColor.writable = true;
+        }`,
+      writable: true
+    };
 
-
-      let thingActionInitGradient : WoT.ThingAction;
-      thingActionInitGradient.name = 'gradient';
-      thingActionInitGradient.inputSchema = `{
-          type: "array",
-          item: {
-            type: "object",
-            field: [
+    let thingActionInitGradient: WoT.ThingAction = {
+      name: "gradient",
+      inputSchema: `{
+          "type": "array",
+          "item": {
+            "type": "object",
+            "field": [
               { "name": "r", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
               { "name": "g", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
               { "name": "b", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } }
             ]
           },
           "minItems": 2
-        }`;
+        }`
+    };
 
         
-      let thingActionInitForce : WoT.ThingAction;
-      thingActionInitForce.name = 'forceColor';
-      thingActionInitForce.inputSchema = `{
+    let thingActionInitForce: WoT.ThingAction = {
+      name: "forceColor",
+      inputSchema: `{
           "type": "object",
           "field": [
             { "name": "r", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
             { "name": "g", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
             { "name": "b", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } }
           ]
-        }`;
+        }`
+    };
 
-      let thingActionInitCancel : WoT.ThingAction;
-      thingActionInitCancel.name = 'cancel';
+    let thingActionInitCancel: WoT.ThingAction = {
+      name: "cancel"
+    };
 
       unicorn
         .addProperty(thingPropertyInitBrightness)
@@ -130,7 +140,7 @@ function main() {
           (value : any) => {
             return new Promise((resolve, reject) => {
                 setBrightness(value);
-                resolve();
+                resolve(value);
             });
           }
         )
@@ -140,7 +150,7 @@ function main() {
           (value : any) => {
             return new Promise((resolve, reject) => {
                 setAll(value.r, value.g, value.b);
-                resolve();
+                resolve(value);
             });
           }
         )
@@ -193,6 +203,12 @@ function main() {
             });
           }
         );
+    console.log(unicorn.name + " ready");
+
+} catch (err) {
+  console.error("Unicorn setup error: " + err);
+}
+
   });
 }
 
