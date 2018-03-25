@@ -39,18 +39,18 @@ export class Content {
 /** default implementation offerin Json de-/serialisation */
 class JsonCodec implements ContentCodec {
 
-  private mimeType : string;
+  private subMediaType: string;
 
-  constructor(mimeType? : string) {
-    if(mimeType == null) {
-      this.mimeType = ContentSerdes.DEFAULT; // 'application/json' 
+  constructor(subMediaType?: string) {
+    if(!subMediaType) {
+      this.subMediaType = ContentSerdes.DEFAULT; // 'application/json' 
     } else {
-      this.mimeType = mimeType;
+      this.subMediaType = subMediaType;
     }
   }
 
   getMediaType(): string {
-    return this.mimeType;
+    return this.subMediaType;
   }
 
   bytesToValue(bytes: Buffer): any {
