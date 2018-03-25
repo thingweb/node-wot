@@ -38,8 +38,19 @@ export class Content {
 
 /** default implementation offerin Json de-/serialisation */
 class JsonCodec implements ContentCodec {
+
+  private mimeType : string;
+
+  constructor(mimeType? : string) {
+    if(mimeType == null) {
+      this.mimeType = ContentSerdes.DEFAULT; // 'application/json' 
+    } else {
+      this.mimeType = mimeType;
+    }
+  }
+
   getMediaType(): string {
-    return 'application/json'
+    return this.mimeType;
   }
 
   bytesToValue(bytes: Buffer): any {
@@ -119,6 +130,7 @@ export class ContentSerdes {
     if (!this.instance) {
       this.instance = new ContentSerdes();
       this.instance.addCodec(new JsonCodec());
+      this.instance.addCodec(new JsonCodec('application/senml+json'));
       this.instance.addCodec(new TextCodec());
     }
     return this.instance;
