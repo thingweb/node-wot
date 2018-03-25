@@ -91,7 +91,10 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
             if (state) {
                 // call read handler (if any)
                 if (state.readHandler != null) {
+                    console.log(`ExposedThing '${this.name}' calls registered readHandler for property ${propertyName}`);
                     state.value = state.readHandler.apply(state.that);
+                } else {
+                    console.log(`ExposedThing '${this.name}' reports value ${state.value} for property ${propertyName}`);
                 }
 
                 resolve(state.value);
@@ -112,8 +115,10 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
             if (state) {
                 // call write handler (if any)
                 if (state.writeHandler != null) {
+                    console.log(`ExposedThing '${this.name}' calls registered writeHandler for property ${propertyName}`);
                     state.value = state.writeHandler.apply(state.that, [newValue]); 
                 } else {
+                    console.log(`ExposedThing '${this.name}' sets new value ${newValue} for property ${propertyName}`);
                     state.value = newValue;
                 }
 
@@ -205,7 +210,8 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
         // FIXME does it makes sense to push the state to the ResourceListener?
         let state = new PropertyState();
         if(property.value) {
-            state.value = property.value
+            state.value = property.value;
+            console.log(`ExposedThing '${this.name}' sets initial property '${property.name}' to '${state.value}'`);
         }
         this.propertyStates.set(newProp.name, state);
         this.addResourceListener("/" + this.name + "/properties/" + newProp.name, new Rest.PropertyResourceListener(this, newProp.name));
