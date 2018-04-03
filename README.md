@@ -10,9 +10,14 @@ W3C Software License
 
 ## Prerequisites
 
-On Windows, install the build tools
+On Linux, install lerna
 ```
-npm install --global --production windows-build-tools
+npm install -g lerna
+```
+
+On Windows, install the build tools and lerna (CMD shell as administrator)
+```
+npm install --global --production windows-build-tools -g lerna 
 ```
 
 ## How to get ready for coding
