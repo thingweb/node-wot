@@ -345,11 +345,10 @@ class WoTServerTest {
 
         return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
     }
-
-    // FIXME ThingTemplate does not process given Interactions yet
-    @test.skip "should be able to add an action and invoke it locally (based on WoT.ThingTemplate)"() {
+    
+    @test "should be able to add an action and invoke it locally (based on WoT.ThingTemplate)"() {
         let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({
-            name: "thing6b"
+            name: "thing6c"
         });
         let inita: WoT.ThingAction = {
             name: "action1",
