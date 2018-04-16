@@ -309,9 +309,7 @@ class WoTServerTest {
         expect(await thing.readProperty("number")).to.equal(5);
     }
 
-
-    // FIXME What listeners?!
-    @test.skip "should be able to add a property, assign it via listener and read it locally"() {
+    @test async "should be able to add a property, write and read it locally"() {
         let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "thing3" });
         let initp: WoT.ThingProperty = {
             name: "prop1",
@@ -321,60 +319,8 @@ class WoTServerTest {
         };
         thing.addProperty(initp);
 
-        let listener = WoTServerTest.server.getListenerFor("/thing3/properties/prop1");
-        expect(listener).to.exist;
-        listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
-        return listener.onWrite({ mediaType: undefined, body: new Buffer("5") }).then(() => {
-            return thing.readProperty("prop1").then((value) => expect(value).to.equal(5));
-        });
-    }
-
-    // FIXME What listeners?!
-    @test.skip "should be able to add a property, assign it locally and read it via listener"() {
-        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "thing4" });
-        let initp: WoT.ThingProperty = {
-            name: "prop1",
-            writable: true,
-            schema: `{ "type": "number" }`,
-            value: 10
-        };
-        thing.addProperty(initp);
-
-        let listener = WoTServerTest.server.getListenerFor("/thing4/properties/prop1");
-        expect(listener).to.exist;
-        listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
-
-        return thing.writeProperty("prop1", 23).then((value) => {
-            return listener.onRead().then((content) => {
-                content.should.deep.equal({ mediaType: "application/json", body: new Buffer("23") });
-            });
-        });
-    }
-
-    // FIXME What listeners?!
-    @test.skip "should be able to add a property, assign and read it via listener"() {
-        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({
-            name: "thing5"
-        });
-        let initp: WoT.ThingProperty = {
-            name: "prop1",
-            writable: true,
-            schema: `{ "type": "number" }`,
-            value: 10
-        };
-        thing.addProperty(initp);
-
-        let listener = WoTServerTest.server.getListenerFor("/thing5/properties/prop1");
-        expect(listener).to.exist;
-        listener.should.be.an.instanceOf(listeners.PropertyResourceListener);
-        return listener.onWrite({ mediaType: undefined, body: new Buffer("42") }).then(() => {
-            return thing.readProperty("prop1").then((value) => {
-                value.should.equal(42);
-                return listener.onRead().then((content) => {
-                    content.body.should.deep.equal(new Buffer("42"));
-                });
-            });
-        });
+        await thing.writeProperty("prop1", 5);
+        expect(await thing.readProperty("prop1")).to.equal(5);
     }
 
     @test "should be able to add an action and invoke it locally"() {
@@ -453,37 +399,5 @@ class WoTServerTest {
         );
 
         return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
-    }
-
-    // FIXME What listeners?!
-    @test.skip "should be able to add an action and invoke it via listener"() {
-        let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({
-            name: "thing7"
-        });
-        let inita: WoT.ThingAction = {
-            name: "action1",
-            inputSchema: `{ "type": "number" }`,
-            outputSchema: `{ "type": "number" }`
-        };
-        thing.addAction(inita).setActionHandler(
-            inita.name,
-            (parameters: any) => {
-                return new Promise((resolve, reject) => {
-                    parameters.should.be.a("number");
-                    parameters.should.equal(23);
-                    resolve(42);
-                });
-            }
-        );
-
-        let listener = WoTServerTest.server.getListenerFor("/thing7/actions/action1");
-        expect(listener).to.exist;
-        listener.should.be.an.instanceOf(listeners.ActionResourceListener);
-
-        return listener
-            .onInvoke({ mediaType: undefined, body: new Buffer("23") })
-            .then((resBytes => {
-                resBytes.should.deep.equal({ mediaType: "application/json", body: new Buffer("42") });
-            }));
     }
 }
