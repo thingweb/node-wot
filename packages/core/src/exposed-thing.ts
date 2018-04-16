@@ -116,7 +116,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
                 // call write handler (if any)
                 if (state.writeHandler != null) {
                     console.log(`ExposedThing '${this.name}' calls registered writeHandler for property ${propertyName}`);
-                    state.value = state.writeHandler.apply(state.that, [newValue]); 
+                    state.value = state.writeHandler.apply(state.that, [newValue]);
                 } else {
                     console.log(`ExposedThing '${this.name}' sets new value ${newValue} for property ${propertyName}`);
                     state.value = newValue;
@@ -181,7 +181,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
     /** @inheritDoc */
     public emitEvent(eventName: string, value: any): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.interactionObservables.get(eventName).next( ContentSerdes.get().valueToContent(value) );
+            this.interactionObservables.get(eventName).next(ContentSerdes.get().valueToContent(value));
             resolve();
         });
     }
@@ -209,7 +209,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 
         // FIXME does it makes sense to push the state to the ResourceListener?
         let state = new PropertyState();
-        if(property.value != null) {
+        if (property.value != null) {
             state.value = property.value;
             console.log(`ExposedThing '${this.name}' sets initial property '${property.name}' to '${state.value}'`);
         }
@@ -353,7 +353,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
 class PropertyState {
     public that: Function;
     public value: any;
-    
+
     public writeHandler: Function;
     public readHandler: Function;
 
