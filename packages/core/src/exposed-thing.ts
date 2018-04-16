@@ -92,7 +92,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
                 // call read handler (if any)
                 if (state.readHandler != null) {
                     console.log(`ExposedThing '${this.name}' calls registered readHandler for property ${propertyName}`);
-                    state.value = state.readHandler.apply(state.that);
+                    state.value = state.readHandler.call(state.that);
                 } else {
                     console.log(`ExposedThing '${this.name}' reports value ${state.value} for property ${propertyName}`);
                 }
@@ -116,7 +116,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
                 // call write handler (if any)
                 if (state.writeHandler != null) {
                     console.log(`ExposedThing '${this.name}' calls registered writeHandler for property ${propertyName}`);
-                    state.value = state.writeHandler.apply(state.that, [newValue]);
+                    state.value = state.writeHandler.call(state.that, newValue);
                 } else {
                     console.log(`ExposedThing '${this.name}' sets new value ${newValue} for property ${propertyName}`);
                     state.value = newValue;
