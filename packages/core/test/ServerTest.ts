@@ -196,7 +196,7 @@ class WoTServerTest {
         let counter: number = 0;
         thing.addProperty(initp).setPropertyReadHandler(
             initp.name,
-            function() {
+            function () {
                 return new Promise((resolve, reject) => {
                     resolve(++counter);
                 });
@@ -218,7 +218,7 @@ class WoTServerTest {
         };
         thing.addProperty(initp).setPropertyReadHandler(
             initp.name,
-            function() {
+            function () {
                 return new Promise((resolve, reject) => {
                     // TODO: figure out a way to provide a common scope that can be used for consecutive handler calls
                     // let counter: number = 0; // fails to keep state!!
@@ -256,7 +256,7 @@ class WoTServerTest {
             initp.name,
             (value: any) => {
                 return new Promise((resolve, reject) => {
-                    thing.writeProperty(initp2.name, value*2);
+                    thing.writeProperty(initp2.name, value * 2);
                     resolve(value);
                 });
             }
@@ -267,9 +267,9 @@ class WoTServerTest {
 
         thing.setPropertyWriteHandler(
             initp.name,
-            function(value: any) {
+            function (value: any) {
                 return new Promise((resolve, reject) => {
-                    thing.writeProperty(initp2.name, value*2);
+                    thing.writeProperty(initp2.name, value * 2);
                     resolve(value);
                 });
             }
@@ -285,7 +285,7 @@ class WoTServerTest {
             name: "number",
             writable: true,
             schema: `{ "type": "number" }`,
-            value : 2
+            value: 2
         };
         thing.addProperty(initp);
         // set handler that writes newValue as oldValue+request
@@ -294,9 +294,9 @@ class WoTServerTest {
             (value: any) => {
                 return new Promise((resolve, reject) => {
                     thing.readProperty(initp.name).then(
-                         (oldValue) => {
+                        (oldValue) => {
                             resolve(oldValue + value);
-                         }
+                        }
                     );
                 });
             }
@@ -345,7 +345,7 @@ class WoTServerTest {
 
         return thing.invokeAction("action1", 23).then((result) => result.should.equal(42));
     }
-    
+
     @test "should be able to add an action and invoke it locally (based on WoT.ThingTemplate)"() {
         let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({
             name: "thing6c"
