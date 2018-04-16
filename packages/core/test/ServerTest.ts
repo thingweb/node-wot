@@ -164,7 +164,7 @@ class WoTServerTest {
     }
 
 
-    @test async "should be able to add a property, read it by setting read increment handler"() {
+    @test async "should be able to add a property, read it by setting read increment handler (with lambda)"() {
         let thing: WoT.ExposedThing = WoTServerTest.WoT.produce({ name: "otherthingIncRead" });
         let initp: WoT.ThingProperty = {
             name: "number",
