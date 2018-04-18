@@ -157,10 +157,9 @@ class WoTServerTest {
         thing.addProperty(initp);
         let value0 = await thing.readProperty("number");
         expect(value0).to.equal(10);
-        let value1 = await thing.writeProperty("number", 5);
+        await thing.writeProperty("number", 5);
+        let value1 = await thing.readProperty("number");
         expect(value1).to.equal(5);
-        let value2 = await thing.readProperty("number");
-        expect(value2).to.equal(5);
     }
 
 
@@ -262,20 +261,12 @@ class WoTServerTest {
             }
         );
 
-        expect(await thing.writeProperty("number", 12)).to.equal(12);
+        await thing.writeProperty("number", 12);
+        expect(await thing.readProperty("number")).to.equal(12);
         expect(await thing.readProperty("number2")).to.equal(24);
 
-        thing.setPropertyWriteHandler(
-            initp.name,
-            function (value: any) {
-                return new Promise((resolve, reject) => {
-                    thing.writeProperty(initp2.name, value * 2);
-                    resolve(value);
-                });
-            }
-        );
-
-        expect(await thing.writeProperty("number", 13)).to.equal(13);
+        await thing.writeProperty("number", 13)
+        expect(await thing.readProperty("number")).to.equal(13);
         expect(await thing.readProperty("number2")).to.equal(26);
     }
 
@@ -302,10 +293,12 @@ class WoTServerTest {
             }
         );
 
-        expect(await thing.writeProperty("number", 1)).to.equal(3); // 2 + 1 = 3
+        // Note: writePropety uses side-effect (sets new value plus old value)
+        // Defintely not a good idea to do so (for testing purposes only!)
+        await thing.writeProperty("number", 1);  // 2 + 1 = 3
         expect(await thing.readProperty("number")).to.equal(3);
 
-        expect(await thing.writeProperty("number", 2)).to.equal(5); // 3 + 2 = 5
+        await thing.writeProperty("number", 2); // 3 + 2 = 5
         expect(await thing.readProperty("number")).to.equal(5);
     }
 
