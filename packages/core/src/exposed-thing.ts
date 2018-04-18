@@ -122,7 +122,7 @@ export default class ExposedThing extends ConsumedThing implements TD.Thing, WoT
                     state.value = newValue;
                 }
 
-                resolve(state.value);
+                resolve();
             } else {
                 reject(new Error("No property called " + propertyName));
             }
