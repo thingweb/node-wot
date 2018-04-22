@@ -1,4 +1,4 @@
-# Contributing to Eclipse ThingWeb
+# Contributing to Eclipse Thingweb
 
 Thanks for your interest in this project.
 

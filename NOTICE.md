@@ -1,12 +1,12 @@
-# Notices for Eclipse ThingWeb
+# Notices for Eclipse Thingweb
 
-This content is produced and maintained by the Eclipse ThingWeb project.
+This content is produced and maintained by the Eclipse Thingweb project.
 
 * Project home: https://projects.eclipse.org/projects/iot.thingweb
 
 ## Trademarks
 
-Eclipse ThingWeb is a trademark of the Eclipse Foundation.
+Eclipse Thingweb is a trademark of the Eclipse Foundation.
 
 ## Copyright
 
