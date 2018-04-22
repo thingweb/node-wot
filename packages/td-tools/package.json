@@ -2,7 +2,7 @@
   "name": "@node-wot/td-tools",
   "version": "0.4.0-SNAPSHOT.3",
   "description": "W3C Web of Things (WoT) Thing Description parser, serializer, and other tools",
-  "author": "the thingweb community",
+  "author": "Eclipse Thingweb <thingweb-dev@eclipse.org> (https://thingweb.io/)",
   "license": "W3C-20150513",
   "repository": "https://github.com/thingweb/node-wot/tree/master/packages/td-tools",
   "publishConfig": {

@@ -3,7 +3,7 @@
   "version": "0.4.0-SNAPSHOT.3",
   "private": true,
   "description": "Integration tests for node-wot (not published)",
-  "author": "the thingweb community",
+  "author": "Eclipse Thingweb <thingweb-dev@eclipse.org> (https://thingweb.io/)",
   "license": "W3C-20150513",
   "repository": "https://github.com/thingweb/node-wot/tree/master/packages/integration-tests",
   "devDependencies": {

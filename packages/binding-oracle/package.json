@@ -3,7 +3,7 @@
   "version": "0.4.0-SNAPSHOT.3",
   "private": true,
   "description": "Oracle IoT Cloud Service protocol binding for node-wot",
-  "author": "the thingweb community",
+  "author": "Eclipse Thingweb <thingweb-dev@eclipse.org> (https://thingweb.io/)",
   "license": "W3C-20150513",
   "files": [
     "dist/"

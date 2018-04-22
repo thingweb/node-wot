@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "W3C WoT demo Servient for the unpublished version of the monorepo",
-  "author": "the thingweb community",
+  "author": "Eclipse Thingweb <thingweb-dev@eclipse.org> (https://thingweb.io/)",
   "license": "W3C-20150513",
   "repository": "https://github.com/thingweb/node-wot/tree/master/examples/servients",
   "files": [

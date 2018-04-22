@@ -1,7 +1,7 @@
 {
   "private": true,
   "description": "W3C Web of Things (WoT) implementation based on Node.js and TypeScript (root project, not published)",
-  "author": "the thingweb community",
+  "author": "Eclipse Thingweb <thingweb-dev@eclipse.org> (https://thingweb.io/)",
   "license": "W3C-20150513",
   "repository": {
     "type": "git",
