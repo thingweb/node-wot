@@ -92,7 +92,8 @@ class WoTServerTest {
             "interaction": [
                 {
                     "@type": ["Property"],
-                    "name": "myPropX"
+                    "name": "myPropX",
+                    "schema": { "type": "number" }
                 }
             ]
         }`;
@@ -373,7 +374,7 @@ class WoTServerTest {
                 }
             ]
         }`);
-        expect(thing).to.have.property("interaction");
+        expect(thing).to.have.property("interaction").that.has.lengthOf(1);
 
         thing.setActionHandler(
             "action1",

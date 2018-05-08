@@ -32,19 +32,9 @@ interface ClientAndForm {
     form: TD.InteractionForm
 }
 
-export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
+export default class ConsumedThing extends TD.Thing implements WoT.ConsumedThing {
 
     protected readonly td: WoT.ThingDescription;
-
-    public readonly context: (string | Object)[];
-    public readonly name: string;
-    public readonly id: string;
-    public readonly semanticType: Array<WoT.SemanticType>;
-    public readonly metadata: Array<WoT.SemanticMetadata>;
-    public readonly security: any;
-    public readonly interaction: TD.Interaction[];
-    public readonly link: Array<any>;
-
     protected readonly srv: Servient;
     private clients: Map<string, ProtocolClient> = new Map();
     protected observablesEvent: Map<string, Subject<any>> = new Map();
@@ -53,6 +43,8 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
 
     constructor(servient: Servient, td: WoT.ThingDescription) {
 
+        super();
+        // asign containing Servient
         this.srv = servient;
         // cache original TD
         this.td = td;
@@ -65,12 +57,9 @@ export default class ConsumedThing implements TD.Thing, WoT.ConsumedThing {
         this.name = tdObj.name;
         this.id = tdObj.id;
         if (Array.isArray(tdObj.security) && tdObj.security.length>=1) {
-            if (tdObj.security.length > 1) {
-                console.warn(`ConsumedThing '${this.name}' received multiple security metadata entries, selecting first`)
-            }
-            this.security = tdObj.security[0];
-        } else {
             this.security = tdObj.security;
+        } else if (typeof tdObj.security === "object" ) {
+            this.security = [tdObj.security];
         }
         this.metadata = tdObj.metadata;
         this.interaction = tdObj.interaction;

@@ -68,8 +68,7 @@ export class InteractionForm {
  */
 export class Interaction {
   /** @ type information of the Interaction */
-  /* TODO Should be public semanticType: Array<WoT.SemanticType>; */
-  public semanticType: Array<string>;
+  public semanticType: Array<WoT.SemanticType>;
 
   public metadata: Array<WoT.SemanticMetadata>;
 
@@ -96,7 +95,7 @@ export class Interaction {
   public outputSchema: any;
 
   constructor() {
-    this.semanticType = [];
+    this.semanticType = []; // semanticType is subset of @type (without Pattern)
     this.metadata = [];
     this.form = [];
   }
@@ -118,7 +117,7 @@ export class PrefixedContext {
 export default class Thing {
 
   /** @context information of the TD */
-  public context: Array<string | object>
+  public context: Array<string | object>;
 
   /** @ type information, usually 'Thing' */
   public semanticType: Array<WoT.SemanticType>;
@@ -133,7 +132,7 @@ export default class Thing {
   public id: string;
 
   /** security metadata */
-  public security: Object;
+  public security: Array<object>;
 
   /** base URI of the Interaction resources */
   public base?: string;
@@ -144,43 +143,9 @@ export default class Thing {
   /** Web links to other Things or metadata */
   public link?: Array<any>;
 
-  /*
-  public getSimpleContexts(): Array<string> {
-    // @DAPE: Shall we cache created list?
-    let contexts: Array<string> = [];
-    if (this.context != null) {
-      for (let cnt of this.context) {
-        if (typeof cnt == "string") {
-          let c: string = cnt as string;
-          contexts.push(c);
-        }
-      }
-    }
-    return contexts;
-  }
-
-  public getPrefixedContexts(): Array<PrefixedContext> {
-    // @DAPE: Shall we cache created list?
-    let contexts: Array<PrefixedContext> = [];
-    if (this.context != null) {
-      for (let cnt of this.context) {
-        if (typeof cnt == "object") {
-          let c: any = cnt as any;
-          let keys = Object.keys(c);
-          for (let pfx of keys) {
-            let v = c[pfx];
-            contexts.push(new PrefixedContext(pfx, v));
-          }
-        }
-      }
-    }
-    return contexts;
-  }
-  */
-
   constructor() {
     this.context = [DEFAULT_HTTPS_CONTEXT];
-    this.semanticType = []; // DEFAULT_THING_TYPE
+    this.semanticType = []; // semanticType is subset of @type (without "Thing")
     this.metadata = [];
     this.interaction = [];
     this.link = []

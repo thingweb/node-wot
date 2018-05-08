@@ -29,12 +29,18 @@ export function generateTD(thing: ExposedThing, servient: Servient): Thing {
 
   // FIXME necessary to create a copy? security and binding data needs to be filled in...
   // Could pass Thing data and binding data separately to serializeTD()?
+  // Due to missing deep copy, the genTD copy is quite worthless
   let genTD: Thing = new Thing();
+  genTD.context = thing.context.slice(0);
   genTD.semanticType = thing.semanticType.slice(0);
   genTD.name = thing.name;
   genTD.id = thing.id;
   // TODO security
-  genTD.security = [{ description: "node-wot development Servient, no security" }];
+  if (thing.security) {
+    genTD.security = thing.security;
+  } else {
+    genTD.security = [{ description: "node-wot development Servient, no security" }];
+  }
   genTD.metadata = thing.metadata.slice(0);
   genTD.interaction = thing.interaction.slice(0); // FIXME: not a deep copy
   genTD.link = thing.link.slice(0); // FIXME: not a deep copy
@@ -53,16 +59,20 @@ export function generateTD(thing: ExposedThing, servient: Servient): Thing {
 
           /* if server is online !==-1 assign the href information */
           if (server.getPort() !== -1) {
-            let href: string = server.scheme + "://" + address + ":" + server.getPort() + "/" + thing.name;
+            let href: string = server.scheme + "://" + address + ":" + server.getPort() + "/" + encodeURIComponent(thing.name);
+            let pattern: string;
 
-            /* depending of the resource pattern, uri is constructed */
+            /* depending of the Interaction Pattern, uri is different */
             if (interaction.pattern === TD.InteractionPattern.Property) {
-              interaction.form.push(new TD.InteractionForm(href + "/properties/" + interaction.name, type));
+              pattern = "/properties/";
             } else if (interaction.pattern === TD.InteractionPattern.Action) {
-              interaction.form.push(new TD.InteractionForm(href + "/actions/" + interaction.name, type));
+              pattern = "/actions/";
             } else if (interaction.pattern === TD.InteractionPattern.Event) {
-              interaction.form.push(new TD.InteractionForm(href + "/events/" + interaction.name, type));
+              pattern = "/events/";
             }
+
+            interaction.form.push(new TD.InteractionForm(href + pattern + encodeURIComponent(interaction.name), type));
+
             console.debug(`generateTD() assigns href '${interaction.form[interaction.form.length - 1].href}' to Interaction '${interaction.name}'`);
           }
         }

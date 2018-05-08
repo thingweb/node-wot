@@ -116,7 +116,7 @@ let tdSampleLemonbeatBurlingame = `{
 			"sensor": "http://example.org/sensors#"
 		}
 	],
-	"@type": ["Thing"],
+	"@type": ["Thing", "sensor:Sensor"],
 	"name": "LemonbeatThings",
 	"base": "http://192.168.1.176:8080/",
 	"interaction": [
@@ -215,80 +215,115 @@ let tdSampleMetadata1 = `{
 class TDParserTest {
 
   @test "should parse the example from Current Practices"() {
-    let td: Thing = TDParser.parseTDString(tdSample1);
+    let thing: Thing = TDParser.parseTDString(tdSample1);
 
-    expect(td).to.have.property("context").that.has.lengthOf(1);
-    // expect(td).to.have.property("semanticType").to.have.lengthOf(1); // old style
-    // expect(td.semanticType[0]).equals("Thing");
-    expect(td).to.have.property("semanticType").to.have.lengthOf(0);  // new style, semanticType does not include "Thing" itself
-    expect(td).to.have.property("name").that.equals("MyTemperatureThing");
-    expect(td).to.not.have.property("base");
+    expect(thing).to.have.property("context").that.has.lengthOf(1); // TD context
+    expect(thing).to.have.property("semanticType").to.have.lengthOf(0); // semanticType is subset of @type
+    expect(thing).to.have.property("name").that.equals("MyTemperatureThing");
+    expect(thing).to.not.have.property("base");
 
-    expect(td.interaction).to.have.lengthOf(1);
-    expect(td.interaction[0]).to.have.property("semanticType").that.is.empty;
-    expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
-    expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
-    expect(td.interaction[0]).to.have.property("writable").that.equals(false);
+    expect(thing.interaction).to.have.lengthOf(1);
+    expect(thing.interaction[0]).to.have.property("pattern").that.equals("Property");
+    expect(thing.interaction[0]).to.have.property("semanticType").that.is.empty;
+    expect(thing.interaction[0]).to.have.property("name").that.equals("temperature");
+    expect(thing.interaction[0]).to.have.property("writable").that.equals(false);
 
-    expect(td.interaction[0].form).to.have.lengthOf(1);
-    expect(td.interaction[0].form[0]).to.have.property("mediaType").that.equals("application/json");
-    expect(td.interaction[0].form[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
+    expect(thing.interaction[0].form).to.have.lengthOf(1);
+    expect(thing.interaction[0].form[0]).to.have.property("mediaType").that.equals("application/json");
+    expect(thing.interaction[0].form[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
   }
 
   @test "should parse writable Property"() {
-    let td: Thing = TDParser.parseTDString(tdSample2);
+    let thing: Thing = TDParser.parseTDString(tdSample2);
 
-    expect(td).to.have.property("context").that.has.lengthOf(1);
-    // expect(td).to.have.property("semanticType").to.have.lengthOf(1);  // old style
-    // expect(td.semanticType[0]).equals("Thing");
-    expect(td).to.have.property("semanticType").to.have.lengthOf(0);  // new style, semanticType does not include "Thing" itself
-    expect(td).to.have.property("name").that.equals("MyTemperatureThing2");
-    expect(td).to.not.have.property("base");
+    expect(thing).to.have.property("context").that.has.lengthOf(1); // TD context
+    expect(thing).to.have.property("semanticType").to.have.lengthOf(0); // semanticType is subset of @type
+    expect(thing).to.have.property("name").that.equals("MyTemperatureThing2");
+    expect(thing).to.not.have.property("base");
 
-    expect(td.interaction).to.have.lengthOf(1);
-    expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
-    expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
-    expect(td.interaction[0]).to.have.property("writable").that.equals(true);
+    expect(thing.interaction).to.have.lengthOf(1);
+    expect(thing.interaction[0]).to.have.property("pattern").that.equals("Property");
+    expect(thing.interaction[0]).to.have.property("name").that.equals("temperature");
+    expect(thing.interaction[0]).to.have.property("writable").that.equals(true);
 
-    expect(td.interaction[0].form).to.have.lengthOf(1);
-    expect(td.interaction[0].form[0]).to.have.property("mediaType").that.equals("application/json");
-    expect(td.interaction[0].form[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
+    expect(thing.interaction[0].form).to.have.lengthOf(1);
+    expect(thing.interaction[0].form[0]).to.have.property("mediaType").that.equals("application/json");
+    expect(thing.interaction[0].form[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/temp");
   }
 
   @test "should parse and apply base field"() {
-    let td: Thing = TDParser.parseTDString(tdSample3);
+    let thing: Thing = TDParser.parseTDString(tdSample3);
 
-    expect(td).to.have.property("context").that.has.lengthOf(1);
-    // expect(td).to.have.property("semanticType").to.have.lengthOf(1);  // old style
-    // expect(td.semanticType[0]).equals("Thing");
-    expect(td).to.have.property("semanticType").to.have.lengthOf(0);  // new style, semanticType does not include "Thing" itself
-    expect(td).to.have.property("name").that.equals("MyTemperatureThing3");
-    expect(td).to.have.property("base").that.equals("coap://mytemp.example.com:5683/interactions/");
+    expect(thing).to.have.property("context").that.has.lengthOf(1);
+    expect(thing).to.have.property("semanticType").to.have.lengthOf(0); // semanticType is subset of @type
+    expect(thing).to.have.property("name").that.equals("MyTemperatureThing3");
+    expect(thing).to.have.property("base").that.equals("coap://mytemp.example.com:5683/interactions/");
 
-    expect(td.interaction).to.have.lengthOf(3);
-    expect(td.interaction[0]).to.have.property("name").that.equals("temperature");
-    expect(td.interaction[0]).to.have.property("pattern").that.equals("Property");
-    expect(td.interaction[0]).to.have.property("writable").that.equals(true);
+    expect(thing.interaction).to.have.lengthOf(3);
+    expect(thing.interaction[0]).to.have.property("name").that.equals("temperature");
+    expect(thing.interaction[0]).to.have.property("pattern").that.equals("Property");
+    expect(thing.interaction[0]).to.have.property("writable").that.equals(true);
 
-    expect(td.interaction[0].form).to.have.lengthOf(1);
-    expect(td.interaction[0].form[0]).to.have.property("mediaType").that.equals("application/json");
-    expect(td.interaction[0].form[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
+    expect(thing.interaction[0].form).to.have.lengthOf(1);
+    expect(thing.interaction[0].form[0]).to.have.property("mediaType").that.equals("application/json");
+    expect(thing.interaction[0].form[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
 
-    expect(td.interaction[1]).to.have.property("name").that.equals("temperature2");
-    expect(td.interaction[1]).to.have.property("pattern").that.equals("Property");
-    expect(td.interaction[1]).to.have.property("writable").that.equals(false);
+    expect(thing.interaction[1]).to.have.property("name").that.equals("temperature2");
+    expect(thing.interaction[1]).to.have.property("pattern").that.equals("Property");
+    expect(thing.interaction[1]).to.have.property("writable").that.equals(false);
 
-    expect(td.interaction[1].form).to.have.lengthOf(1);
-    expect(td.interaction[1].form[0]).to.have.property("mediaType").that.equals("application/json");
-    expect(td.interaction[1].form[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
+    expect(thing.interaction[1].form).to.have.lengthOf(1);
+    expect(thing.interaction[1].form[0]).to.have.property("mediaType").that.equals("application/json");
+    expect(thing.interaction[1].form[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/interactions/temp");
 
-    expect(td.interaction[2]).to.have.property("name").that.equals("humidity");
-    expect(td.interaction[2]).to.have.property("pattern").that.equals("Property");
-    expect(td.interaction[2]).to.have.property("writable").that.equals(false);
+    expect(thing.interaction[2]).to.have.property("name").that.equals("humidity");
+    expect(thing.interaction[2]).to.have.property("pattern").that.equals("Property");
+    expect(thing.interaction[2]).to.have.property("writable").that.equals(false);
 
-    expect(td.interaction[2].form).to.have.lengthOf(1);
-    expect(td.interaction[2].form[0]).to.have.property("mediaType").that.equals("application/json");
-    expect(td.interaction[2].form[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/humid");
+    expect(thing.interaction[2].form).to.have.lengthOf(1);
+    expect(thing.interaction[2].form[0]).to.have.property("mediaType").that.equals("application/json");
+    expect(thing.interaction[2].form[0]).to.have.property("href").that.equals("coap://mytemp.example.com:5683/humid");
+  }
+
+  @test "should parse additional contexts"() {
+    let thing: Thing = TDParser.parseTDString(tdSampleLemonbeatBurlingame);
+
+    expect(thing).to.have.property("context").that.has.lengthOf(2); // TD, { actuator, sensor }
+    expect(thing).to.have.property("semanticType").to.have.lengthOf(1); // "sensor:Sensor"
+    expect(thing.semanticType[0]).to.have.property("prefix").that.equals("sensor");
+    expect(thing.semanticType[0]).to.have.property("name").that.equals("Sensor");
+    expect(thing).to.have.property("name").that.equals("LemonbeatThings");
+    expect(thing).to.have.property("base").that.equals("http://192.168.1.176:8080/");
+
+    expect(thing.interaction).to.have.lengthOf(6);
+    expect(thing.interaction[0]).to.have.property("name").that.equals("luminance");
+    expect(thing.interaction[0]).to.have.property("pattern").that.equals("Property");
+    expect(thing.interaction[0]).to.have.property("semanticType").to.have.lengthOf(1); // "sensor:luminance"
+    expect(thing.interaction[0].semanticType[0]).to.have.property("prefix").that.equals("sensor");
+    expect(thing.interaction[0].semanticType[0]).to.have.property("name").that.equals("luminance");
+    expect(thing.interaction[0]).to.have.property("metadata").to.have.lengthOf(1); // "sensor:unit": "sensor:Candela"
+    expect(thing.interaction[0].metadata[0]).to.have.property("type").that.has.property("prefix").that.equals("sensor");
+    expect(thing.interaction[0].metadata[0]).to.have.property("type").that.has.property("name").that.equals("unit");
+    expect(thing.interaction[0].metadata[0]).to.have.property("value").that.equals("sensor:Candela");
+
+    expect(thing.interaction).to.have.lengthOf(6);
+    expect(thing.interaction[1]).to.have.property("name").that.equals("humidity");
+    expect(thing.interaction[1]).to.have.property("pattern").that.equals("Property");
+    expect(thing.interaction[1]).to.have.property("semanticType").to.have.lengthOf(1); // "sensor:humidity"
+    expect(thing.interaction[1].semanticType[0]).to.have.property("prefix").that.equals("sensor");
+    expect(thing.interaction[1].semanticType[0]).to.have.property("name").that.equals("humidity");
+    expect(thing.interaction[1]).to.have.property("metadata").to.have.lengthOf(1); // "sensor:unit": "sensor:Percent"
+    expect(thing.interaction[1].metadata[0]).to.have.property("type").that.has.property("prefix").that.equals("sensor");
+    expect(thing.interaction[1].metadata[0]).to.have.property("type").that.has.property("name").that.equals("unit");
+    expect(thing.interaction[1].metadata[0]).to.have.property("value").that.equals("sensor:Percent");
+
+    expect(thing.interaction).to.have.lengthOf(6);
+    expect(thing.interaction[4]).to.have.property("name").that.equals("turnOn");
+    expect(thing.interaction[4]).to.have.property("pattern").that.equals("Action");
+    expect(thing.interaction[4]).to.have.property("semanticType").to.have.lengthOf(1); // "actuator:turnOn"
+    expect(thing.interaction[4].semanticType[0]).to.have.property("prefix").that.equals("actuator");
+    expect(thing.interaction[4].semanticType[0]).to.have.property("name").that.equals("turnOn");
+    expect(thing.interaction[4]).to.have.property("metadata").to.have.lengthOf(0);
   }
 
   @test "should return same TD in round-trips"() {
@@ -366,7 +401,7 @@ class TDParserTest {
     let td: Thing = TDParser.parseTDString(tdSampleMetadata1);
 
     expect(td).to.have.property("context").that.has.lengthOf(1);
-    expect(td).to.have.property("semanticType").to.have.lengthOf(0);  // new style, semanticType does not include "Thing" itself
+    expect(td).to.have.property("semanticType").to.have.lengthOf(0); // semanticType is subset of @type
 
     expect(td).to.have.property("name").that.equals("MyTemperatureThing3");
     expect(td).to.have.property("base").that.equals("coap://mytemp.example.com:5683/interactions/");
@@ -396,7 +431,6 @@ class TDParserTest {
 
     // serialize
     let newJson = TDParser.serializeTD(td);
-    console.log(newJson);
   }
 
 }
