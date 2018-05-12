@@ -59,6 +59,13 @@ export default class WoTImpl implements WoT.WoTFactory {
 
     /** @inheritDoc */
     consume(td: WoT.ThingDescription): WoT.ConsumedThing {
+
+        let trimmedTD = td.trim();
+
+        if (td[0]!=='{') {
+            throw new Error("WoT.consume() takes a Thing Description. Use WoT.fetch() for URIs.");
+        }
+
         let newThing = new ConsumedThing(this.srv, td);
         console.info(`WoTImpl consuming TD ${newThing.id ? "'"+newThing.id+"'" : "without @id"} for ConsumedThing '${newThing.name}'`);
         return newThing;
