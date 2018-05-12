@@ -47,7 +47,8 @@ export default class Servient {
         try {
             script.runInContext(context, options);
         } catch (err) {
-            console.error(`Servient caught error in '${filename}': ${err}`);
+            let scriptPosition = err.stack.match(/at evalmachine\.<anonymous>\:([0-9]+\:[0-9]+)\n/)[1];
+            console.error(`Servient caught error in privileged '${filename}' and halted at line ${scriptPosition}\n    ${err}`);
         }
     }
 
@@ -68,7 +69,8 @@ export default class Servient {
         try {
             script.runInContext(context, options);
         } catch (err) {
-            console.error(`Servient caught error in privileged '${filename}': ${err}`);
+            let scriptPosition = err.stack.match(/at evalmachine\.<anonymous>\:([0-9]+\:[0-9]+)\n/)[1];
+            console.error(`Servient caught error in privileged '${filename}' and halted at line ${scriptPosition}\n    ${err}`);
         }
     }
 
