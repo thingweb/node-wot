@@ -55,7 +55,7 @@ const runScripts = function(srv : DefaultServient, scripts : Array<string>) : vo
                 console.error("WoT-Servient experienced error while reading script", err);
             } else {
                 // limit printout to first line
-                console.info(`WoT-Servient running script '${data.substr(0, data.indexOf("\n"))}...'`);
+                console.info(`WoT-Servient running script '${data.substr(0, data.indexOf("\n")).replace("\r", "")}'... (${data.split(/\r\n|\r|\n/).length} lines)`);
                 srv.runPrivilegedScript(data, fname);
             }
         });

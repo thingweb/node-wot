@@ -200,6 +200,10 @@ export default class HttpClient implements ProtocolClient {
 
   public setSecurity(metadata: any, credentials?: any): boolean {
 
+    if (Array.isArray(metadata)) {
+      metadata = metadata[0];
+    }
+
     if (metadata.authorization === "Basic") {
       this.authorization = "Basic " + new Buffer(credentials.username + ":" + credentials.password).toString('base64');
 
@@ -230,7 +234,7 @@ export default class HttpClient implements ProtocolClient {
       return false;
     }
 
-    console.info(`HttpClient using security metadata '${metadata.authorization}'`);
+    console.log(`HttpClient using security metadata '${metadata.authorization}'`);
     return true;
   }
 

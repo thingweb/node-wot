@@ -98,7 +98,7 @@ export default class ConsumedThing extends TD.Thing implements WoT.ConsumedThing
             if (client) {
                 console.log(`ConsumedThing '${this.name}' got new client for '${schemes[srvIdx]}'`);
                 if (this.security) {
-                    console.warn("ConsumedThing applying security metadata");
+                    console.log("ConsumedThing applying security metadata");
                     //console.dir(this.security);
                     client.setSecurity(this.security, this.srv.getCredentials(this.id));
                 }
