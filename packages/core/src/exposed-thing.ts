@@ -86,12 +86,16 @@ export default class ExposedThing extends ConsumedThing implements WoT.ConsumedT
                 // call read handler (if any)
                 if (state.readHandler != null) {
                     console.log(`ExposedThing '${this.name}' calls registered readHandler for property ${propertyName}`);
-                    state.value = state.readHandler.call(state.that);
+                    state.readHandler.call(state.that).then( (result: any) => {
+                        state.value = result;
+                        resolve(state.value);
+                    }).catch( (err: Error) => {
+                        reject(err);
+                    });
                 } else {
                     console.log(`ExposedThing '${this.name}' reports value ${state.value} for property ${propertyName}`);
+                    resolve(state.value);
                 }
-
-                resolve(state.value);
             } else {
                 reject(new Error("No property called " + propertyName));
             }
@@ -110,13 +114,17 @@ export default class ExposedThing extends ConsumedThing implements WoT.ConsumedT
                 // call write handler (if any)
                 if (state.writeHandler != null) {
                     console.log(`ExposedThing '${this.name}' calls registered writeHandler for property ${propertyName}`);
-                    state.value = state.writeHandler.call(state.that, newValue);
+                    state.writeHandler.call(state.that, newValue).then( (result: any) => {
+                        state.value = result;
+                        resolve();
+                    }).catch( (err: Error) => {
+                        reject(err);
+                    });
                 } else {
                     console.log(`ExposedThing '${this.name}' sets new value ${newValue} for property ${propertyName}`);
                     state.value = newValue;
+                    resolve();
                 }
-
-                resolve();
             } else {
                 reject(new Error("No property called " + propertyName));
             }

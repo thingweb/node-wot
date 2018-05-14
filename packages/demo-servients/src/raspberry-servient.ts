@@ -31,10 +31,11 @@ const net = require('net');
 // the UnicornHat API daemon listens on a Unix socket at /var/run/mysocket
 const client = net.createConnection('/var/run/unicornd.socket');
 client.on('connect', () => { main(); });
-client.on('error', (err: Error) => { console.log('unicornd error: ' + err.message); });
-client.on('data', (data: Buffer) => { console.log('unicornd data: ' + data.toString()); });
+client.on('error', (err: Error) => { console.error('unicornd error: ' + err.message); });
+client.on('data', (data: Buffer) => { console.debug('unicornd data: ' + data.toString()); });
 
-// local definition
+// local definitions
+
 declare interface Color {
   r: number,
   g: number,
@@ -50,11 +51,13 @@ let gradNext: Color;
 let gradVector: Color;
 
 // main logic after connecting to UnicornHat daemon
+
 function main() {
 
   // init hardware
   setBrightness(100);
   setAll(0, 0, 0);
+
   console.info("UnicornHAT initilized");
 
   let servient = new Servient();
@@ -67,25 +70,25 @@ function main() {
   
     console.info("RaspberryServient started");
 
-try {
+    try {
 
-    let template: WoT.ThingTemplate = { name: "Unicorn" };
+      let template: WoT.ThingTemplate = { name: "Unicorn" };
 
-    let thing = WoT.produce(template);
-    unicorn = thing;
+      let thing = WoT.produce(template);
+      unicorn = thing;
 
-    let thingPropertyInitBrightness: WoT.ThingProperty = {
-      name: "brightness",
-      value: 100,
-      schema: `{ "type": "integer", "minimum": 0, "maximum": 255 }`,
-      writable: true
-    };
+      let thingPropertyInitBrightness: WoT.ThingProperty = {
+        name: "brightness",
+        value: 100,
+        schema: `{ "type": "integer", "minimum": 0, "maximum": 255 }`,
+        writable: true
+      };
 
 
-    let thingPropertyInitColor: WoT.ThingProperty = {
-      name: "color",
-      value: { r: 0, g: 0, b: 0 },
-      schema: `{
+      let thingPropertyInitColor: WoT.ThingProperty = {
+        name: "color",
+        value: { r: 0, g: 0, b: 0 },
+        schema: `{
           "type": "object",
           "field": [
             { "name": "r", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
@@ -93,12 +96,12 @@ try {
             { "name": "b", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } }
           ]
         }`,
-      writable: true
-    };
+        writable: true
+      };
 
-    let thingActionInitGradient: WoT.ThingAction = {
-      name: "gradient",
-      inputSchema: `{
+      let thingActionInitGradient: WoT.ThingAction = {
+        name: "gradient",
+        inputSchema: `{
           "type": "array",
           "item": {
             "type": "object",
@@ -110,12 +113,11 @@ try {
           },
           "minItems": 2
         }`
-    };
+      };
 
-        
-    let thingActionInitForce: WoT.ThingAction = {
-      name: "forceColor",
-      inputSchema: `{
+      let thingActionInitForce: WoT.ThingAction = {
+        name: "forceColor",
+        inputSchema: `{
           "type": "object",
           "field": [
             { "name": "r", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } },
@@ -123,11 +125,11 @@ try {
             { "name": "b", "schema": { "type": "integer", "minimum": 0, "maximum": 255 } }
           ]
         }`
-    };
+      };
 
-    let thingActionInitCancel: WoT.ThingAction = {
-      name: "cancel"
-    };
+      let thingActionInitCancel: WoT.ThingAction = {
+        name: "cancel"
+      };
 
       unicorn
         .addProperty(thingPropertyInitBrightness)
@@ -135,8 +137,8 @@ try {
           thingPropertyInitBrightness.name,
           (value : any) => {
             return new Promise((resolve, reject) => {
-                setBrightness(value);
-                resolve(value);
+              setBrightness(value);
+              resolve(value);
             });
           }
         )
@@ -145,8 +147,12 @@ try {
           thingPropertyInitColor.name,
           (value : any) => {
             return new Promise((resolve, reject) => {
+              if (typeof value !== "object") {
+                reject(new Error(thingPropertyInitColor.name + " requires application/json"));
+              } else {
                 setAll(value.r, value.g, value.b);
                 resolve(value);
+              }
             });
           }
         )
@@ -191,7 +197,7 @@ try {
           () => {
             return new Promise((resolve, reject) => {
               if (gradientTimer) {
-                console.log('>> canceling timer');
+                console.info('>> canceling timer');
                 clearInterval(gradientTimer);
                 gradientTimer = null;
               }
@@ -199,16 +205,20 @@ try {
             });
           }
         );
-    console.log(unicorn.name + " ready");
 
-} catch (err) {
-  console.error("Unicorn setup error: " + err);
-}
+      console.info(unicorn.name + " ready");
 
+    } catch (err) {
+      console.error("Unicorn setup error: " + err);
+    }
+
+  }).catch( (err) => {
+    console.error("Servient start error: " + err);
   });
 }
 
-// helper
+// helpers
+
 function roundColor(color: Color): Color {
   return { r: Math.round(color.r), g: Math.round(color.g), b: Math.round(color.b) };
 }
@@ -224,7 +234,7 @@ function gradientStep() {
     gradNow = gradient[gradIndex];
     gradIndex = ++gradIndex % gradient.length;
     gradNext = gradient[gradIndex];
-    console.log('> step new index ' + gradIndex);
+    console.debug('> step new index ' + gradIndex);
     gradVector = {
       r: (gradNext.r - gradNow.r) / 20,
       g: (gradNext.g - gradNow.g) / 20,
@@ -235,7 +245,7 @@ function gradientStep() {
 
 function setBrightness(val: number) {
   if (!client) {
-    console.log('not connected');
+    console.error('not connected');
     return;
   }
   client.write(new Buffer([0, val, 3]));
@@ -243,7 +253,7 @@ function setBrightness(val: number) {
 
 function setPixel(x: number, y: number, r: number, g: number, b: number) {
   if (!client) {
-    console.log('not connected');
+    console.error('not connected');
     return;
   }
   client.write(new Buffer([1, x, y, g, r, b]));
@@ -251,7 +261,7 @@ function setPixel(x: number, y: number, r: number, g: number, b: number) {
 
 function show() {
   if (!client) {
-    console.log('not connected');
+    console.error('not connected');
     return;
   }
   client.write(new Buffer([3]));
@@ -259,7 +269,7 @@ function show() {
 
 function setAll(r: number, g: number, b: number) {
   if (!client) {
-    console.log('not connected');
+    console.error('not connected');
     return;
   }
   let all = [2];
@@ -271,3 +281,4 @@ function setAll(r: number, g: number, b: number) {
   all.push(3);
   client.write(new Buffer(all));
 }
+
