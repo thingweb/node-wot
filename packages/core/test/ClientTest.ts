@@ -201,7 +201,6 @@ class WoTClientTest {
             }
         );
 
-        // JSON.stringify(myThingDesc)
         WoTClientTest.WoT.fetch("data://" + "tdFoo")
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
@@ -269,7 +268,6 @@ class WoTClientTest {
             }
         )
 
-        // JSON.stringify(myThingDesc)
         WoTClientTest.WoT.fetch("data://" + "tdFoo")
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
@@ -290,7 +288,6 @@ class WoTClientTest {
             }
         )
 
-        // JSON.stringify(myThingDesc)
         WoTClientTest.WoT.fetch("data://" + "tdFoo")
             .then((td) => {
                 let thing = WoTClientTest.WoT.consume(td);
