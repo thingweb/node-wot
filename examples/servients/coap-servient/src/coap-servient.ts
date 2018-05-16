@@ -60,36 +60,53 @@ export default class MyServient extends Servient {
             super.start().then( WoT => {
                 console.info("MyServient started");
     
-                WoT.expose({ name: "servient" }).then(thing => {
+                let thing = WoT.produce({ name: "servient" });
     
+                thing
+                    .addAction({
+                        name: "log",
+                        inputSchema: `{ type: "string" }`,
+                        outputSchema: `{ type: "string" }`
+                    }).setActionHandler(
+                        "log",
+                        (msg: any) => {
+                            return new Promise((resolve, reject) => {
+                                console.info(msg);
+                                resolve(`logged '${msg}'`);
+                            });
+                        }
+                    )
+
+                    .addAction({
+                        name: "shutdown",
+                        outputSchema: `{ type: "string" }`
+                    }).setActionHandler(
+                        "shutdown",
+                        () => {
+                            return new Promise((resolve, reject) => {
+                                console.info("shutting down by remote");
+                                this.shutdown();
+                                resolve();
+                            });
+                        }
+                    );
+
+                if (this.config.servient.scriptAction) {
                     thing
-                        .addAction({ name: "log",
-                                    inputSchema: `{ type: "string" }`,
-                                    outputSchema: `{ type: "string" }`,
-                                    action: (msg: string) => {
-                                        console.info(msg);
-                                        return `logged '${msg}`;
-                                    }
-                                })
-                        .addAction({ name: "shutdown",
-                                    outputSchema: `{ type: "string" }`,
-                                    action: () => {
-                                        console.info("shutting down by remote");
-                                        this.shutdown();
-                                    }
+                        .addAction({
+                            name: "runScript",
+                            inputSchema: `{ type: "string" }`,
+                            outputSchema: `{ type: "string" }`
+                        }).setActionHandler(
+                            "runScript",
+                            (script: string) => {
+                                return new Promise((resolve, reject) => {
+                                    console.log("runnig script", script);
+                                    resolve(this.runScript(script));
                                 });
-    
-                    if (this.config.servient.scriptAction)
-                        thing
-                            .addAction({ name: "runScript",
-                                    inputSchema: `{ type: "string" }`,
-                                    outputSchema: `{ type: "string" }`,
-                                    action: (script: string) => {
-                                        console.log("runnig script", script);
-                                        return this.runScript(script);
-                                    }
-                                });
-                });
+                            }
+                        );
+                }
 
                 // pass WoTFactory on
                 resolve(WoT);
