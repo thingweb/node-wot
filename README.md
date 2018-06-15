@@ -17,7 +17,7 @@ npm install -g lerna
 
 On Windows, install the build tools and lerna (CMD shell as administrator)
 ```
-npm install --global --production windows-build-tools -g lerna 
+npm install -g --production windows-build-tools
 ```
 
 ## How to get ready for coding
